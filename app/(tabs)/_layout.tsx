@@ -15,6 +15,15 @@ const TabIcon = ({ focused, icon, title }) => {
     )
 }
 
+const AppHeader = () => {
+    return (
+        <View className={"flex justify-center items-start h-[100px] px-4 bg-white"}>
+            <Text className={"text-[20px] font-bold"}>Good morning! 👋</Text>
+            <Text className={"text-gray-500 font-medium"}>Ready to learn something new?</Text>
+        </View>
+    )
+}
+
 export default function TabLayout() {
 
     return (
@@ -33,7 +42,7 @@ export default function TabLayout() {
                 name={"index"}
                 options={{
                     title: 'Home',
-                    headerShown: false,
+                    header: () => (<AppHeader />),
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={'home'} title={'Home'} />
                     )
