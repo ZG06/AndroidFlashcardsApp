@@ -1,12 +1,12 @@
 import {Text, View} from "react-native";
 import React from "react";
 
-export default function Index() {
+export default function Decks() {
 
     return (
         <View>
             <Text>
-                Home
+                Decks
             </Text>
         </View>
     );
