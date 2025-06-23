@@ -7,6 +7,9 @@ export default function Index() {
     return (
         <ScrollView showsVerticalScrollIndicator={false} className={"p-6"}>
             <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
+                {
+                    // Today's progress card
+                }
                 <Text className={"font-bold text-2xl mb-2"}>Today&#39;s Progress</Text>
                 <View className={"flex-row justify-center gap-x-20 mb-5"}>
                     <View className={"items-center"}>
@@ -30,11 +33,17 @@ export default function Index() {
             </View>
 
             <View className={"flex-row gap-x-5 mb-6"}>
+                {
+                    // Quick study button
+                }
                 <TouchableOpacity className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}>
                     <MaterialIcons name={"play-arrow"} color={"#2563eb"} size={38} />
                     <Text className={"font-bold text-lg"}>Quick Study</Text>
                     <Text className={"text-gray-500"}>Continue learning</Text>
                 </TouchableOpacity>
+                {
+                    // Create deck button
+                }
                 <TouchableOpacity className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}>
                     <MaterialIcons name={"add"} color={'#16a34a'} size={38} />
                     <Text className={"font-bold text-lg"}>Create deck</Text>
