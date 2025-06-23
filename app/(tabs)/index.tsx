@@ -2,14 +2,15 @@ import {ScrollView, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import * as Progress from 'react-native-progress';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {router} from "expo-router";
 
 export default function Index() {
     return (
-        <ScrollView showsVerticalScrollIndicator={false} className={"p-6"}>
+        <ScrollView showsVerticalScrollIndicator={false} className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
+            {
+                // Today's progress card
+            }
             <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
-                {
-                    // Today's progress card
-                }
                 <Text className={"font-bold text-2xl mb-2"}>Today&#39;s Progress</Text>
                 <View className={"flex-row justify-center gap-x-20 mb-5"}>
                     <View className={"items-center"}>
@@ -44,7 +45,10 @@ export default function Index() {
                 {
                     // Create deck button
                 }
-                <TouchableOpacity className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}>
+                <TouchableOpacity
+                    className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}
+                    onPress={() => router.push('/new/newDeck')}
+                >
                     <MaterialIcons name={"add"} color={'#16a34a'} size={38} />
                     <Text className={"font-bold text-lg"}>Create deck</Text>
                     <Text className={"text-gray-500"}>Add new cards</Text>
