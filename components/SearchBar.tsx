@@ -1,4 +1,4 @@
-import {Text, TextInput, View} from "react-native";
+import {TextInput, View} from "react-native";
 import React, {useState} from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -17,9 +17,7 @@ export default function SearchBar() {
                 style={{
                     fontSize: 14
                 }}
-            >
-
-            </TextInput>
+            />
         </View>
     );
 }
