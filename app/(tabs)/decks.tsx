@@ -18,7 +18,7 @@ export default function Decks() {
                         // New deck button
                     }
                     <TouchableOpacity
-                        className={"flex-row items-center justify-center gap-x-2 bg-black h-9 w-[110px] rounded-md px-3"}
+                        className={"flex-row items-center justify-center gap-x-2 bg-black h-10 w-[110px] rounded-md px-3"}
                         onPress={() => router.push('/new/newDeck')}
                     >
                         <MaterialIcons name={"add"} color={"white"} size={15}/>
