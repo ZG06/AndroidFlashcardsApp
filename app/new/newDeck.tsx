@@ -1,9 +1,9 @@
-import {ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {FlatList, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
 import React, {useState} from "react";
 import {router, Stack, useNavigation} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import * as Progress from 'react-native-progress';
 import NewFlashcard from "@/components/NewFlashcard";
+import { v4 as uuidv4 } from 'uuid';
 
 
 const NewDeckHeader = () => {
@@ -38,7 +38,11 @@ const NewDeckHeader = () => {
 
 export default function NewDeck() {
     const [deckInfoValue, setDeckInfoValue] = useState('');
+    const [flashcards, setFlashcards] = useState([{ id: uuidv4() }]);
 
+    const addFlashcard = () => {
+        setFlashcards(prev => [...prev, { id: uuidv4() }]);
+    }
 
     return (
         <>
@@ -78,20 +82,30 @@ export default function NewDeck() {
                     </View>
                 </View>
 
-                <View className={"flex-row justify-between w-full py-2"}>
+                <View className={"flex-row justify-between w-full mb-6"}>
                     <Text className={"text-[18px] font-bold mb-4"}>Flashcards</Text>
                     {
                         // Add card button
                     }
                     <TouchableOpacity
                         className={"flex-row items-center justify-center gap-x-2 bg-black h-9 w-[110px] rounded-md px-3"}
+                        onPress={addFlashcard}
                     >
                         <MaterialIcons name={"add"} color={"white"} size={15}/>
                         <Text className={"text-white font-semibold text-[13px]"}>Add card</Text>
                     </TouchableOpacity>
                 </View>
 
-                <NewFlashcard />
+                {flashcards.map((card, index) => (
+                    <NewFlashcard
+                        key={card.id}
+                        index={index + 1}
+                        canDelete={flashcards.length > 1}
+                        onDelete={() => {
+                            setFlashcards(prev => prev.filter(f => f.id !== card.id))
+                        }}
+                    />
+                ))}
             </ScrollView>
             <View className={"absolute bottom-8 left-6 right-6"}>
                 <View className={"flex-row gap-x-6"}>
