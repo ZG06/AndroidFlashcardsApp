@@ -10,14 +10,16 @@ const NewDeckHeader = () => {
     const navigation = useNavigation();
 
     return (
-        <View className={"justify-center items-start h-[130px] px-4 bg-white"}>
-            <View className={"flex-row items-center w-full justify-between"}>
-                <TouchableOpacity onPress={navigation.goBack}>
-                    <MaterialIcons name={"arrow-back"} size={24} color={"black"} />
-                </TouchableOpacity>
-                <View>
-                    <Text className={"text-xl font-bold"}>Create New Deck</Text>
-                    <Text className={"text-gray-600"}>0 of 1 cards completed</Text>
+        <View className={"justify-center h-[130px] px-4 bg-white"}>
+            <View className={"flex-row items-center justify-between w-full"}>
+                <View className={"flex-row items-center gap-x-4"}>
+                    <TouchableOpacity onPress={navigation.goBack}>
+                        <MaterialIcons name={"arrow-back"} size={24} color={"black"} />
+                    </TouchableOpacity>
+                    <View>
+                        <Text className={"text-2xl font-bold"}>Create New Deck</Text>
+                        <Text className={"text-gray-600"}>0 of 1 cards completed</Text>
+                    </View>
                 </View>
                 {
                     // New deck button
@@ -57,7 +59,7 @@ export default function NewDeck() {
                     <View className={"mb-4"}>
                         <Text className={"mb-1.5"}>Deck Name *</Text>
                         <TextInput
-                            className={"border-gray-200 border rounded-md h-9 px-3 text-gray-500"}
+                            className={"border-gray-200 border rounded-md min-h-12 px-3 text-gray-500"}
                             value={deckInfoValue}
                             onChangeText={setDeckInfoValue}
                             placeholder={"e.g., Spanish vocabulary"}
@@ -70,7 +72,7 @@ export default function NewDeck() {
                         <Text className={"mb-1.5"}>Description</Text>
                         <TextInput
                             multiline={true}
-                            className={"border-gray-200 border rounded-md h-9 px-3 text-gray-500 min-h-[70px] pt-2.5"}
+                            className={"border-gray-200 border rounded-md px-3 text-gray-500 min-h-[70px] pt-2.5"}
                             placeholder={"Brief description of what this deck"}
                         />
                     </View>
@@ -90,7 +92,8 @@ export default function NewDeck() {
                 </View>
 
                 <NewFlashcard />
-
+            </ScrollView>
+            <View className={"absolute bottom-8 left-6 right-6"}>
                 <View className={"flex-row gap-x-6"}>
                     {
                         // Cancel button
@@ -111,7 +114,7 @@ export default function NewDeck() {
                         <Text className={"text-white font-semibold text-[13px]"}>Save Deck</Text>
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
+            </View>
         </>
     );
 }

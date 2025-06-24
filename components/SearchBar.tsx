@@ -6,7 +6,7 @@ export default function SearchBar() {
     const [query, setQuery] = useState('');
 
     return (
-        <View className={"flex-row items-center border-gray-200 h-10 border rounded-md px-2 w-full"}>
+        <View className={"flex-row items-center border-gray-200 h-12 border rounded-md px-2 w-full"}>
             <MaterialIcons name={"search"} color={"gray"} size={18} />
             <TextInput
                 className={"border-gray-500 pl-2"}

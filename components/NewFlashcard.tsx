@@ -18,13 +18,13 @@ export default function NewFlashcard() {
             {
                 // Deck question
             }
-            <View className={"mb-4"}>
+            <View className={"mb-5"}>
                 <Text className={"mb-1.5"}>Front (Question)</Text>
                 <TextInput
                     multiline={true}
                     value={frontValue}
                     onChangeText={setFrontValue}
-                    className={"border-gray-200 border rounded-md h-9 px-3 text-gray-500 min-h-[70px] pt-2.5"}
+                    className={"border-gray-200 border rounded-md px-3 text-gray-500 min-h-[70px] pt-2.5"}
                     placeholder={"Enter the question or prompt..."}
                 />
             </View>
@@ -37,7 +37,7 @@ export default function NewFlashcard() {
                     multiline={true}
                     value={backValue}
                     onChangeText={setBackValue}
-                    className={"border-gray-200 border rounded-md h-9 px-3 text-gray-500 min-h-[70px] pt-2.5"}
+                    className={"border-gray-200 border rounded-md px-3 text-gray-500 min-h-[70px] pt-2.5"}
                     placeholder={"Enter the answer or explanation..."}
                 />
             </View>
