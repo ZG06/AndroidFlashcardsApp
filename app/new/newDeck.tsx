@@ -1,4 +1,4 @@
-import {FlatList, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
 import React, {useState} from "react";
 import {router, Stack, useNavigation} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -6,7 +6,7 @@ import NewFlashcard from "@/components/NewFlashcard";
 import { v4 as uuidv4 } from 'uuid';
 
 
-const NewDeckHeader = () => {
+const NewDeckHeader = ({ flashcardsLength }: { flashcardsLength: number }) => {
     const navigation = useNavigation();
 
     return (
@@ -18,7 +18,7 @@ const NewDeckHeader = () => {
                     </TouchableOpacity>
                     <View>
                         <Text className={"text-2xl font-bold"}>Create New Deck</Text>
-                        <Text className={"text-gray-600"}>0 of 1 cards completed</Text>
+                        <Text className={"text-gray-600"}>0 of {flashcardsLength} cards completed</Text>
                     </View>
                 </View>
                 {
@@ -48,7 +48,7 @@ export default function NewDeck() {
         <>
             <Stack.Screen
                 options={{
-                    header: () => (<NewDeckHeader />)
+                    header: () => (<NewDeckHeader flashcardsLength={flashcards.length} />)
                 }}
             />
             <ScrollView className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
