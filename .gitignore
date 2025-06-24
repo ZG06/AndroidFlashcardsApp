@@ -18,8 +18,10 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
-# Metro
+# Metro & Babel
+metro-cache/
 .metro-health-check*
+babel-cache/
 
 # debug
 npm-debug.*
@@ -31,9 +33,30 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+.env
+.env.*
 
 # typescript
 *.tsbuildinfo
+*.d.ts
+nativewind-env.d.ts
 
-app-example
+# Build artifacts & cache
+*.log
+*.tmp
+*.cache
+*.lock
+*.bak
+*.apk
+
+# IDE/editor settings
+.idea/
+.vscode/
+
+# Android-specific
+android/.gradle
+android/app/build/
+android/build
+android/app/debug.keystore
+*.keystore
+*.jks
