@@ -4,10 +4,17 @@ import {router, Stack, useNavigation} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import NewFlashcard from "@/components/NewFlashcard";
 import uuid from 'react-native-uuid';
+import {FlashCard} from "@/types/FlashCard";
 
 
-const NewDeckHeader = ({ flashcardsLength }: { flashcardsLength: number }) => {
+type HeaderProps = {
+    flashcardsLength: number;
+    flashcards: FlashCard[];
+}
+
+const NewDeckHeader = ({flashcardsLength, flashcards}: HeaderProps) => {
     const navigation = useNavigation();
+    const filledFlashCards = flashcards.filter((card) => card.front !== '' && card.back !== '')
 
     return (
         <View className={"justify-center h-[130px] px-4 bg-white"}>
@@ -18,7 +25,7 @@ const NewDeckHeader = ({ flashcardsLength }: { flashcardsLength: number }) => {
                     </TouchableOpacity>
                     <View>
                         <Text className={"text-2xl font-bold"}>Create New Deck</Text>
-                        <Text className={"text-gray-600"}>0 of {flashcardsLength} cards completed</Text>
+                        <Text className={"text-gray-600"}>{filledFlashCards ? filledFlashCards.length : '0'} of {flashcardsLength} cards completed</Text>
                     </View>
                 </View>
                 {
@@ -37,18 +44,32 @@ const NewDeckHeader = ({ flashcardsLength }: { flashcardsLength: number }) => {
 }
 
 export default function NewDeck() {
-    const [deckInfoValue, setDeckInfoValue] = useState('');
-    const [flashcards, setFlashcards] = useState([{ id: uuid.v4() }]);
+    const [deckName, setDeckName] = useState('');
+    const [deckDescription, setDeckDescription] = useState('');
+    const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
 
     const addFlashcard = () => {
-        setFlashcards(prev => [...prev, { id: uuid.v4() }]);
+        const newCard: FlashCard = {
+            id: uuid.v4(),
+            front: '',
+            back: ''
+        }
+        setFlashcards(prev => [...prev, newCard]);
+    }
+
+    const updateFlashcard = (id: string, field: keyof FlashCard, value: string) => {
+        setFlashcards(flashcards.map((card) => (card.id === id) ? { ...card, [field]: value } : card));
+    }
+
+    const deleteFlashcard = (id: string) => {
+        setFlashcards(flashcards.filter((card) => card.id !== id));
     }
 
     return (
         <>
             <Stack.Screen
                 options={{
-                    header: () => (<NewDeckHeader flashcardsLength={flashcards.length} />)
+                    header: () => (<NewDeckHeader flashcardsLength={flashcards.length} flashcards={flashcards} />)
                 }}
             />
             <ScrollView className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
@@ -63,9 +84,9 @@ export default function NewDeck() {
                     <View className={"mb-4"}>
                         <Text className={"mb-1.5"}>Deck Name *</Text>
                         <TextInput
-                            className={"border-gray-200 border rounded-md min-h-12 px-3 text-gray-500"}
-                            value={deckInfoValue}
-                            onChangeText={setDeckInfoValue}
+                            className={"border-gray-200 border rounded-md min-h-12 px-3"}
+                            value={deckName}
+                            onChangeText={setDeckName}
                             placeholder={"e.g., Spanish vocabulary"}
                         />
                     </View>
@@ -76,7 +97,9 @@ export default function NewDeck() {
                         <Text className={"mb-1.5"}>Description</Text>
                         <TextInput
                             multiline={true}
-                            className={"border-gray-200 border rounded-md px-3 text-gray-500 min-h-[70px] pt-2.5"}
+                            className={"border-gray-200 border rounded-md px-3 min-h-[70px] pt-2.5"}
+                            value={deckDescription}
+                            onChangeText={setDeckDescription}
                             placeholder={"Brief description of what this deck"}
                         />
                     </View>
@@ -101,9 +124,11 @@ export default function NewDeck() {
                         key={card.id}
                         index={index + 1}
                         canDelete={flashcards.length > 1}
-                        onDelete={() => {
-                            setFlashcards(prev => prev.filter(f => f.id !== card.id))
-                        }}
+                        onDelete={() => deleteFlashcard(card.id)}
+                        frontValue={card.front}
+                        backValue={card.back}
+                        onFrontChange={(text) => updateFlashcard(card.id, 'front', text)}
+                        onBackChange={(text) => updateFlashcard(card.id, 'back', text)}
                     />
                 ))}
             </ScrollView>
