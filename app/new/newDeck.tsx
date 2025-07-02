@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {router, Stack, useNavigation} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import NewFlashcard from "@/components/NewFlashcard";
-import { v4 as uuidv4 } from 'uuid';
+import uuid from 'react-native-uuid';
 
 
 const NewDeckHeader = ({ flashcardsLength }: { flashcardsLength: number }) => {
@@ -38,10 +38,10 @@ const NewDeckHeader = ({ flashcardsLength }: { flashcardsLength: number }) => {
 
 export default function NewDeck() {
     const [deckInfoValue, setDeckInfoValue] = useState('');
-    const [flashcards, setFlashcards] = useState([{ id: uuidv4() }]);
+    const [flashcards, setFlashcards] = useState([{ id: uuid.v4() }]);
 
     const addFlashcard = () => {
-        setFlashcards(prev => [...prev, { id: uuidv4() }]);
+        setFlashcards(prev => [...prev, { id: uuid.v4() }]);
     }
 
     return (
