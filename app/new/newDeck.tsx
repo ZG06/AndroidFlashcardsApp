@@ -2,7 +2,7 @@ import {ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native"
 import React, {useState} from "react";
 import {router, Stack, useNavigation} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import NewFlashcard from "@/components/NewFlashcard";
+import {NewFlashcard} from "@/components/NewFlashcard";
 import uuid from 'react-native-uuid';
 import {FlashCard} from "@/types/FlashCard";
 
@@ -47,6 +47,7 @@ export default function NewDeck() {
     const [deckName, setDeckName] = useState('');
     const [deckDescription, setDeckDescription] = useState('');
     const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
+    const [previewCard, setPreviewCard] = useState<string | null>(null);
 
     const addFlashcard = () => {
         const newCard: FlashCard = {
@@ -65,6 +66,10 @@ export default function NewDeck() {
         setFlashcards(flashcards.filter((card) => card.id !== id));
     }
 
+    const togglePreview = (id: string) => {
+        setPreviewCard(prev => (prev === id ? null : id));
+    }
+
     return (
         <>
             <Stack.Screen
@@ -72,7 +77,7 @@ export default function NewDeck() {
                     header: () => (<NewDeckHeader flashcardsLength={flashcards.length} flashcards={flashcards} />)
                 }}
             />
-            <ScrollView className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
+            <ScrollView className={"p-6"} style={{backgroundColor: '#E6EDFF'}} showsVerticalScrollIndicator={false}>
                 {
                     // Deck information block
                 }
@@ -119,18 +124,23 @@ export default function NewDeck() {
                     </TouchableOpacity>
                 </View>
 
-                {flashcards.map((card, index) => (
-                    <NewFlashcard
-                        key={card.id}
-                        index={index + 1}
-                        canDelete={flashcards.length > 1}
-                        onDelete={() => deleteFlashcard(card.id)}
-                        frontValue={card.front}
-                        backValue={card.back}
-                        onFrontChange={(text) => updateFlashcard(card.id, 'front', text)}
-                        onBackChange={(text) => updateFlashcard(card.id, 'back', text)}
-                    />
-                ))}
+                <View className={"pb-24"}>
+                    {flashcards.map((card, index) => (
+                        <NewFlashcard
+                            key={card.id}
+                            index={index + 1}
+                            canDelete={flashcards.length > 1}
+                            onDelete={() => deleteFlashcard(card.id)}
+                            frontValue={card.front}
+                            backValue={card.back}
+                            onFrontChange={(text) => updateFlashcard(card.id, 'front', text)}
+                            onBackChange={(text) => updateFlashcard(card.id, 'back', text)}
+                            isFlipped={previewCard === card.id}
+                            togglePreview={() => togglePreview(card.id)}
+                        />
+                    ))}
+                </View>
+
             </ScrollView>
             <View className={"absolute bottom-8 left-6 right-6"}>
                 <View className={"flex-row gap-x-6"}>
