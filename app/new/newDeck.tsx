@@ -29,11 +29,10 @@ const NewDeckHeader = ({flashcardsLength, flashcards}: HeaderProps) => {
                     </View>
                 </View>
                 {
-                    // New deck button
+                    // Save deck button
                 }
                 <TouchableOpacity
                     className={"flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
-                    onPress={() => router.push('/new/newDeck')}
                 >
                     <MaterialIcons name={"save"} color={"white"} size={15}/>
                     <Text className={"text-white font-semibold text-[13px]"}>Save Deck</Text>
