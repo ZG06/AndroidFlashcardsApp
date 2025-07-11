@@ -6,7 +6,7 @@ import {router} from "expo-router";
 export default function Index() {
     return (
         <ScrollView
-            style={{backgroundColor: '#E6EDFF'}}
+            style={{backgroundColor: '#EBF2FF'}}
             contentContainerStyle={{flexGrow: 1}}
         >
             <View className={"flex-1 items-center justify-center"}>
@@ -20,6 +20,9 @@ export default function Index() {
                 <Text className={"font-bold text-4xl mb-3"}>FlashMaster</Text>
                 <Text className={"text-gray-600 text-xl mb-8"}>Digital flashcards for learning</Text>
 
+                {
+                    // Create account button
+                }
                 <TouchableOpacity
                     className={"bg-black items-center justify-center rounded-md w-full max-w-[450px]"}
                     style={{
@@ -30,6 +33,10 @@ export default function Index() {
                 >
                     <Text className={"text-white font-bold text-lg"}>Create Account</Text>
                 </TouchableOpacity>
+
+                {
+                    // Sign in button
+                }
                 <TouchableOpacity
                     className={"bg-white items-center justify-center rounded-md w-full max-w-[450px]"}
                     style={{
