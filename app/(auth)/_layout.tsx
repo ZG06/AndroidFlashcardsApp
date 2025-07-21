@@ -21,7 +21,7 @@ export default function AuthLayout() {
                 options={{headerShown: false}}
             />
             <Stack.Screen
-                name={'forgotPassword'}
+                name={'resetPassword'}
                 options={{headerShown: false}}
             />
         </Stack>

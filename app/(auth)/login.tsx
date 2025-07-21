@@ -60,7 +60,7 @@ export default function Login() {
                         // Forgot password button
                     }
                     <TouchableOpacity
-                        onPress={() => router.push('/forgotPassword')}
+                        onPress={() => router.push('/resetPassword')}
                     >
                         <Text className={"text-blue-500"}>Forgot password?</Text>
                     </TouchableOpacity>
