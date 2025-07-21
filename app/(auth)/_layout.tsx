@@ -24,6 +24,14 @@ export default function AuthLayout() {
                 name={'resetPassword'}
                 options={{headerShown: false}}
             />
+            <Stack.Screen
+                name={'verifyEmail'}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name={'forgotPassword'}
+                options={{headerShown: false}}
+            />
         </Stack>
     );
 }
