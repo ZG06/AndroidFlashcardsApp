@@ -3,10 +3,25 @@ import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-n
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {ErrorType} from "@/types/ErrorType";
+import AuthErrorBox from "@/components/AuthErrorBox";
 
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
+    const [errorType, setErrorType] = useState<ErrorType>(null);
+
+    const handlePasswordReset = (email: string) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Email format validation
+        if (!regex.test(email)) {
+            setErrorType('invalidEmail');
+            return;
+        }
+
+        if (errorType) setErrorType(null);
+    }
 
     return (
         <ScrollView
@@ -39,6 +54,15 @@ export default function ForgotPassword() {
                     }}
                 >
                     {
+                        // Error box
+                    }
+                    {errorType && (
+                        <AuthErrorBox
+                            errorType={errorType}
+                        />
+                    )}
+
+                    {
                         // Email input
                     }
                     <AuthInput
@@ -57,6 +81,7 @@ export default function ForgotPassword() {
                         style={{
                             height: Platform.OS === 'web' ? 50 : 40
                         }}
+                        onPress={() => handlePasswordReset(email)}
                     >
                         <Text className={"text-white font-medium text-[16px]"}>Send Reset Link</Text>
                     </TouchableOpacity>

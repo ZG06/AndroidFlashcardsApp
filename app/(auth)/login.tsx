@@ -1,13 +1,35 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
+import AuthErrorBox from "@/components/AuthErrorBox";
+import {ErrorType} from "@/types/ErrorType";
 
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordSecure, setIsPasswordSecure] = useState(true);
+    const [errorType, setErrorType] = useState<ErrorType>(null);
+
+    const handleSignIn = (email: string, password: string) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Checking if there are empty fields
+        if (!password || !email) {
+            setErrorType('emptyField');
+            return;
+        }
+
+        // Email format validation
+        if (!regex.test(email)) {
+            setErrorType('invalidEmail');
+            return;
+        }
+
+        // Setting error type to null if there are no errors
+        if (errorType) setErrorType(null);
+    }
 
     return (
         <ScrollView
@@ -31,6 +53,14 @@ export default function Login() {
                         maxWidth: Platform.OS === 'web' ? 500 : 370
                     }}
                 >
+                    {
+                        // Error box
+                    }
+                    {errorType && (
+                        <AuthErrorBox
+                            errorType={errorType}
+                        />
+                    )}
 
                     {
                         // Email input
@@ -73,6 +103,7 @@ export default function Login() {
                         style={{
                             height: Platform.OS === 'web' ? 50 : 40
                         }}
+                        onPress={() => handleSignIn(email, password)}
                     >
                         <Text className={"text-white font-medium text-lg"}>Sign In</Text>
                     </TouchableOpacity>

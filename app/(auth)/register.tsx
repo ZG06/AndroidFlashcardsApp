@@ -2,6 +2,8 @@ import React, {useState} from "react";
 import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
+import {ErrorType} from "@/types/ErrorType";
+import AuthErrorBox from "@/components/AuthErrorBox";
 
 
 export default function Register() {
@@ -11,6 +13,36 @@ export default function Register() {
     const [isPasswordSecure, setIsPasswordSecure] = useState(true);
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isConfirmPasswordSecure, setIsConfirmPasswordSecure] = useState(true);
+    const [errorType, setErrorType] = useState<ErrorType>(null);
+
+    const handleAccountCreate = (
+        login: string,
+        email: string,
+        password: string,
+        confirmPassword: string
+    ) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Checking if there are empty fields
+        if (!login || !password || !email || !confirmPassword) {
+            setErrorType('emptyField');
+            return;
+        }
+
+        // Email format validation
+        if (!regex.test(email)) {
+            setErrorType('invalidEmail');
+            return;
+        }
+
+        // Checking if both passwords are the same
+        if (password !== confirmPassword) {
+            setErrorType('notSamePasswords')
+        }
+
+        // Setting error type to null if there are no errors
+        if (errorType) setErrorType(null);
+    }
 
     return (
         <ScrollView
@@ -35,7 +67,16 @@ export default function Register() {
                     }}
                 >
                     {
-                        // Login
+                        // Error box
+                    }
+                    {errorType && (
+                        <AuthErrorBox
+                            errorType={errorType}
+                        />
+                    )}
+
+                    {
+                        // Login input
                     }
                     <AuthInput
                         label={"Login"}
@@ -83,15 +124,18 @@ export default function Register() {
                     />
 
                     {
-                        // Sign In button
+                        // Create account button
                     }
                     <TouchableOpacity
                         className={"bg-black items-center justify-center rounded-md"}
                         style={{
                             height: Platform.OS === 'web' ? 50 : 40
                         }}
+                        onPress={() => handleAccountCreate(login, email, password, confirmPassword)}
                     >
-                        <Text className={"text-white font-medium text-lg"}>Sign In</Text>
+                        <Text className={"text-white font-medium text-lg"}>
+                            Create Account
+                        </Text>
                     </TouchableOpacity>
 
                     {
