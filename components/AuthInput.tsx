@@ -35,7 +35,7 @@ const AuthInput = ({
                     onChangeText={onChangeText}
                     secureTextEntry={isPasswordSecure}
                 />
-                {label === 'Password' && (
+                {icon === 'lock' && (
                     <TouchableOpacity
                         onPress={onShowPasswordPress}
                     >
