@@ -1,7 +1,8 @@
 import React, {useState} from "react";
-import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
+import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 
 
 export default function ResetPassword() {
@@ -11,10 +12,7 @@ export default function ResetPassword() {
     const [isConfirmPasswordSecure, setIsConfirmPasswordSecure] = useState(true);
 
     return (
-        <ScrollView
-            style={{backgroundColor: '#EBF2FF'}}
-            contentContainerStyle={{flexGrow: 1}}
-        >
+        <KeyboardAvoidingContainer>
             <View className={"flex-1 items-center justify-center"}>
                 <Image
                     source={require('../../assets/icon.png')}
@@ -87,6 +85,6 @@ export default function ResetPassword() {
                     </View>
                 </View>
             </View>
-        </ScrollView>
+        </KeyboardAvoidingContainer>
     );
 }
