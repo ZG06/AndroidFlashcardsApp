@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from "react";
-import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import React, {useState} from "react";
+import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import {ErrorType} from "@/types/ErrorType";
+import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 
 
 export default function Login() {
@@ -32,10 +33,7 @@ export default function Login() {
     }
 
     return (
-        <ScrollView
-            style={{backgroundColor: '#EBF2FF'}}
-            contentContainerStyle={{flexGrow: 1}}
-        >
+        <KeyboardAvoidingContainer>
             <View className={"flex-1 items-center justify-center"}>
                 <Image
                     source={require('../../assets/icon.png')}
@@ -125,6 +123,6 @@ export default function Login() {
                     </View>
                 </View>
             </View>
-        </ScrollView>
+        </KeyboardAvoidingContainer>
     );
 }

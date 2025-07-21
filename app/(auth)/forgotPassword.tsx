@@ -1,10 +1,11 @@
 import React, {useState} from "react";
-import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {ErrorType} from "@/types/ErrorType";
 import AuthErrorBox from "@/components/AuthErrorBox";
+import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 
 
 export default function ForgotPassword() {
@@ -24,10 +25,7 @@ export default function ForgotPassword() {
     }
 
     return (
-        <ScrollView
-            style={{backgroundColor: '#EBF2FF'}}
-            contentContainerStyle={{flexGrow: 1}}
-        >
+        <KeyboardAvoidingContainer>
             <View className={"flex-1 items-starts justify-center"}>
                 <View className={"flex-row items-center mx-auto"}>
                     <TouchableOpacity onPress={() => router.back()}>
@@ -103,6 +101,6 @@ export default function ForgotPassword() {
                     </View>
                 </View>
             </View>
-        </ScrollView>
+        </KeyboardAvoidingContainer>
     );
 }

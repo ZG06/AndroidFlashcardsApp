@@ -1,15 +1,13 @@
-import React, {useState} from "react";
-import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import React from "react";
+import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
 import {router} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 
 
 export default function VerifyEmail() {
     return (
-        <ScrollView
-            style={{backgroundColor: '#EBF2FF'}}
-            contentContainerStyle={{flexGrow: 1}}
-        >
+        <KeyboardAvoidingContainer>
             <View className={"flex-1 items-center justify-center"}>
                 <Image
                     source={require('../../assets/icon.png')}
@@ -78,6 +76,6 @@ export default function VerifyEmail() {
                     </Text>
                 </View>
             </View>
-        </ScrollView>
+        </KeyboardAvoidingContainer>
     );
 }
