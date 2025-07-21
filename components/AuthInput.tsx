@@ -39,7 +39,7 @@ const AuthInput = ({
                     <TouchableOpacity
                         onPress={onShowPasswordPress}
                     >
-                        <MaterialIcons name={`${isPasswordSecure ? 'visibility' : 'visibility-off'}`} size={18} color={"gray"} className={"mr-3"} />
+                        <MaterialIcons name={`${isPasswordSecure ? 'visibility-off' : 'visibility'}`} size={18} color={"gray"} className={"mr-3"} />
                     </TouchableOpacity>
                 )}
             </View>
