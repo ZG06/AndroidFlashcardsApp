@@ -6,6 +6,7 @@ import AuthErrorBox from "@/components/AuthErrorBox";
 import {ErrorType} from "@/types/ErrorType";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import ActivityIndicator from "@/components/ActivityIndicator";
+import {useAuth} from "@/context/authContext";
 
 
 export default function Login() {
@@ -15,7 +16,9 @@ export default function Login() {
     const [errorType, setErrorType] = useState<ErrorType>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSignIn = (email: string, password: string) => {
+    const {login} = useAuth()
+
+    const handleSignIn = async (email: string, password: string) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         // Checking if there are empty fields
@@ -34,9 +37,13 @@ export default function Login() {
         if (errorType) setErrorType(null);
 
         setIsLoading(true);
-        // TODO signIn logic
 
-        // setIsLoading(false);
+        let response = await login(email, password);
+        setIsLoading(false);
+
+        if (!response.success) {
+            setErrorType(response.msg);
+        }
     }
 
     return (

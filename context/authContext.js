@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {createUserWithEmailAndPassword, onAuthStateChanged, signOut} from 'firebase/auth'
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut} from 'firebase/auth'
 import {auth, db} from '@/firebaseConfig'
 import {doc, setDoc} from 'firebase/firestore'
 
@@ -24,9 +24,13 @@ export const AuthContextProvider = ({children}) => {
 
     const login = async (email, password) => {
         try {
-
+            const response = await signInWithEmailAndPassword(auth, email, password);
+            return {success: true}
         } catch (error) {
+            let msg = error.message;
 
+            if (msg.includes('(auth/invalid-credential)')) msg = 'invalidCredentials';
+            return {success: false, msg};
         }
     }
 
@@ -53,7 +57,7 @@ export const AuthContextProvider = ({children}) => {
         } catch (error) {
             let msg = error.message;
 
-            if (error.message.includes('(auth/email-already-in-use')) msg = 'emailInUse';
+            if (msg.includes('(auth/email-already-in-use')) msg = 'emailInUse';
             return {success: false, msg};
         }
     }
