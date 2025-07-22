@@ -5,6 +5,7 @@ import {router} from "expo-router";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import {ErrorType} from "@/types/ErrorType";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import ActivityIndicator from "@/components/ActivityIndicator";
 
 
 export default function Login() {
@@ -12,6 +13,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [isPasswordSecure, setIsPasswordSecure] = useState(true);
     const [errorType, setErrorType] = useState<ErrorType>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSignIn = (email: string, password: string) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,6 +32,11 @@ export default function Login() {
 
         // Setting error type to null if there are no errors
         if (errorType) setErrorType(null);
+
+        setIsLoading(true);
+        // TODO signIn logic
+
+        // setIsLoading(false);
     }
 
     return (
@@ -94,17 +101,25 @@ export default function Login() {
                     </TouchableOpacity>
 
                     {
-                        // Sign In button
+                        // Displays an activity indicator or a signIn button depending on the isLoading state
                     }
-                    <TouchableOpacity
-                        className={"bg-black items-center justify-center rounded-md"}
-                        style={{
-                            height: Platform.OS === 'web' ? 50 : 40
-                        }}
-                        onPress={() => handleSignIn(email, password)}
-                    >
-                        <Text className={"text-white font-medium text-lg"}>Sign In</Text>
-                    </TouchableOpacity>
+                    {isLoading ? (
+                        <View className={"items-center justify-center"}>
+                            <ActivityIndicator size={50} />
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            className={"bg-black items-center justify-center rounded-md"}
+                            style={{
+                                height: Platform.OS === 'web' ? 50 : 40
+                            }}
+                            onPress={() => handleSignIn(email, password)}
+                        >
+                            <Text className={"text-white font-medium text-lg"}>
+                                Sign In
+                            </Text>
+                        </TouchableOpacity>
+                    )}
 
                     {
                         // Create account button
