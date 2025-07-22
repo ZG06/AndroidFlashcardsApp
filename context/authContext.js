@@ -51,7 +51,10 @@ export const AuthContextProvider = ({children}) => {
 
             return {success: true, data: response?.user};
         } catch (error) {
-            return {success: false, msg: error.message};
+            let msg = error.message;
+
+            if (error.message.includes('(auth/email-already-in-use')) msg = 'emailInUse';
+            return {success: false, msg};
         }
     }
 
