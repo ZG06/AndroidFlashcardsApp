@@ -16,6 +16,7 @@ const AuthErrorBox = ({errorType}: AuthErrorBoxProps) => {
                 {errorType === 'invalidEmail' && 'Please enter a valid email address' }
                 {errorType === 'emptyField' && 'Please enter both email and password'}
                 {errorType === 'notSamePasswords' && 'Passwords don\'t match'}
+                {errorType === 'emailInUse' && 'This email is already in use'}
             </Text>
         </View>
     );

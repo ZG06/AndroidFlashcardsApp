@@ -58,7 +58,7 @@ export default function Register() {
         setIsLoading(false);
 
         if (!response.success) {
-            // TODO add another type for unsuccessful account creation
+            setErrorType(response.msg);
         }
     }
 
