@@ -3,4 +3,5 @@ export type ErrorType =
     'emptyField' |
     'notSamePasswords' |
     'emailInUse' |
+    'invalidCredentials' |
     null;
