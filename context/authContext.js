@@ -1,0 +1,72 @@
+import {createContext, useContext, useEffect, useState} from "react";
+import {createUserWithEmailAndPassword, onAuthStateChanged} from 'firebase/auth'
+import {auth, db} from '@/firebaseConfig'
+import {doc, setDoc} from 'firebase/firestore'
+
+
+export const AuthContext = createContext();
+
+export const AuthContextProvider = ({children}) => {
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(undefined);
+
+    useEffect(() => {
+        return onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setIsAuthenticated(true);
+                setUser(user);
+            } else {
+                setIsAuthenticated(false);
+                setUser(null);
+            }
+        });
+    }, []);
+
+    const login = async (email, password) => {
+        try {
+
+        } catch (error) {
+
+        }
+    }
+
+    const logout = async () => {
+        try {
+
+        } catch (error) {
+
+        }
+    }
+
+    const register = async (username, email, password) => {
+        try {
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+
+            await setDoc(doc(db, 'users', response?.user?.uid), {
+                username,
+                email,
+                userId: response?.user?.uid
+            });
+
+            return {success: true, data: response?.user};
+        } catch (error) {
+            return {success: false, msg: error.message};
+        }
+    }
+
+    return (
+        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout}}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
+
+export const useAuth = () => {
+    const value = useContext(AuthContext);
+
+    if (!value) {
+        throw new Error('useAuth must be wrapped inside AuthContextProvider');
+    }
+
+    return value;
+}

@@ -5,10 +5,11 @@ import {router} from "expo-router";
 import {ErrorType} from "@/types/ErrorType";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import {useAuth} from "@/context/authContext";
 
 
 export default function Register() {
-    const [login, setLogin] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordSecure, setIsPasswordSecure] = useState(true);
@@ -16,8 +17,10 @@ export default function Register() {
     const [isConfirmPasswordSecure, setIsConfirmPasswordSecure] = useState(true);
     const [errorType, setErrorType] = useState<ErrorType>(null);
 
-    const handleAccountCreate = (
-        login: string,
+    const {register} = useAuth();
+
+    const handleAccountCreate = async (
+        username: string,
         email: string,
         password: string,
         confirmPassword: string
@@ -25,7 +28,7 @@ export default function Register() {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         // Checking if there are empty fields
-        if (!login || !password || !email || !confirmPassword) {
+        if (!username || !password || !email || !confirmPassword) {
             setErrorType('emptyField');
             return;
         }
@@ -38,11 +41,18 @@ export default function Register() {
 
         // Checking if both passwords are the same
         if (password !== confirmPassword) {
-            setErrorType('notSamePasswords')
+            setErrorType('notSamePasswords');
+            return;
         }
 
         // Setting error type to null if there are no errors
         if (errorType) setErrorType(null);
+
+        let response = await register(username, email, password);
+
+        if (!response.success) {
+            // TODO add another type for unsuccessful account creation
+        }
     }
 
     return (
@@ -74,14 +84,14 @@ export default function Register() {
                     )}
 
                     {
-                        // Login input
+                        // Username input
                     }
                     <AuthInput
                         label={"Login"}
                         placeholder={"Enter your login"}
                         icon={"person"}
-                        value={login}
-                        onChangeText={setLogin}
+                        value={username}
+                        onChangeText={setUsername}
                     />
 
                     {
@@ -129,7 +139,7 @@ export default function Register() {
                         style={{
                             height: Platform.OS === 'web' ? 50 : 40
                         }}
-                        onPress={() => handleAccountCreate(login, email, password, confirmPassword)}
+                        onPress={() => handleAccountCreate(username, email, password, confirmPassword)}
                     >
                         <Text className={"text-white font-medium text-lg"}>
                             Create Account
