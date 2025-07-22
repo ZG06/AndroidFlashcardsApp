@@ -6,6 +6,7 @@ import {ErrorType} from "@/types/ErrorType";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import {useAuth} from "@/context/authContext";
+import ActivityIndicator from "@/components/ActivityIndicator";
 
 
 export default function Register() {
@@ -16,6 +17,7 @@ export default function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isConfirmPasswordSecure, setIsConfirmPasswordSecure] = useState(true);
     const [errorType, setErrorType] = useState<ErrorType>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const {register} = useAuth();
 
@@ -48,7 +50,12 @@ export default function Register() {
         // Setting error type to null if there are no errors
         if (errorType) setErrorType(null);
 
+        // Settings isLoading to true when registering a user to display an activity indicator
+        setIsLoading(true);
+
+        // Registering a user and settings isLoading to false afterwards
         let response = await register(username, email, password);
+        setIsLoading(false);
 
         if (!response.success) {
             // TODO add another type for unsuccessful account creation
@@ -132,19 +139,25 @@ export default function Register() {
                     />
 
                     {
-                        // Create account button
+                        // Displays an activity indicator or a Create Account button depending on the isLoading state
                     }
-                    <TouchableOpacity
-                        className={"bg-black items-center justify-center rounded-md"}
-                        style={{
-                            height: Platform.OS === 'web' ? 50 : 40
-                        }}
-                        onPress={() => handleAccountCreate(username, email, password, confirmPassword)}
-                    >
-                        <Text className={"text-white font-medium text-lg"}>
-                            Create Account
-                        </Text>
-                    </TouchableOpacity>
+                    {isLoading ? (
+                        <View className={"items-center justify-center"}>
+                            <ActivityIndicator size={50} />
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            className={"bg-black items-center justify-center rounded-md"}
+                            style={{
+                                height: Platform.OS === 'web' ? 50 : 40
+                            }}
+                            onPress={() => handleAccountCreate(username, email, password, confirmPassword)}
+                        >
+                            <Text className={"text-white font-medium text-lg"}>
+                                Create Account
+                            </Text>
+                        </TouchableOpacity>
+                    )}
 
                     {
                         // Create account button

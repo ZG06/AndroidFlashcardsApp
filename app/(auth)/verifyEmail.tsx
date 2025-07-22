@@ -1,11 +1,14 @@
-import React from "react";
+import React, {useState} from "react";
 import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
 import {router} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import ActivityIndicator from "@/components/ActivityIndicator";
 
 
 export default function VerifyEmail() {
+    const [isLoading, setIsLoading] = useState(false);
+
     return (
         <KeyboardAvoidingContainer>
             <View className={"flex-1 items-center justify-center"}>
@@ -37,18 +40,24 @@ export default function VerifyEmail() {
                             Click the verification link in the email we sent you to activate your account.
                         </Text>
                     </View>
-                    
+
                     {
-                        // Resend email button
+                        // Displays an activity indicator or a Resend Email button depending on the isLoading state
                     }
-                    <TouchableOpacity
-                        className={"bg-white items-center justify-center rounded-md border-[1px] border-gray-200"}
-                        style={{
-                            height: Platform.OS === 'web' ? 40 : 40
-                        }}
-                    >
-                        <Text className={"text-black font-medium text-[16px]"}>Resend Email</Text>
-                    </TouchableOpacity>
+                    {isLoading ? (
+                        <View className={"items-center justify-center"}>
+                            <ActivityIndicator size={50} />
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            className={"bg-white items-center justify-center rounded-md border-[1px] border-gray-200"}
+                            style={{
+                                height: Platform.OS === 'web' ? 40 : 40
+                            }}
+                        >
+                            <Text className={"text-black font-medium text-[16px]"}>Resend Email</Text>
+                        </TouchableOpacity>
+                    )}
 
                     {
                         // Back to sign in button

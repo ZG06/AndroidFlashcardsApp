@@ -3,6 +3,7 @@ import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import ActivityIndicator from "@/components/ActivityIndicator";
 
 
 export default function ResetPassword() {
@@ -10,6 +11,7 @@ export default function ResetPassword() {
     const [isNewPasswordSecure, setIsNewPasswordSecure] = useState(true);
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isConfirmPasswordSecure, setIsConfirmPasswordSecure] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     return (
         <KeyboardAvoidingContainer>
@@ -57,16 +59,22 @@ export default function ResetPassword() {
                     />
 
                     {
-                        // Reset password button
+                        // Displays an activity indicator or a Reset Password button depending on the isLoading state
                     }
-                    <TouchableOpacity
-                        className={"bg-black items-center justify-center rounded-md"}
-                        style={{
-                            height: Platform.OS === 'web' ? 50 : 40
-                        }}
-                    >
-                        <Text className={"text-white font-medium text-lg"}>Reset Password</Text>
-                    </TouchableOpacity>
+                    {isLoading ? (
+                        <View className={"items-center justify-center"}>
+                            <ActivityIndicator size={50} />
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            className={"bg-black items-center justify-center rounded-md"}
+                            style={{
+                                height: Platform.OS === 'web' ? 50 : 40
+                            }}
+                        >
+                            <Text className={"text-white font-medium text-lg"}>Reset Password</Text>
+                        </TouchableOpacity>
+                    )}
 
                     {
                         // Sign In button

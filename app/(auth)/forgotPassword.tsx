@@ -6,11 +6,13 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {ErrorType} from "@/types/ErrorType";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import ActivityIndicator from "@/components/ActivityIndicator";
 
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
     const [errorType, setErrorType] = useState<ErrorType>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handlePasswordReset = (email: string) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,17 +74,23 @@ export default function ForgotPassword() {
                     />
 
                     {
-                        // Send reset link button
+                        // Displays an activity indicator or a Send Reset Link button depending on the isLoading state
                     }
-                    <TouchableOpacity
-                        className={"bg-black items-center justify-center rounded-md"}
-                        style={{
-                            height: Platform.OS === 'web' ? 50 : 40
-                        }}
-                        onPress={() => handlePasswordReset(email)}
-                    >
-                        <Text className={"text-white font-medium text-[16px]"}>Send Reset Link</Text>
-                    </TouchableOpacity>
+                    {isLoading ? (
+                        <View className={"items-center justify-center"}>
+                            <ActivityIndicator size={50} />
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            className={"bg-black items-center justify-center rounded-md"}
+                            style={{
+                                height: Platform.OS === 'web' ? 50 : 40
+                            }}
+                            onPress={() => handlePasswordReset(email)}
+                        >
+                            <Text className={"text-white font-medium text-[16px]"}>Send Reset Link</Text>
+                        </TouchableOpacity>
+                    )}
 
                     {
                         // Back to sign in button
