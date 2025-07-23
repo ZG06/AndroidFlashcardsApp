@@ -2,6 +2,7 @@ import {ScrollView, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import {useAuth} from "@/context/authContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {router} from "expo-router";
 
 export default function Settings() {
     const {logout} = useAuth();
@@ -11,9 +12,6 @@ export default function Settings() {
 
     return (
         <ScrollView showsVerticalScrollIndicator={false} className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
-            {
-                // Today's progress card
-            }
             <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6 gap-y-8"}>
                 <View className={"flex-row justify-between"}>
                     <View className={"flex-row items-center gap-x-2"}>
@@ -22,6 +20,10 @@ export default function Settings() {
                             Profile
                         </Text>
                     </View>
+
+                    {
+                        // Sign out button
+                    }
                     <TouchableOpacity
                         className={"border border-red-300 bg-red-50 rounded-md px-3 py-2.5"}
                         onPress={handleLogout}
@@ -32,6 +34,10 @@ export default function Settings() {
                     </TouchableOpacity>
                 </View>
                 <View className={"flex-row"}>
+
+                    {
+                        // User profile with name and email
+                    }
                     <View className={"items-center justify-center rounded-full size-16 mr-2"} style={{backgroundColor: '#dbeaff'}}>
                         <MaterialIcons name={'person'} size={38} color={'#2863e9'} />
                     </View>
@@ -47,8 +53,13 @@ export default function Settings() {
                             </View>
                         </View>
                         <View className={"items-center justify-center"}>
+
+                            {
+                                // Button to profile edit screen
+                            }
                             <TouchableOpacity
                                 className={"border-gray-300 border-[1px] rounded-md px-3 py-2.5"}
+                                onPress={() => router.push('../EditProfileSettings')}
                             >
                                 <Text className={"text-[16px] font-medium"}>
                                     Edit
