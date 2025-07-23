@@ -4,6 +4,11 @@ import {Tabs} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 
+type HeaderProps = {
+    title: string;
+    description: string;
+}
+
 const TabIcon = ({ focused, icon, title }) => {
     const color = focused ? '#2563EB' : '#9CA3AF';
 
@@ -15,11 +20,11 @@ const TabIcon = ({ focused, icon, title }) => {
     )
 }
 
-const HomeHeader = () => {
+const Header = ({title, description}: HeaderProps) => {
     return (
-        <View className={"flex justify-center items-start h-[100px] px-4 bg-white"}>
-            <Text className={"text-[20px] font-bold"}>Good morning! 👋</Text>
-            <Text className={"text-gray-500 font-medium"}>Ready to learn something new?</Text>
+        <View className={"flex justify-center items-start h-[120px] px-4 bg-white"}>
+            <Text className={"text-[24px] font-bold"}>{title}</Text>
+            <Text className={"text-gray-500 font-medium text-lg"}>{description}</Text>
         </View>
     )
 }
@@ -42,7 +47,7 @@ export default function TabLayout() {
                 name={"index"}
                 options={{
                     title: 'Home',
-                    header: () => (<HomeHeader />),
+                    header: () => (<Header title={"Good morning! 👋"} description={"Ready to learn something new?"} />),
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={'home'} title={'Home'} />
                     )
@@ -62,7 +67,7 @@ export default function TabLayout() {
                 name={"settings"}
                 options={{
                     title: 'Settings',
-                    headerShown: false,
+                    header: () => (<Header title={"Settings"} description={"Customize your learning experience"} />),
                     tabBarIcon: ({ focused }) => (
                         <TabIcon focused={focused} icon={'settings'} title={'Settings'} />
                     )
