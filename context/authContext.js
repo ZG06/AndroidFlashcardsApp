@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, deleteUser} from 'firebase/auth'
 import {auth, db} from '@/firebaseConfig'
-import {doc, setDoc} from 'firebase/firestore'
+import {doc, setDoc, deleteDoc} from 'firebase/firestore'
 import {router} from "expo-router";
 import {Alert} from "react-native";
 
@@ -73,6 +73,7 @@ export const AuthContextProvider = ({children}) => {
 
 
         try {
+            await deleteDoc(doc(db, "users", currentUser.uid));
             await deleteUser(currentUser);
             return { success: true };
         } catch (error) {
