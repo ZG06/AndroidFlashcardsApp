@@ -59,6 +59,8 @@ export default function Register() {
 
         if (!response.success) {
             setErrorType(response.msg);
+        } else {
+            router.push('/verifyEmail')
         }
     }
 
@@ -151,7 +153,9 @@ export default function Register() {
                             style={{
                                 height: Platform.OS === 'web' ? 50 : 40
                             }}
-                            onPress={() => handleAccountCreate(username, email, password, confirmPassword)}
+                            onPress={() => {
+                                handleAccountCreate(username, email, password, confirmPassword);
+                            }}
                         >
                             <Text className={"text-white font-medium text-lg"}>
                                 Create Account

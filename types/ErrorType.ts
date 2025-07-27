@@ -4,4 +4,5 @@ export type ErrorType =
     'notSamePasswords' |
     'emailInUse' |
     'invalidCredentials' |
+    'emailNotVerified' |
     null;

@@ -9,7 +9,7 @@ type AuthErrorBoxProps = {
 const AuthErrorBox = ({errorType}: AuthErrorBoxProps) => {
     return (
         <View
-            className={"justify-center border-[1px] border-red-200 rounded-md h-12 pl-4"}
+            className={"justify-center border-[1px] border-red-200 rounded-md min-h-12 px-4 py-2"}
             style={{ backgroundColor: '#FEF2F2' }}
         >
             <Text className={"text-[16px]"} style={{color: '#DC2727'}}>
@@ -18,6 +18,7 @@ const AuthErrorBox = ({errorType}: AuthErrorBoxProps) => {
                 {errorType === 'notSamePasswords' && 'Passwords don\'t match'}
                 {errorType === 'emailInUse' && 'This email is already in use'}
                 {errorType === 'invalidCredentials' && 'Wrong email or password'}
+                {errorType === 'emailNotVerified' && 'Please verify your email address before logging in. Check your inbox for a verification email.'}
             </Text>
         </View>
     );
