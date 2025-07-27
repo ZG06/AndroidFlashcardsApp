@@ -120,7 +120,10 @@ export const AuthContextProvider = ({children}) => {
             await sendEmailVerification(currentUser);
             return { success: true };
         } catch (error) {
-            return { success: false, msg: error.message };
+            let msg = error.message;
+
+            if (msg.includes('(auth/too-many-requests)')) msg = 'tooManyRequests';
+            return {success: false, msg};
         }
     }
 
