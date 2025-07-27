@@ -1,8 +1,9 @@
 import {router, Stack, useNavigation} from "expo-router";
-import {Platform, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Alert, Platform, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, {useState} from "react";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
+import {useAuth} from "@/context/authContext";
 
 const EditProfileSettingsHeader = () => {
     const navigation = useNavigation();
@@ -67,6 +68,30 @@ const EditProfileSettingsHeader = () => {
 
 export default function EditProfileSettings() {
     const [bioText, setBioText] = useState('');
+
+    const {deleteAccount} = useAuth();
+
+    const confirmDeleteAccount = () => {
+        Alert.alert(
+            "Delete Account",
+            "Are you sure you want to delete your account? This action cannot be undone.",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        const result = await deleteAccount();
+                        if (result.success) router.replace('(auth)');
+                    }
+                }
+            ],
+            { cancelable: true }
+        );
+    };
 
     return (
         <>
@@ -289,6 +314,7 @@ export default function EditProfileSettings() {
                         </View>
                         <TouchableOpacity
                             className={"border border-red-300 rounded-md p-2.5"}
+                            onPress={confirmDeleteAccount}
                         >
                             <Text className={"color-red-600 font-medium"}>
                                 Delete
