@@ -5,10 +5,13 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import ActivityIndicator from "@/components/ActivityIndicator";
 import {useAuth} from "@/context/authContext";
+import {ErrorType} from "@/types/ErrorType";
+import AuthErrorBox from "@/components/AuthErrorBox";
 
 
 export default function VerifyEmail() {
     const [isLoading, setIsLoading] = useState(false);
+    const [errorType, setErrorType] = useState<ErrorType>(null);
 
     const {resendVerificationEmail} = useAuth();
 
@@ -16,9 +19,12 @@ export default function VerifyEmail() {
         setIsLoading(true);
 
         let response = await resendVerificationEmail();
-        console.log(response.msg)
 
         setIsLoading(false);
+
+        if (!response.success) {
+            setErrorType(response.msg);
+        }
     }
 
     return (
@@ -44,7 +50,15 @@ export default function VerifyEmail() {
 
                     }
                     <View className={"items-center mb-3"}>
-                        <MaterialIcons name={'check-circle-outline'} size={72} color={'#22C55E'} />
+                        {
+                            // Error box
+                        }
+                        {errorType && (
+                            <AuthErrorBox
+                                errorType={errorType}
+                            />
+                        )}
+                        <MaterialIcons className={"mt-5"} name={'check-circle-outline'} size={72} color={'#22C55E'} />
                         <Text className={"text-center text-lg font-semibold mb-3"}>
                             Check your inbox
                         </Text>

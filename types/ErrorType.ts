@@ -5,4 +5,5 @@ export type ErrorType =
     'emailInUse' |
     'invalidCredentials' |
     'emailNotVerified' |
+    'tooManyRequests' |
     null;
