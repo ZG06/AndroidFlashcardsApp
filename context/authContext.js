@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, deleteUser} from 'firebase/auth'
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, onAuthStateChanged, signOut, deleteUser} from 'firebase/auth'
 import {auth, db} from '@/firebaseConfig'
 import {doc, setDoc, deleteDoc} from 'firebase/firestore'
 import {router} from "expo-router";
@@ -14,7 +14,7 @@ export const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
         return onAuthStateChanged(auth, (user) => {
-            if (user) {
+            if (user?.emailVerified) {
                 setIsAuthenticated(true);
                 setUser(user);
             } else {
@@ -27,11 +27,20 @@ export const AuthContextProvider = ({children}) => {
     const login = async (email, password) => {
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
+
+            const user = response?.user;
+
+            if (!user.emailVerified) {
+                await signOut(auth);
+                return { success: false, msg: 'emailNotVerified' };
+            }
+
             return {success: true}
         } catch (error) {
             let msg = error.message;
 
             if (msg.includes('(auth/invalid-credential)')) msg = 'invalidCredentials';
+            if (msg.includes('(auth/email-not-verified)')) msg = 'emailNotVerified';
             return {success: false, msg};
         }
     }
@@ -48,12 +57,15 @@ export const AuthContextProvider = ({children}) => {
     const register = async (username, email, password) => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
+            const user = response?.user;
 
             await setDoc(doc(db, 'users', response?.user?.uid), {
                 username,
                 email,
                 userId: response?.user?.uid
             });
+
+            await sendEmailVerification(user);
 
             return {success: true, data: response?.user};
         } catch (error) {
