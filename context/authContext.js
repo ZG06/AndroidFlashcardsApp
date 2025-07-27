@@ -110,8 +110,22 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
+    const resendVerificationEmail = async () => {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+            return {success: false, msg: "No user signed in"};
+        }
+
+        try {
+            await sendEmailVerification(currentUser);
+            return { success: true };
+        } catch (error) {
+            return { success: false, msg: error.message };
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, deleteAccount}}>
+        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, deleteAccount, resendVerificationEmail}}>
             {children}
         </AuthContext.Provider>
     )
