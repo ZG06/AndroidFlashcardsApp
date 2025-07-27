@@ -3,6 +3,7 @@ import React, {useEffect} from "react";
 import './globals.css';
 import {Stack, useRouter, useSegments} from "expo-router";
 import {AuthContextProvider, useAuth} from "@/context/authContext";
+import {SafeAreaView} from 'react-native-safe-area-context'
 
 
 const MainLayout = () => {
@@ -25,7 +26,7 @@ const MainLayout = () => {
     }, [isAuthenticated]);
 
     return (
-        <>
+        <SafeAreaView className={"flex-1"}>
             <StatusBar hidden={true} />
 
             <Stack>
@@ -38,7 +39,7 @@ const MainLayout = () => {
                     options={{headerShown: false}}
                 />
             </Stack>
-        </>
+        </SafeAreaView>
     );
 }
 
