@@ -4,10 +4,22 @@ import {router} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import ActivityIndicator from "@/components/ActivityIndicator";
+import {useAuth} from "@/context/authContext";
 
 
 export default function VerifyEmail() {
     const [isLoading, setIsLoading] = useState(false);
+
+    const {resendVerificationEmail} = useAuth();
+
+    const handleSendVerificationEmail = async () => {
+        setIsLoading(true);
+
+        let response = await resendVerificationEmail();
+        console.log(response.msg)
+
+        setIsLoading(false);
+    }
 
     return (
         <KeyboardAvoidingContainer>
@@ -54,6 +66,7 @@ export default function VerifyEmail() {
                             style={{
                                 height: Platform.OS === 'web' ? 40 : 40
                             }}
+                            onPress={handleSendVerificationEmail}
                         >
                             <Text className={"text-black font-medium text-[16px]"}>Resend Email</Text>
                         </TouchableOpacity>
