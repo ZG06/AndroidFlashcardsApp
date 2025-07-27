@@ -1,7 +1,9 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut} from 'firebase/auth'
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, deleteUser} from 'firebase/auth'
 import {auth, db} from '@/firebaseConfig'
 import {doc, setDoc} from 'firebase/firestore'
+import {router} from "expo-router";
+import {Alert} from "react-native";
 
 
 export const AuthContext = createContext();
@@ -62,8 +64,41 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
+    const deleteAccount = async () => {
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            return { success: false, msg: 'No user is currently signed in.' };
+        }
+
+
+        try {
+            await deleteUser(currentUser);
+            return { success: true };
+        } catch (error) {
+            let msg = error.message;
+
+            if (msg.includes("auth/requires-recent-login")) {
+                Alert.alert(
+                    "Session Expired",
+                    "Please log in again to delete your account.",
+                    [
+                        {
+                            text: "OK",
+                            onPress: async () => {
+                                await logout();
+                                router.replace("/login");
+                            },
+                        },
+                    ]
+                );
+                return { success: false, msg: "Please re-authenticate and try again." };
+            }
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout}}>
+        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, deleteAccount}}>
             {children}
         </AuthContext.Provider>
     )
