@@ -1,11 +1,12 @@
-import {Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import React, {useEffect, useState} from "react";
+import {ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import React, {useCallback, useEffect, useState} from "react";
 import {useAuth} from "@/context/authContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {router} from "expo-router";
+import {router, useFocusEffect} from "expo-router";
 
 export default function Settings() {
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
+    const [isProfilePictureLoading, setIsProfilePictureLoading] = useState(false);
 
     const {logout, fetchProfilePicture} = useAuth();
 
@@ -13,9 +14,29 @@ export default function Settings() {
         await logout();
     }
 
-    useEffect(() => {
-        fetchProfilePicture(setProfilePicture);
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            let isActive = true;
+
+            const loadProfilePicture = async () => {
+                setIsProfilePictureLoading(true);
+                await fetchProfilePicture((url: string) => {
+                    if (isActive) {
+                        setProfilePicture(url);
+                    }
+                });
+                if (isActive) {
+                    setIsProfilePictureLoading(false);
+                }
+            };
+
+            loadProfilePicture();
+
+            return () => {
+                isActive = false;
+            }
+        }, [])
+    )
 
     return (
         <ScrollView showsVerticalScrollIndicator={false} className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
@@ -46,13 +67,15 @@ export default function Settings() {
                         // User profile with name and email
                     }
                     <View className={"items-center justify-center rounded-full size-16 mr-2"} style={{backgroundColor: '#dbeaff'}}>
-                        {profilePicture ? (
+                        {isProfilePictureLoading ? (
+                            <ActivityIndicator size={'small'} />
+                        ) : profilePicture ? (
                             <Image
                                 source={{uri: profilePicture}}
                                 style={{
-                                    height: 54,
-                                    width: 54,
-                                    borderRadius: 27,
+                                    height: 60,
+                                    width: 60,
+                                    borderRadius: 30,
                                     resizeMode: 'cover',
                                 }}
                             />

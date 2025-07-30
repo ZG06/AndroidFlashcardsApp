@@ -113,10 +113,8 @@ export default function EditProfileSettings() {
         if (!imageUri) return;
 
         const userId = auth.currentUser?.uid;
-        if (!userId) {
-            alert("You must be logged it");
-            return;
-        }
+
+        if (!userId) return;
 
         try {
             setIsProfilePictureLoading(true);
@@ -127,6 +125,21 @@ export default function EditProfileSettings() {
         } catch (error) {
             if (isProfilePictureLoading) setIsProfilePictureLoading(false);
             console.log(error);
+        }
+    }
+
+    const onRemoveImage = async () => {
+        const userId = auth.currentUser?.uid;
+
+        if (!userId) return;
+
+        setIsProfilePictureLoading(true);
+        try {
+            await saveProfilePictureURL(userId, '');
+            setProfilePicture(null);
+            setIsProfilePictureLoading(false);
+        } catch (error) {
+            console.error("Error removing profile picture", error);
         }
     }
 
@@ -221,6 +234,7 @@ export default function EditProfileSettings() {
                                             style={{
 
                                             }}
+                                            onPress={onRemoveImage}
                                         >
                                             Remove
                                         </Text>
