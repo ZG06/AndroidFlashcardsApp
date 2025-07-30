@@ -1,5 +1,15 @@
 import {router, Stack, useNavigation} from "expo-router";
-import {Alert, Image, Platform, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, {useEffect, useState} from "react";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
@@ -71,6 +81,7 @@ const EditProfileSettingsHeader = () => {
 export default function EditProfileSettings() {
     const [bioText, setBioText] = useState('');
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
+    const [isProfilePictureLoading, setIsProfilePictureLoading] = useState(false);
 
     const {deleteAccount, uploadProfilePicture, saveProfilePictureURL, fetchProfilePicture} = useAuth();
 
@@ -108,15 +119,23 @@ export default function EditProfileSettings() {
         }
 
         try {
+            setIsProfilePictureLoading(true);
             const url = await uploadProfilePicture(userId, imageUri);
             await saveProfilePictureURL(userId, url);
+            await fetchProfilePicture(setProfilePicture);
+            setIsProfilePictureLoading(false);
         } catch (error) {
+            if (isProfilePictureLoading) setIsProfilePictureLoading(false);
             console.log(error);
         }
     }
 
     useEffect(() => {
-        fetchProfilePicture(setProfilePicture);
+        setIsProfilePictureLoading(true);
+        (async () => {
+            await fetchProfilePicture(setProfilePicture);
+            setIsProfilePictureLoading(false);
+        })();
     }, []);
 
     return (
@@ -146,7 +165,9 @@ export default function EditProfileSettings() {
                             {
                                 // User profile picture
                             }
-                            {profilePicture ? (
+                            {isProfilePictureLoading ? (
+                                <ActivityIndicator size={'small'} />
+                            ) : profilePicture ? (
                                 <Image
                                     source={{uri: profilePicture}}
                                     style={{
