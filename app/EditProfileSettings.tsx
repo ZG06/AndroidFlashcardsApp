@@ -1,9 +1,11 @@
 import {router, Stack, useNavigation} from "expo-router";
-import {Alert, Platform, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Alert, Image, Platform, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
 import {useAuth} from "@/context/authContext";
+import {pickImageFromLibrary} from "@/utils/imagePicker";
+import {auth} from "@/firebaseConfig";
 
 const EditProfileSettingsHeader = () => {
     const navigation = useNavigation();
@@ -68,8 +70,9 @@ const EditProfileSettingsHeader = () => {
 
 export default function EditProfileSettings() {
     const [bioText, setBioText] = useState('');
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
 
-    const {deleteAccount} = useAuth();
+    const {deleteAccount, uploadProfilePicture, saveProfilePictureURL, fetchProfilePicture} = useAuth();
 
     const confirmDeleteAccount = () => {
         Alert.alert(
@@ -92,6 +95,29 @@ export default function EditProfileSettings() {
             { cancelable: true }
         );
     };
+
+
+    const onChooseImage = async () => {
+        const imageUri = await pickImageFromLibrary();
+        if (!imageUri) return;
+
+        const userId = auth.currentUser?.uid;
+        if (!userId) {
+            alert("You must be logged it");
+            return;
+        }
+
+        try {
+            const url = await uploadProfilePicture(userId, imageUri);
+            await saveProfilePictureURL(userId, url);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchProfilePicture(setProfilePicture);
+    }, []);
 
     return (
         <>
@@ -120,7 +146,20 @@ export default function EditProfileSettings() {
                             {
                                 // User profile picture
                             }
-                            <MaterialIcons name={'person'} size={38} color={'#2863e9'} />
+                            {profilePicture ? (
+                                <Image
+                                    source={{uri: profilePicture}}
+                                    style={{
+                                        height: 60,
+                                        width: 60,
+                                        borderRadius: 30,
+                                        resizeMode: 'cover',
+                                    }}
+                                />
+                            ) : (
+                                <MaterialIcons name={'person'} size={38} color={'#2863e9'} />
+                            )}
+
                         </View>
                         <View className={"justify-center"}>
                             <View className={""}>
@@ -146,6 +185,7 @@ export default function EditProfileSettings() {
                                             style={{
 
                                             }}
+                                            onPress={onChooseImage}
                                         >
                                             Upload Photo
                                         </Text>

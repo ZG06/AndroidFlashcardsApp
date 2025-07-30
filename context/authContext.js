@@ -1,10 +1,22 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, onAuthStateChanged, signOut, deleteUser} from 'firebase/auth'
-import {auth, db} from '@/firebaseConfig'
-import {doc, setDoc, deleteDoc} from 'firebase/firestore'
+import {
+    createUserWithEmailAndPassword,
+    deleteUser,
+    onAuthStateChanged,
+    sendEmailVerification,
+    signInWithEmailAndPassword,
+    signOut
+} from 'firebase/auth'
+import {auth, db, storage} from '@/firebaseConfig'
+import {deleteDoc, doc, getDoc, setDoc, updateDoc} from 'firebase/firestore'
 import {router} from "expo-router";
 import {Alert} from "react-native";
+import Constants from "expo-constants";
 
+
+const {
+    CLOUDINARY_CLOUD_NAME
+} = Constants.expoConfig?.extra || {};
 
 export const AuthContext = createContext();
 
@@ -127,8 +139,75 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
+    const uploadProfilePicture = async (userId, imageUri) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', {
+                uri: imageUri,
+                type: 'image/jpeg',
+                name: 'avatar.jpg'
+            });
+            formData.append('upload_preset', 'flashcard-app-avatars')
+
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log(data)
+
+            if (data.secure_url) {
+                console.log("Uploaded image to Cloudinary:", data.secure_url);
+                return data.secure_url;
+            } else {
+                console.error("Cloudinary upload failed:", data);
+                return undefined;
+            }
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
+    };
+
+
+    const saveProfilePictureURL = async (userId, url) => {
+        const userRef = doc(db, 'users', userId);
+        await updateDoc(userRef, {
+            profilePictureUrl: url
+        });
+    }
+
+    const fetchProfilePicture = async (setProfilePicture) => {
+        const userId = auth.currentUser?.uid;
+        if (!userId) return;
+
+        try {
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                if (data.profilePictureUrl) {
+                    setProfilePicture(data.profilePictureUrl);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, deleteAccount, resendVerificationEmail}}>
+        <AuthContext.Provider value={{
+            user,
+            isAuthenticated,
+            login,
+            register,
+            logout,
+            deleteAccount,
+            resendVerificationEmail,
+            uploadProfilePicture,
+            saveProfilePictureURL,
+            fetchProfilePicture
+        }}>
             {children}
         </AuthContext.Provider>
     )
