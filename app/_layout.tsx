@@ -27,8 +27,6 @@ const MainLayout = () => {
 
     return (
         <SafeAreaView className={"flex-1"}>
-            <StatusBar hidden={true} />
-
             <Stack>
                 <Stack.Screen
                     name={'(auth)'}
