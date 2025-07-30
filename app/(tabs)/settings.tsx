@@ -1,14 +1,21 @@
-import {ScrollView, Text, TouchableOpacity, View} from "react-native";
-import React from "react";
+import {Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import React, {useEffect, useState} from "react";
 import {useAuth} from "@/context/authContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {router} from "expo-router";
 
 export default function Settings() {
-    const {logout} = useAuth();
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
+
+    const {logout, fetchProfilePicture} = useAuth();
+
     const handleLogout = async () => {
         await logout();
     }
+
+    useEffect(() => {
+        fetchProfilePicture(setProfilePicture);
+    }, []);
 
     return (
         <ScrollView showsVerticalScrollIndicator={false} className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
@@ -39,7 +46,19 @@ export default function Settings() {
                         // User profile with name and email
                     }
                     <View className={"items-center justify-center rounded-full size-16 mr-2"} style={{backgroundColor: '#dbeaff'}}>
-                        <MaterialIcons name={'person'} size={38} color={'#2863e9'} />
+                        {profilePicture ? (
+                            <Image
+                                source={{uri: profilePicture}}
+                                style={{
+                                    height: 54,
+                                    width: 54,
+                                    borderRadius: 27,
+                                    resizeMode: 'cover',
+                                }}
+                            />
+                        ) : (
+                            <MaterialIcons name={'person'} size={38} color={'#2863e9'} />
+                        )}
                     </View>
                     <View className={"flex-1 flex-row justify-between"}>
                         <View className={"justify-center"}>

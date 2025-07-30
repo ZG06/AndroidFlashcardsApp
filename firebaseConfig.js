@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {collection, getFirestore} from 'firebase/firestore'
 import Constants from 'expo-constants'
 import {Platform} from "react-native";
+import {getStorage} from "firebase/storage";
 
 
 const {
@@ -34,3 +35,5 @@ export const auth = initializeAuth(app, {
 export const db = getFirestore(app);
 
 export const usersRef = collection(db, 'users');
+
+export const storage = getStorage(app);
