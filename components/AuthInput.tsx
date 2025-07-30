@@ -25,23 +25,26 @@ const AuthInput = ({
     return (
         <View>
             <Text className={"text-gray-800 font-[500] mb-3"}>{label}</Text>
-            <View className={"flex-row border-[0.5px] border-gray-300 rounded-lg items-center h-12"}>
+            <View className={`flex-row border-[0.5px] border-gray-300 rounded-lg items-center h-12 ${icon === 'lock' ? 'pr-1' : ''}`}>
                 <MaterialIcons name={icon} size={18} color={"gray"} className={"ml-2"} />
-                <TextInput
-                    className={"flex-1 ml-2 mr-2"}
-                    placeholder={placeholder}
-                    placeholderTextColor={"gray"}
-                    value={value}
-                    onChangeText={onChangeText}
-                    secureTextEntry={isPasswordSecure}
-                />
-                {icon === 'lock' && (
-                    <TouchableOpacity
-                        onPress={onShowPasswordPress}
-                    >
-                        <MaterialIcons name={`${isPasswordSecure ? 'visibility-off' : 'visibility'}`} size={18} color={"gray"} className={"mr-3"} />
-                    </TouchableOpacity>
-                )}
+                <View className={"flex-1 flex-row justify-between items-center space-x-2 size-full"}>
+                    <TextInput
+                        className={"flex-1 ml-2 pl-2 pr-2 size-full"}
+                        placeholder={placeholder}
+                        placeholderTextColor={"gray"}
+                        value={value}
+                        onChangeText={onChangeText}
+                        secureTextEntry={isPasswordSecure}
+                    />
+                    {icon === 'lock' && (
+                        <TouchableOpacity
+                            className={"items-center justify-center size-6"}
+                            onPress={onShowPasswordPress}
+                        >
+                            <MaterialIcons name={`${isPasswordSecure ? 'visibility-off' : 'visibility'}`} size={18} color={"gray"} className={"text-center"} />
+                        </TouchableOpacity>
+                    )}
+                </View>
             </View>
         </View>
     );
