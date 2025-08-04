@@ -4,10 +4,13 @@ import {
     deleteUser,
     onAuthStateChanged,
     sendEmailVerification,
+    sendPasswordResetEmail,
     signInWithEmailAndPassword,
+    verifyPasswordResetCode,
+    confirmPasswordReset,
     signOut
 } from 'firebase/auth'
-import {auth, db, storage} from '@/firebaseConfig'
+import {auth, db} from '@/firebaseConfig'
 import {deleteDoc, doc, getDoc, setDoc, updateDoc} from 'firebase/firestore'
 import {router} from "expo-router";
 import {Alert} from "react-native";
@@ -95,7 +98,6 @@ export const AuthContextProvider = ({children}) => {
             return { success: false, msg: 'No user is currently signed in.' };
         }
 
-
         try {
             await deleteDoc(doc(db, "users", currentUser.uid));
             await deleteUser(currentUser);
@@ -139,7 +141,29 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
-    const uploadProfilePicture = async (userId, imageUri) => {
+    const sendResetPasswordEmail = async (email) => {
+        try {
+            await sendPasswordResetEmail(auth, email, {
+                url: 'http://localhost:8081/resetPassword',
+                handleCodeInApp: true
+            });
+            return { success: true };
+        } catch (error) {
+            return { success: false, msg: error };
+        }
+    }
+
+    const resetPassword = async (oobCode, newPassword) => {
+        try {
+            await verifyPasswordResetCode(auth, oobCode);
+            await confirmPasswordReset(auth, oobCode, newPassword);
+            return {success: true};
+        } catch (error) {
+            return { success: false, msg: error };
+        }
+    }
+
+    const uploadProfilePicture = async (imageUri) => {
         try {
             const formData = new FormData();
             formData.append('file', {
@@ -206,7 +230,9 @@ export const AuthContextProvider = ({children}) => {
             resendVerificationEmail,
             uploadProfilePicture,
             saveProfilePictureURL,
-            fetchProfilePicture
+            fetchProfilePicture,
+            sendResetPasswordEmail,
+            resetPassword
         }}>
             {children}
         </AuthContext.Provider>
