@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Image, Platform, Text, TouchableOpacity, View} from "react-native";
 import AuthInput from "@/components/AuthInput";
 import {router} from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -7,6 +7,7 @@ import {ErrorType} from "@/types/ErrorType";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import ActivityIndicator from "@/components/ActivityIndicator";
+import {useAuth} from "@/context/authContext";
 
 
 export default function ForgotPassword() {
@@ -14,7 +15,9 @@ export default function ForgotPassword() {
     const [errorType, setErrorType] = useState<ErrorType>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handlePasswordReset = (email: string) => {
+    const {sendResetPasswordEmail} = useAuth();
+
+    const handlePasswordReset = async (email: string) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         // Email format validation
@@ -23,7 +26,35 @@ export default function ForgotPassword() {
             return;
         }
 
+        // Clear any previous errors
         if (errorType) setErrorType(null);
+
+        try {
+            setIsLoading(true);
+            const {success, msg} = await sendResetPasswordEmail(email);
+
+            if (success) {
+                // Display a success message to the user
+                Alert.alert("Success", "A password reset link has been sent to your email address.");
+                // Redirect the user back to the login screen
+                router.replace('/(auth)/login');
+            } else {
+                // Check for a specific Firebase error code and provide a better message
+                if (msg?.code === 'auth/user-not-found') {
+                    Alert.alert("Error", "There is no account associated with that email address.");
+                } else {
+                    Alert.alert("Error", "An unexpected error occurred. Please try again later.");
+                    console.error("Firebase Error:", msg);
+                }
+            }
+
+        } catch (error) {
+            console.error("An unexpected error occurred:", error);
+            Alert.alert("Error", "An unexpected error occurred. Please try again later.");
+        } finally {
+            // Ensure isLoading is always set to false
+            setIsLoading(false);
+        }
     }
 
     return (

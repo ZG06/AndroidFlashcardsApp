@@ -1,51 +1,66 @@
-import {StatusBar} from "react-native";
 import React, {useEffect} from "react";
 import './globals.css';
 import {Stack, useRouter, useSegments} from "expo-router";
 import {AuthContextProvider, useAuth} from "@/context/authContext";
 import {SafeAreaView} from 'react-native-safe-area-context'
+import {usePasswordResetRedirect} from "@/hooks/usePasswordResetRedirect";
 
 
 const MainLayout = () => {
-    const {isAuthenticated} = useAuth();
-    const segments = useSegments();
-    const router = useRouter();
+        const {isAuthenticated} = useAuth();
+        const segments = useSegments();
+        const router = useRouter();
 
-    useEffect(() => {
-        // check if user is authenticated or not
-        if (typeof isAuthenticated === 'undefined') return;
+        usePasswordResetRedirect();
 
-        const inApp = segments[0] === '(tabs)';
-        if (isAuthenticated && !inApp) {
-            // redirect to home
-            router.replace('/(tabs)')
-        } else if (isAuthenticated === false) {
-            // redirect to signIn
-            router.replace('/(auth)');
-        }
-    }, [isAuthenticated]);
+        useEffect(() => {
+            if (isAuthenticated === undefined) {
+                return;
+            }
 
-    return (
-        <SafeAreaView className={"flex-1"}>
-            <Stack>
-                <Stack.Screen
-                    name={'(auth)'}
-                    options={{headerShown: false}}
-                />
-                <Stack.Screen
-                    name={'(tabs)'}
-                    options={{headerShown: false}}
-                />
-            </Stack>
-        </SafeAreaView>
-    );
-}
+            const currentPath = segments.join('/')
+            const PUBLIC_ROUTES = [
+                '(auth)',
+                '(auth)/login',
+                '(auth)/register',
+                '(auth)/verifyEmail',
+                '(auth)/forgotPassword',
+                '(auth)/resetPassword',
+                '+not-found'
+            ];
 
-export default function RootLayout() {
+            const isPublicRoute = PUBLIC_ROUTES.some(route => currentPath.startsWith(route));
 
-    return (
-        <AuthContextProvider>
-            <MainLayout />
-        </AuthContextProvider>
-    );
-}
+            const inApp = segments.includes('(tabs)');
+
+            if (isAuthenticated && !inApp) {
+                router.replace('/(tabs)')
+            } else if (isAuthenticated === false && !isPublicRoute) {
+                router.replace('/(auth)');
+            }
+        }, [isAuthenticated, segments, router]);
+
+        return (
+            <SafeAreaView className={"flex-1"}>
+                <Stack>
+                    <Stack.Screen
+                        name={'(auth)'}
+                        options={{headerShown: false}}
+                    />
+                    <Stack.Screen
+                        name={'(tabs)'}
+                        options={{headerShown: false}}
+                    />
+                </Stack>
+            </SafeAreaView>
+        );
+    }
+
+    export default function RootLayout() {
+
+        return (
+            <AuthContextProvider>
+                <MainLayout />
+            </AuthContextProvider>
+        );
+    }
