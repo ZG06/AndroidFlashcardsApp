@@ -47,7 +47,7 @@ export default function Index() {
                 }
                 <TouchableOpacity
                     className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}
-                    onPress={() => router.push('/new/newDeck')}
+                    onPress={() => router.push('/decks/new')}
                 >
                     <MaterialIcons name={"add"} color={'#16a34a'} size={38} />
                     <Text className={"font-bold text-lg"}>Create deck</Text>
