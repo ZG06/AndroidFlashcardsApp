@@ -52,10 +52,25 @@ export const AuthContextProvider = ({children}) => {
 
             return {success: true}
         } catch (error) {
-            let msg = error.message;
+            let msg = error.code;
 
-            if (msg.includes('(auth/invalid-credential)')) msg = 'invalidCredentials';
-            if (msg.includes('(auth/email-not-verified)')) msg = 'emailNotVerified';
+            switch (msg) {
+                case 'auth/invalid-credential':
+                    msg = 'invalidCredentials';
+                    break;
+                case 'auth/user-disabled':
+                    msg = 'userDisabled';
+                    break;
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+                case 'auth/too-many-requests':
+                    msg = 'tooManyRequests';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+
             return {success: false, msg};
         }
     }
@@ -65,7 +80,17 @@ export const AuthContextProvider = ({children}) => {
             await signOut(auth);
             return {success: true}
         } catch (error) {
-            return {success: false, msg: error.message}
+            let msg = error.code;
+
+            switch (msg) {
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+
+            return {success: false, msg};
         }
     }
 
@@ -84,9 +109,30 @@ export const AuthContextProvider = ({children}) => {
 
             return {success: true, data: response?.user};
         } catch (error) {
-            let msg = error.message;
+            let msg = error.code;
 
-            if (msg.includes('(auth/email-already-in-use')) msg = 'emailInUse';
+            switch (msg) {
+                case 'auth/email-already-in-use':
+                    msg = 'emailInUse';
+                    break;
+                case 'auth/invalid-email':
+                    msg = 'invalidEmail';
+                    break;
+                case 'auth/weak-password':
+                    msg = 'tooWeakPassword';
+                    break;
+                case 'auth/operation-not-allowed':
+                    msg = 'registrationNotAllowed'; // Email/password sign-in not enabled in Firebase project
+                    break;
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+                case 'auth/too-many-requests':
+                    msg = 'tooManyRequests';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
             return {success: false, msg};
         }
     }
@@ -134,9 +180,18 @@ export const AuthContextProvider = ({children}) => {
             await sendEmailVerification(currentUser);
             return { success: true };
         } catch (error) {
-            let msg = error.message;
+            let msg = error.code;
 
-            if (msg.includes('(auth/too-many-requests)')) msg = 'tooManyRequests';
+            switch (msg) {
+                case 'auth/too-many-requests':
+                    msg = 'tooManyRequests';
+                    break;
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
             return {success: false, msg};
         }
     }
@@ -149,7 +204,22 @@ export const AuthContextProvider = ({children}) => {
             });
             return { success: true };
         } catch (error) {
-            return { success: false, msg: error };
+            let msg = error.code;
+
+            switch (msg) {
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+
+                case 'auth/too-many-requests':
+                    msg = 'tooManyRequests';
+                    break;
+
+                default:
+                    msg = 'unexpectedError';
+            }
+
+            return { success: false, msg };
         }
     }
 
@@ -159,7 +229,26 @@ export const AuthContextProvider = ({children}) => {
             await confirmPasswordReset(auth, oobCode, newPassword);
             return {success: true};
         } catch (error) {
-            return { success: false, msg: error };
+            let msg = error.code;
+
+            switch (msg) {
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+
+                case 'auth/user-not-found':
+                    msg = 'userNotFound';
+                    break;
+
+                case 'auth/weak-password':
+                    msg = 'tooWeakPassword';
+                    break;
+
+                default:
+                    msg = 'unexpectedError';
+            }
+
+            return { success: false, msg };
         }
     }
 
@@ -197,9 +286,28 @@ export const AuthContextProvider = ({children}) => {
 
     const saveProfilePictureURL = async (userId, url) => {
         const userRef = doc(db, 'users', userId);
-        await updateDoc(userRef, {
-            profilePictureUrl: url
-        });
+        try {
+            await updateDoc(userRef, {
+                profilePictureUrl: url
+            });
+        } catch (error) {
+            let msg = error.code;
+
+            switch (msg) {
+                case 'permission-denied':
+                    msg = 'profilePermissionDenied';
+                    break;
+                case 'not-found':
+                    msg = 'userDocumentNotFound';
+                    break;
+                case 'internal':
+                    msg = 'networkRequestFailed';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+            return { success: false, msg };
+        }
     }
 
     const fetchProfilePicture = async (setProfilePicture) => {

@@ -29,32 +29,19 @@ export default function ForgotPassword() {
         // Clear any previous errors
         if (errorType) setErrorType(null);
 
-        try {
-            setIsLoading(true);
-            const {success, msg} = await sendResetPasswordEmail(email);
+        setIsLoading(true);
+        const response = await sendResetPasswordEmail(email);
 
-            if (success) {
-                // Display a success message to the user
-                Alert.alert("Success", "A password reset link has been sent to your email address.");
-                // Redirect the user back to the login screen
-                router.replace('/(auth)/login');
-            } else {
-                // Check for a specific Firebase error code and provide a better message
-                if (msg?.code === 'auth/user-not-found') {
-                    Alert.alert("Error", "There is no account associated with that email address.");
-                } else {
-                    Alert.alert("Error", "An unexpected error occurred. Please try again later.");
-                    console.error("Firebase Error:", msg);
-                }
-            }
-
-        } catch (error) {
-            console.error("An unexpected error occurred:", error);
-            Alert.alert("Error", "An unexpected error occurred. Please try again later.");
-        } finally {
-            // Ensure isLoading is always set to false
-            setIsLoading(false);
+        if (response.success) {
+            // Display a success message to the user
+            Alert.alert("Success", "A password reset link has been sent to your email address.");
+            // Redirect the user back to the login screen
+            router.replace('/(auth)/login');
+        } else {
+            setErrorType(response.msg);
         }
+        // Ensure isLoading is always set to false
+        setIsLoading(false);
     }
 
     return (
