@@ -21,15 +21,15 @@ export default function AuthLayout() {
                 options={{headerShown: false}}
             />
             <Stack.Screen
-                name={'resetPassword'}
+                name={'reset-password'}
                 options={{headerShown: false}}
             />
             <Stack.Screen
-                name={'verifyEmail'}
+                name={'verify-email'}
                 options={{headerShown: false}}
             />
             <Stack.Screen
-                name={'forgotPassword'}
+                name={'forgot-password'}
                 options={{headerShown: false}}
             />
         </Stack>
