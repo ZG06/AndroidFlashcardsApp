@@ -10,7 +10,7 @@ export default function SettingsLayout() {
                 options={{ title: 'Settings Main' }}
             />
             <Stack.Screen
-                name="EditProfileSettings"
+                name="edit-profile-settings"
                 options={{
                     header: () => (<EditProfileSettingsHeader />)
                 }}

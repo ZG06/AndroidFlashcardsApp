@@ -101,7 +101,7 @@ export default function Settings() {
                             }
                             <TouchableOpacity
                                 className={"border-gray-300 border-[1px] rounded-md px-3 py-2.5"}
-                                onPress={() => router.push('/settings/EditProfileSettings')}
+                                onPress={() => router.push('/settings/edit-profile-settings')}
                             >
                                 <Text className={"text-[16px] font-medium"}>
                                     Edit

@@ -23,9 +23,9 @@ const MainLayout = () => {
                 '(auth)',
                 '(auth)/login',
                 '(auth)/register',
-                '(auth)/verifyEmail',
-                '(auth)/forgotPassword',
-                '(auth)/resetPassword',
+                '(auth)/verify-email',
+                '(auth)/forgot-password',
+                '(auth)/reset-password',
                 '+not-found'
             ];
 

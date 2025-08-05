@@ -60,7 +60,7 @@ export default function Register() {
         if (!response.success) {
             setErrorType(response.msg);
         } else {
-            router.push('/verifyEmail')
+            router.push('/verify-email')
         }
     }
 
