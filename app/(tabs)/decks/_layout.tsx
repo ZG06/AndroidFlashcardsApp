@@ -1,7 +1,7 @@
 import React from 'react';
 import {Stack} from 'expo-router';
 
-export default function SettingsLayout() {
+export default function DecksLayout() {
     return (
         <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen
@@ -11,7 +11,7 @@ export default function SettingsLayout() {
                 }}
             />
             <Stack.Screen
-                name="new"
+                name="new/index"
                 options={{
                     headerShown: false
                 }}
