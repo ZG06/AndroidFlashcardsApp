@@ -342,7 +342,7 @@ export default function EditProfileSettings() {
                 }
                 <TouchableOpacity
                     className={"flex-1 flex-row items-center justify-center gap-x-2 bg-white h-10 w-[120px] rounded-md px-3"}
-                    onPress={() => router.back()}
+                    onPress={() => router.push('settings')}
                 >
                     <MaterialIcons name={"close"} color={"black"} size={15}/>
                     <Text>Cancel</Text>
