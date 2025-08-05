@@ -6,4 +6,12 @@ export type ErrorType =
     'invalidCredentials' |
     'emailNotVerified' |
     'tooManyRequests' |
+    'userNotFound' |
+    'unexpectedError' |
+    'tooWeakPassword' |
+    'networkRequestFailed' |
+    'userDisabled' |
+    'registrationNotAllowed' |
+    'profilePermissionDenied' |
+    'userDocumentNotFound' |
     null;
