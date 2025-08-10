@@ -34,10 +34,6 @@ export default function ForgotPassword() {
         const response = await sendResetPasswordEmail(email);
 
         if (response.success) {
-            // // Display a success message to the user
-            // Alert.alert("Success", "A password reset link has been sent to your email address.");
-            // // Redirect the user back to the login screen
-            // router.replace('/(auth)/login');
             setIsSent(true);
         } else {
             setErrorType(response.msg);
@@ -86,25 +82,19 @@ export default function ForgotPassword() {
                     </View>
 
                     {
-                        // Displays an activity indicator or a Resend Email button depending on the isLoading state
+                        // Try different email button
                     }
-                    {isLoading ? (
-                        <View className={"items-center justify-center"}>
-                            <ActivityIndicator size={50} />
-                        </View>
-                    ) : (
-                        <TouchableOpacity
-                            className={"bg-white items-center justify-center rounded-md border-[1px] border-gray-200"}
-                            style={{
-                                height: Platform.OS === 'web' ? 40 : 40
-                            }}
-                            onPress={() => setIsSent(false)}
-                        >
-                            <Text className={"text-black font-medium text-[16px]"}>
-                                Try Different Email
-                            </Text>
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity
+                        className={"bg-white items-center justify-center rounded-md border-[1px] border-gray-200"}
+                        style={{
+                            height: Platform.OS === 'web' ? 40 : 40
+                        }}
+                        onPress={() => setIsSent(false)}
+                    >
+                        <Text className={"text-black font-medium text-[16px]"}>
+                            Try Different Email
+                        </Text>
+                    </TouchableOpacity>
 
                     {
                         // Back to sign in button
