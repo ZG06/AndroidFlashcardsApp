@@ -6,15 +6,15 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-   ActivityIndicator,
-   Alert,
-   Image,
-   Platform,
-   ScrollView,
-   Text,
-   TextInput,
-   TouchableOpacity,
-   View
+    ActivityIndicator,
+    Alert,
+    Image,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 
 
@@ -26,6 +26,15 @@ export default function EditProfileSettings() {
     const {deleteAccount, uploadProfilePicture, saveProfilePictureURL, fetchProfilePicture} = useAuth();
 
     const confirmDeleteAccount = () => {
+        if (Platform.OS === 'web') {
+            const confirmed = window.confirm(
+                "Are you sure you want to delete your account? This action cannot be undone."
+            );
+
+            if (confirmed) {
+                deleteAccountHandler();
+            }
+        }
         Alert.alert(
             "Delete Account",
             "Are you sure you want to delete your account? This action cannot be undone.",
@@ -37,15 +46,17 @@ export default function EditProfileSettings() {
                 {
                     text: "Delete",
                     style: "destructive",
-                    onPress: async () => {
-                        const result = await deleteAccount();
-                        if (result.success) router.replace('(auth)');
-                    }
+                    onPress: deleteAccountHandler
                 }
             ],
             { cancelable: true }
         );
     };
+
+    const deleteAccountHandler = async () => {
+        const result = await deleteAccount();
+        if (result.success) router.replace('(auth)');
+    }
 
 
     const onChooseImage = async () => {
