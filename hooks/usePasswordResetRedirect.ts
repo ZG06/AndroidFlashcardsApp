@@ -1,7 +1,6 @@
-import {useEffect} from 'react';
 import * as Linking from 'expo-linking';
-import {useAuth} from "@/context/authContext";
-import {router} from "expo-router";
+import { router } from "expo-router";
+import { useEffect } from 'react';
 
 export const usePasswordResetRedirect = () => {
 
@@ -13,7 +12,7 @@ export const usePasswordResetRedirect = () => {
             const mode = parsed.queryParams?.mode;
 
             if (mode === 'resetPassword' && oobCode) {
-                router.replace(`/(auth)/resetPassword?oobCode=${oobCode}`);
+                router.replace(`/(auth)/reset-password?oobCode=${oobCode}`);
             }
         };
 
