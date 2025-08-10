@@ -1,21 +1,21 @@
-import {router} from "expo-router";
-import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import React, {useEffect, useState} from "react";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
-import {useAuth} from "@/context/authContext";
-import {pickImageFromLibrary} from "@/utils/imagePicker";
-import {auth} from "@/firebaseConfig";
+import { useAuth } from "@/context/authContext";
+import { auth } from "@/firebaseConfig";
+import { pickImageFromLibrary } from "@/utils/imagePicker";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+   ActivityIndicator,
+   Alert,
+   Image,
+   Platform,
+   ScrollView,
+   Text,
+   TextInput,
+   TouchableOpacity,
+   View
+} from "react-native";
 
 
 export default function EditProfileSettings() {
@@ -58,7 +58,7 @@ export default function EditProfileSettings() {
 
         try {
             setIsProfilePictureLoading(true);
-            const url = await uploadProfilePicture(userId, imageUri);
+            const url = await uploadProfilePicture(imageUri);
             await saveProfilePictureURL(userId, url);
             await fetchProfilePicture(setProfilePicture);
             setIsProfilePictureLoading(false);
