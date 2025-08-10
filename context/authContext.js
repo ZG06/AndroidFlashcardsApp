@@ -198,10 +198,7 @@ export const AuthContextProvider = ({children}) => {
 
     const sendResetPasswordEmail = async (email) => {
         try {
-            await sendPasswordResetEmail(auth, email, {
-                url: 'http://localhost:8081/resetPassword',
-                handleCodeInApp: true
-            });
+            await sendPasswordResetEmail(auth, email);
             return { success: true };
         } catch (error) {
             let msg = error.code;
