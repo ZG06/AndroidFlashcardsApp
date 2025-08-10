@@ -255,11 +255,19 @@ export const AuthContextProvider = ({children}) => {
     const uploadProfilePicture = async (imageUri) => {
         try {
             const formData = new FormData();
-            formData.append('file', {
-                uri: imageUri,
-                type: 'image/jpeg',
-                name: 'avatar.jpg'
-            });
+            
+
+            if (imageUri.startsWith('data:')) {
+                const response = await fetch(imageUri);
+                const blob = await response.blob();
+                formData.append('file', blob, 'avatar.jpg');
+            } else {
+                formData.append('file', {
+                    uri: imageUri,
+                    type: 'image/jpeg',
+                    name: 'avatar.jpg'
+                });
+            }
             formData.append('upload_preset', 'flashcard-app-avatars');
 
             const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
