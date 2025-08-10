@@ -1,20 +1,20 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import { auth, db } from '@/firebaseConfig';
+import Constants from "expo-constants";
+import { router } from "expo-router";
 import {
+    confirmPasswordReset,
     createUserWithEmailAndPassword,
     deleteUser,
     onAuthStateChanged,
     sendEmailVerification,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
-    verifyPasswordResetCode,
-    confirmPasswordReset,
-    signOut
-} from 'firebase/auth'
-import {auth, db} from '@/firebaseConfig'
-import {deleteDoc, doc, getDoc, setDoc, updateDoc} from 'firebase/firestore'
-import {router} from "expo-router";
-import {Alert} from "react-native";
-import Constants from "expo-constants";
+    signOut,
+    verifyPasswordResetCode
+} from 'firebase/auth';
+import { deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { createContext, useContext, useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 
 const {
@@ -260,7 +260,7 @@ export const AuthContextProvider = ({children}) => {
                 type: 'image/jpeg',
                 name: 'avatar.jpg'
             });
-            formData.append('upload_preset', 'flashcard-app-avatars')
+            formData.append('upload_preset', 'flashcard-app-avatars');
 
             const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                 method: 'POST',
@@ -268,17 +268,13 @@ export const AuthContextProvider = ({children}) => {
             });
 
             const data = await response.json();
-            console.log(data)
 
             if (data.secure_url) {
-                console.log("Uploaded image to Cloudinary:", data.secure_url);
                 return data.secure_url;
             } else {
-                console.error("Cloudinary upload failed:", data);
                 return undefined;
             }
         } catch (error) {
-            console.error(error);
             return undefined;
         }
     };
