@@ -1,6 +1,6 @@
-import React from 'react';
-import { Stack } from 'expo-router';
 import EditProfileSettingsHeader from "@/components/EditProfileSettingsHeader";
+import { Stack } from 'expo-router';
+import React from 'react';
 
 export default function SettingsLayout() {
     return (
@@ -10,7 +10,7 @@ export default function SettingsLayout() {
                 options={{ title: 'Settings Main' }}
             />
             <Stack.Screen
-                name="edit-profile-settings"
+                name="edit"
                 options={{
                     header: () => (<EditProfileSettingsHeader />)
                 }}
