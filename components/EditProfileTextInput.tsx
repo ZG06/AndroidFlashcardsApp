@@ -1,16 +1,18 @@
-import React from 'react'
-import {Text, TextInput, View} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import React from 'react';
+import { Text, TextInput, View } from "react-native";
 
 
 type Props = {
     title: string;
     placeholder: string
     icon?: string;
-    required?: boolean
+    required?: boolean;
+    value: string;
+    onChangeText: (text: string) => void;
 }
 
-function EditProfileTextInput({title, placeholder, icon = '', required = false}: Props) {
+function EditProfileTextInput({title, placeholder, icon = '', required = false, value, onChangeText}: Props) {
     return (
         <View className={"gap-y-3"}>
             <Text className={"font-medium"}>
@@ -23,6 +25,8 @@ function EditProfileTextInput({title, placeholder, icon = '', required = false}:
                         className={"flex-1 h-full px-2 font-semibold"}
                         placeholder={placeholder}
                         placeholderTextColor={"gray"}
+                        value={value}
+                        onChangeText={onChangeText}
                     />
                 </View>
             ) : (
@@ -30,6 +34,8 @@ function EditProfileTextInput({title, placeholder, icon = '', required = false}:
                     className={"font-semibold border-gray-200 border rounded-md min-h-12 px-3"}
                     placeholder={placeholder}
                     placeholderTextColor={"gray"}
+                    value={value}
+                    onChangeText={onChangeText}
                 />
             )}
         </View>

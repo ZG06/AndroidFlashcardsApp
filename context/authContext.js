@@ -327,6 +327,58 @@ export const AuthContextProvider = ({children}) => {
             console.log(error);
         }
     }
+    
+    const getUserData = async (
+        setUsername,
+        setEmail,
+        setBio,
+        setLocation,
+        setWebsite
+    ) => {
+        const userId = auth.currentUser?.uid;
+        try {
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                
+                if (data.username) setUsername(data.username);
+                if (data.email) setEmail(data.email);
+                if (data.bio) setBio(data.bio);
+                if (data.location) setLocation(data.location);
+                if (data.website) setWebsite(data.website);
+            }
+        } catch (error) {
+            console.error('Error in getUserData:', {
+                code: error.code,
+                message: error.message,
+                stack: error.stack
+            });
+        }
+    }
+
+
+    const saveUserData = async (
+        username,
+        email,
+        bio,
+        location,
+        website
+    ) => {
+        const userId = auth.currentUser?.uid;
+        const userRef = doc(db, 'users', userId);
+
+        try {
+            await updateDoc(userRef, {
+                username,
+                email,
+                bio,
+                location,
+                website
+            })
+        } catch (error) {
+            console.log('saveUserData: ', error)
+        }
+    }
 
     return (
         <AuthContext.Provider value={{
@@ -341,7 +393,9 @@ export const AuthContextProvider = ({children}) => {
             saveProfilePictureURL,
             fetchProfilePicture,
             sendResetPasswordEmail,
-            resetPassword
+            resetPassword,
+            getUserData,
+            saveUserData
         }}>
             {children}
         </AuthContext.Provider>
