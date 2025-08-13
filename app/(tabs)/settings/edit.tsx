@@ -19,11 +19,26 @@ import {
 
 
 export default function EditProfileSettings() {
+    const [isAuthReady, setIsAuthReady] = useState(false);
+
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [bioText, setBioText] = useState('');
+    const [location, setLocation] = useState('');
+    const [website, setWebsite] = useState('');
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
+
     const [isProfilePictureLoading, setIsProfilePictureLoading] = useState(false);
 
-    const {deleteAccount, uploadProfilePicture, saveProfilePictureURL, fetchProfilePicture} = useAuth();
+    const {
+        user,
+        deleteAccount,
+        uploadProfilePicture,
+        saveProfilePictureURL,
+        fetchProfilePicture,
+        getUserData,
+        saveUserData
+    } = useAuth();
 
     const confirmDeleteAccount = () => {
         if (Platform.OS === 'web') {
@@ -93,6 +108,14 @@ export default function EditProfileSettings() {
             console.error("Error removing profile picture", error);
         }
     }
+    
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setIsAuthReady(true);
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         setIsProfilePictureLoading(true);
@@ -101,6 +124,43 @@ export default function EditProfileSettings() {
             setIsProfilePictureLoading(false);
         })();
     }, []);
+
+    useEffect(() => {
+        if (!isAuthReady || !user) return;
+        
+        const getData = async () => {
+            try {
+                await getUserData(
+                    setUsername,
+                    setEmail,
+                    setBioText,
+                    setLocation,
+                    setWebsite
+                );
+            } catch (error) {
+                console.log('UseEffect, edit: ', error);
+            }
+        }
+
+        getData();
+    }, [isAuthReady, user, getUserData])
+    
+    const handleSave = async () => {
+        if (!user) return;
+
+        try {
+            await saveUserData(
+                username,
+                email,
+                bioText,
+                location,
+                website
+            );
+            router.replace('settings');
+        } catch (error) {
+            console.log('handleSave, edit: ', error);
+        }
+    }
 
     return (
         <ScrollView
@@ -199,14 +259,28 @@ export default function EditProfileSettings() {
                 </Text>
 
                 {
-                    // Full name input
+                    // Username input
                 }
-                <EditProfileTextInput title={'Full Name'} placeholder={'Enter your full name'} icon={'person'} required={true} />
+                <EditProfileTextInput
+                    title={'Username'}
+                    placeholder={'Enter your username'}
+                    icon={'person'}
+                    required={true}
+                    value={username}
+                    onChangeText={setUsername}
+                />
 
                 {
                     // Email address input
                 }
-                <EditProfileTextInput title={'Email Address'} placeholder={'Enter your email'} icon={'email'} required={true} />
+                <EditProfileTextInput
+                    title={'Email Address'}
+                    placeholder={'Enter your email'} 
+                    icon={'email'}
+                    required={true}
+                    value={email}
+                    onChangeText={setEmail}
+                />
 
                 {
                     // Bio input
@@ -232,12 +306,22 @@ export default function EditProfileSettings() {
                 {
                     // Location input
                 }
-                <EditProfileTextInput title={'Location'} placeholder={'City, Country'} />
+                <EditProfileTextInput
+                    title={'Location'}
+                    placeholder={'City, Country'}
+                    value={location}
+                    onChangeText={setLocation}
+                />
 
                 {
                     // Website input
                 }
-                <EditProfileTextInput title={'Website'} placeholder={'https://yourwebsite.com'} />
+                <EditProfileTextInput
+                    title={'Website'}
+                    placeholder={'https://yourwebsite.com'}
+                    value={website}
+                    onChangeText={setWebsite}
+                />
             </View>
 
             {
@@ -364,6 +448,7 @@ export default function EditProfileSettings() {
                 }
                 <TouchableOpacity
                     className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
+                    onPress={handleSave}
                 >
                     <MaterialIcons name={"save"} color={"white"} size={15}/>
                     <Text className={"text-white font-semibold text-[13px]"}>Save Changes</Text>
