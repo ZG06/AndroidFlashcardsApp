@@ -1,8 +1,8 @@
-import {ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import React, {useCallback, useEffect, useState} from "react";
-import {useAuth} from "@/context/authContext";
+import { useAuth } from "@/context/authContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {router, useFocusEffect} from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function Settings() {
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -101,7 +101,7 @@ export default function Settings() {
                             }
                             <TouchableOpacity
                                 className={"border-gray-300 border-[1px] rounded-md px-3 py-2.5"}
-                                onPress={() => router.push('/settings/edit-profile-settings')}
+                                onPress={() => router.push('/settings/edit')}
                             >
                                 <Text className={"text-[16px] font-medium"}>
                                     Edit
