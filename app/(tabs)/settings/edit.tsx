@@ -118,32 +118,29 @@ export default function EditProfileSettings() {
     }, []);
 
     useEffect(() => {
-        setIsProfilePictureLoading(true);
-        (async () => {
-            await fetchProfilePicture(setProfilePicture);
-            setIsProfilePictureLoading(false);
-        })();
-    }, []);
-
-    useEffect(() => {
         if (!isAuthReady || !user) return;
         
         const getData = async () => {
             try {
+                setIsProfilePictureLoading(true);
                 await getUserData(
                     setUsername,
                     setEmail,
                     setBioText,
                     setLocation,
-                    setWebsite
+                    setWebsite,
+                    setProfilePicture
                 );
+                
+                setIsProfilePictureLoading(false);
             } catch (error) {
                 console.log('UseEffect, edit: ', error);
+                setIsProfilePictureLoading(false);
             }
         }
 
         getData();
-    }, [isAuthReady, user, getUserData])
+    }, [isAuthReady, user])
     
     const handleSave = async () => {
         if (!user) return;
@@ -154,7 +151,8 @@ export default function EditProfileSettings() {
                 email,
                 bioText,
                 location,
-                website
+                website,
+                profilePicture
             );
             router.replace('settings');
         } catch (error) {

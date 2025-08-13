@@ -122,7 +122,7 @@ export const AuthContextProvider = ({children}) => {
                     msg = 'tooWeakPassword';
                     break;
                 case 'auth/operation-not-allowed':
-                    msg = 'registrationNotAllowed'; // Email/password sign-in not enabled in Firebase project
+                    msg = 'registrationNotAllowed';
                     break;
                 case 'auth/network-request-failed':
                     msg = 'networkRequestFailed';
@@ -324,7 +324,22 @@ export const AuthContextProvider = ({children}) => {
                 }
             }
         } catch (error) {
-            console.log(error);
+            let msg = error.code;
+
+            switch (msg) {
+                case 'permission-denied':
+                    msg = 'profilePermissionDenied';
+                    break;
+                case 'not-found':
+                    msg = 'userDocumentNotFound';
+                    break;
+                case 'internal':
+                    msg = 'networkRequestFailed';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+            return { success: false, msg };
         }
     }
     
@@ -333,7 +348,8 @@ export const AuthContextProvider = ({children}) => {
         setEmail,
         setBio,
         setLocation,
-        setWebsite
+        setWebsite,
+        setProfilePicture
     ) => {
         const userId = auth.currentUser?.uid;
         try {
@@ -346,13 +362,25 @@ export const AuthContextProvider = ({children}) => {
                 if (data.bio) setBio(data.bio);
                 if (data.location) setLocation(data.location);
                 if (data.website) setWebsite(data.website);
+                if (data.profilePictureUrl) fetchProfilePicture(setProfilePicture);
             }
         } catch (error) {
-            console.error('Error in getUserData:', {
-                code: error.code,
-                message: error.message,
-                stack: error.stack
-            });
+            let msg = error.code;
+
+            switch (msg) {
+                case 'permission-denied':
+                    msg = 'profilePermissionDenied';
+                    break;
+                case 'not-found':
+                    msg = 'userDocumentNotFound';
+                    break;
+                case 'internal':
+                    msg = 'networkRequestFailed';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+            return { success: false, msg };
         }
     }
 
@@ -362,7 +390,8 @@ export const AuthContextProvider = ({children}) => {
         email,
         bio,
         location,
-        website
+        website,
+        profilePictureUrl
     ) => {
         const userId = auth.currentUser?.uid;
         const userRef = doc(db, 'users', userId);
@@ -373,10 +402,26 @@ export const AuthContextProvider = ({children}) => {
                 email,
                 bio,
                 location,
-                website
+                website,
+                profilePictureUrl
             })
         } catch (error) {
-            console.log('saveUserData: ', error)
+            let msg = error.code;
+
+            switch (msg) {
+                case 'permission-denied':
+                    msg = 'profilePermissionDenied';
+                    break;
+                case 'not-found':
+                    msg = 'userDocumentNotFound';
+                    break;
+                case 'internal':
+                    msg = 'networkRequestFailed';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+            return { success: false, msg };
         }
     }
 
