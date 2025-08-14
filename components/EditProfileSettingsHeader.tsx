@@ -8,9 +8,10 @@ type Props = {
     title: string,
     description: string;
     isSaveButtonVisible: boolean;
+    onSave: () => void;
 }
 
-const EditProfileSettingsHeader = ({title, description, isSaveButtonVisible}: Props) => {
+const EditProfileSettingsHeader = ({title, description, isSaveButtonVisible, onSave}: Props) => {
     const navigation = useNavigation();
 
     return (
@@ -54,6 +55,7 @@ const EditProfileSettingsHeader = ({title, description, isSaveButtonVisible}: Pr
                         style={{
                             paddingHorizontal: Platform.OS === 'web' ? 14 : 8
                         }}
+                        onPress={onSave}
                     >
                         <MaterialIcons name={"save"} color={"white"} size={Platform.OS === 'web' ? 22 : 16}/>
                         <Text

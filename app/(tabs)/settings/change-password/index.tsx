@@ -82,7 +82,7 @@ export default function ChangePasswordSettings() {
                     }}
                 >
                     <View className="flex-row items-center gap-x-2 mb-2">
-                        <Lock size={20} className="text-blue-600" />
+                        <Lock size={20} color={"#2563eb"} />
                         <Text className="text-2xl font-semibold">
                             Password Security
                         </Text>
@@ -155,16 +155,18 @@ export default function ChangePasswordSettings() {
                         ) : (
                             // Update password button
                             <TouchableOpacity
-                                className={"flex-1 flex-row bg-black items-center justify-center rounded-md gap-x-2"}
+                                className={"flex-1 bg-black items-center justify-center rounded-md gap-x-2"}
                                 style={{
                                     height: Platform.OS === 'web' ? 40 : 30
                                 }}
                                 onPress={handleChangePassword}
                             >
-                                <Save size={16} className="text-white" />
-                                <Text className={"text-white font-medium text-[16px]"}>
-                                    Update Password
-                                </Text>
+                                <View className="flex-row items-center gap-x-2">
+                                    <Save size={16} color={'white'} />
+                                    <Text className={`text-white font-medium ${Platform.OS === 'web' ? 'text-[16px]' : 'text-[14px]'}`}>
+                                        Update Password
+                                    </Text>
+                                </View>
                             </TouchableOpacity>
                         )}
                         
