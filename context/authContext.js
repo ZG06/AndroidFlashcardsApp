@@ -5,11 +5,14 @@ import {
     confirmPasswordReset,
     createUserWithEmailAndPassword,
     deleteUser,
+    EmailAuthProvider,
     onAuthStateChanged,
+    reauthenticateWithCredential,
     sendEmailVerification,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signOut,
+    updatePassword,
     verifyPasswordResetCode
 } from 'firebase/auth';
 import { deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -425,6 +428,51 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
+    const changePassword = async (currentPassword, newPassword) => {
+        try {
+            const user = auth.currentUser;
+
+            if (!user) return { success: false, msg: 'unexpectedError' }
+
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            await reauthenticateWithCredential(user, credential);
+
+            await updatePassword(user, newPassword);
+
+            return { success: true };
+        } catch (error) {
+            let msg = error.code;
+
+            switch (msg) {
+                case 'auth/invalid-credential':
+                    msg = 'invalidCredentials';
+                    break;
+                case 'auth/user-disabled':
+                    msg = 'userDisabled';
+                    break;
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+                case 'auth/too-many-requests':
+                    msg = 'tooManyRequests';
+                    break;
+                case 'auth/weak-password':
+                    msg = 'tooWeakPassword';
+                    break;
+                case 'auth/internal-error':
+                    msg = 'internalError';
+                    break;
+                case 'auth/wrong-password':
+                    msg = 'wrongPassword';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+
+            return { success: false, msg };
+        }
+    }
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -440,7 +488,8 @@ export const AuthContextProvider = ({children}) => {
             sendResetPasswordEmail,
             resetPassword,
             getUserData,
-            saveUserData
+            saveUserData,
+            changePassword
         }}>
             {children}
         </AuthContext.Provider>

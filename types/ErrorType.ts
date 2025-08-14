@@ -14,4 +14,7 @@ export type ErrorType =
     'registrationNotAllowed' |
     'profilePermissionDenied' |
     'userDocumentNotFound' |
+    'wrongPassword' |
+    'internalError' |
+    'samePasswords' |
     null;
