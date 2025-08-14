@@ -12,14 +12,7 @@ export default function SettingsLayout() {
             <Stack.Screen
                 name="edit"
                 options={{
-                    headerShown: true,
-                    header: () => (
-                        <EditProfileSettingsHeader
-                            title="Edit Profile"
-                            description="Update your personal information"
-                            isSaveButtonVisible={true}
-                        />
-                    )
+                    headerShown: false
                 }}
             />
             <Stack.Screen 
