@@ -133,27 +133,27 @@ export default function ChangePasswordSettings() {
                         onShowPasswordPress={() => setIsConfirmNewPasswordSecure(prev => !prev)}
                     />
 
-                    <View className="flex-row items-center justify-between gap-x-12 mt-4">
-                        {/* Cancel button */}
-                        <TouchableOpacity
-                            className={"flex-1 bg-white items-center justify-center rounded-md border border-gray-200"}
-                            style={{
-                                height: Platform.OS === 'web' ? 40 : 30
-                            }}
-                            onPress={() => router.back()}
-                        >
-                            <Text className={"text-black font-medium text-[16px]"}>
-                                Cancel
-                            </Text>
-                        </TouchableOpacity>
-
-                        {isLoading ? (
-                            // Show activity indicator while waiting for password update
-                            <View className={"items-center justify-center"}>
-                                <ActivityIndicator size={50} />
-                            </View>
-                        ) : (
-                            // Update password button
+                    {isLoading ? (
+                        // Show activity indicator while waiting for password update
+                        <View className={"items-center justify-center"}>
+                            <ActivityIndicator size={50} />
+                        </View>
+                    ) : (
+                        <View className="flex-row items-center justify-between gap-x-12 mt-4">
+                            {/* Cancel button */ }
+                            <TouchableOpacity
+                                className={"flex-1 bg-white items-center justify-center rounded-md border border-gray-200"}
+                                style={{
+                                    height: Platform.OS === 'web' ? 40 : 30
+                                }}
+                                onPress={() => router.back()}
+                            >
+                                <Text className={"text-black font-medium text-[16px]"}>
+                                    Cancel
+                                </Text>
+                            </TouchableOpacity>
+                            
+                            {/* Update password button */}
                             <TouchableOpacity
                                 className={"flex-1 bg-black items-center justify-center rounded-md gap-x-2"}
                                 style={{
@@ -168,9 +168,8 @@ export default function ChangePasswordSettings() {
                                     </Text>
                                 </View>
                             </TouchableOpacity>
-                        )}
-                        
-                    </View>
+                        </View>
+                    )}
                     
                 </View>
             </View>
