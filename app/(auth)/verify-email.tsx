@@ -1,12 +1,13 @@
-import React, {useState} from "react";
-import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
-import {router} from "expo-router";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import ActivityIndicator from "@/components/ActivityIndicator";
-import {useAuth} from "@/context/authContext";
-import {ErrorType} from "@/types/ErrorType";
 import AuthErrorBox from "@/components/AuthErrorBox";
+import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import Text from "@/components/Text";
+import { useAuth } from "@/context/authContext";
+import { ErrorType } from "@/types/ErrorType";
+import { router } from "expo-router";
+import { CheckCircle } from "lucide-react-native";
+import React, { useState } from "react";
+import { Image, Platform, TouchableOpacity, View } from "react-native";
 
 
 export default function VerifyEmail() {
@@ -34,16 +35,16 @@ export default function VerifyEmail() {
                     source={require('../../assets/icon.png')}
                     className={"mb-2"}
                     style={{
-                        height: 72,
-                        width: 72
+                        height: 64,
+                        width: 64
                     }}
                 />
-                <Text className={"font-bold text-2xl mb-1"}>Verify Your Email</Text>
+                <Text weight="bold" className={"text-2xl mb-1"}>Verify Your Email</Text>
                 <Text className={"text-gray-600 text-[18px] mb-8"}>We&#39;ve sent a verification link to your email</Text>
                 <View
                     className={"bg-white p-6 rounded-md shadow-md w-full mx-auto mt-2"}
                     style={{
-                        maxWidth: Platform.OS === 'web' ? 420 : 320
+                        maxWidth: Platform.OS === 'web' ? 460 : 320
                     }}
                 >
                     {
@@ -58,8 +59,8 @@ export default function VerifyEmail() {
                                 errorType={errorType}
                             />
                         )}
-                        <MaterialIcons className={"mt-5"} name={'check-circle-outline'} size={72} color={'#22C55E'} />
-                        <Text className={"text-center text-lg font-semibold mb-3"}>
+                        <CheckCircle size={64} color={'#22C55E'} style={{ marginBottom: 16 }} />
+                        <Text weight="semibold" className={"text-center text-lg mb-3"}>
                             Check your inbox
                         </Text>
                         <Text className={"text-center text-[15px] text-gray-600 mx-3"}>
@@ -82,7 +83,7 @@ export default function VerifyEmail() {
                             }}
                             onPress={handleSendVerificationEmail}
                         >
-                            <Text className={"text-black font-medium text-[16px]"}>Resend Email</Text>
+                            <Text weight="medium" className={"text-black text-[14px]"}>Resend Email</Text>
                         </TouchableOpacity>
                     )}
 
@@ -96,7 +97,7 @@ export default function VerifyEmail() {
                             height: Platform.OS === 'web' ? 40 : 40
                         }}
                     >
-                        <Text className={"text-white font-medium text-[16px]"}>Back to Sign In</Text>
+                        <Text weight="medium" className={"text-white text-[14px]"}>Back to Sign In</Text>
                     </TouchableOpacity>
 
                     {
@@ -107,7 +108,7 @@ export default function VerifyEmail() {
                     {
                         // Instruction text
                     }
-                    <Text className={"text-center text-xs text-gray-600"}>
+                    <Text className={"text-center text-xs text-gray-500"}>
                         Didn&#39;t receive the email? Check your spam folder or contact support.
                     </Text>
                 </View>

@@ -2,12 +2,13 @@ import ActivityIndicator from "@/components/ActivityIndicator";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import AuthInput from "@/components/AuthInput";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
 import { ErrorType } from "@/types/ErrorType";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
 
 export default function ForgotPassword() {
@@ -56,7 +57,7 @@ export default function ForgotPassword() {
                         width: 72
                     }}
                 />
-                <Text className={"font-bold text-2xl mb-1"}>Check Your Email</Text>
+                <Text weight="bold" className={"text-2xl mb-1"}>Check Your Email</Text>
                 <Text className={"text-center text-gray-600 text-[19px] mb-8"}>We&#39;ve sent a password reset link to {email}</Text>
                 <View
                     className={"bg-white p-6 rounded-md shadow-md w-full mx-auto mt-2"}
@@ -91,7 +92,7 @@ export default function ForgotPassword() {
                         }}
                         onPress={() => setIsSent(false)}
                     >
-                        <Text className={"text-black font-medium text-[16px]"}>
+                        <Text weight="medium" className={"text-black text-[16px]"}>
                             Try Different Email
                         </Text>
                     </TouchableOpacity>
@@ -106,7 +107,7 @@ export default function ForgotPassword() {
                             height: Platform.OS === 'web' ? 40 : 40
                         }}
                     >
-                        <Text className={"text-white font-medium text-[16px]"}>
+                        <Text weight="medium" className={"text-white text-[16px]"}>
                             Back to Sign In
                         </Text>
                     </TouchableOpacity>
@@ -115,23 +116,30 @@ export default function ForgotPassword() {
         </ScrollView>
     ) : (
         <KeyboardAvoidingContainer>
-            <View className={"flex-1 items-starts justify-center"}>
-                <View className={"flex-row items-center mx-auto"}>
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
-                    </TouchableOpacity>
-                    <Image
-                        source={require('../../assets/icon.png')}
-                        className={"mb-2 ml-4 mr-1"}
-                        style={{
-                            height: 42,
-                            width: 42
-                        }}
-                    />
-                    <Text className={"font-bold text-xl"}>FlashMaster</Text>
+            <View className={"flex-1 justify-center"}>
+                <View
+                    className={"w-full mx-auto px-2"}
+                    style={{
+                        maxWidth: Platform.OS === 'web' ? 500 : 370
+                    }}
+                >
+                    <View className={"flex-row items-center self-start"} >
+                        <TouchableOpacity onPress={() => router.back()}>
+                            <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
+                        </TouchableOpacity>
+                        <Image
+                            source={require('../../assets/icon.png')}
+                            className={"mb-2 ml-4 mr-1"}
+                            style={{
+                                height: 42,
+                                width: 42
+                            }}
+                        />
+                        <Text weight="bold" className={"text-xl"}>FlashMaster</Text>
+                    </View>
                 </View>
                 <View className={"items-center"}>
-                    <Text className={"font-bold text-3xl mb-3"}>Forgot Password?</Text>
+                    <Text weight="bold" className={"text-3xl mb-2 mt-8"}>Forgot Password?</Text>
                     <Text className={"text-gray-600 text-xl mb-8"}>Enter your email to reset your password</Text>
                 </View>
                 <View
@@ -175,7 +183,7 @@ export default function ForgotPassword() {
                             }}
                             onPress={() => handlePasswordReset(email)}
                         >
-                            <Text className={"text-white font-medium text-[16px]"}>Send Reset Link</Text>
+                            <Text weight="medium" className={"text-white text-[16px]"}>Send Reset Link</Text>
                         </TouchableOpacity>
                     )}
 
@@ -189,7 +197,7 @@ export default function ForgotPassword() {
                         <TouchableOpacity
                             onPress={() => router.push('/login')}
                         >
-                            <Text className={"text-blue-500 font-semibold ml-1"}>
+                            <Text weight="semibold" className={"text-blue-600 ml-1"}>
                                 Sign in
                             </Text>
                         </TouchableOpacity>

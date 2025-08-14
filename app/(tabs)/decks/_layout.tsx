@@ -1,5 +1,5 @@
+import { Stack } from 'expo-router';
 import React from 'react';
-import {Stack} from 'expo-router';
 
 export default function DecksLayout() {
     return (
@@ -13,7 +13,7 @@ export default function DecksLayout() {
             <Stack.Screen
                 name="new/index"
                 options={{
-                    headerShown: false
+                    headerShown: true
                 }}
             />
         </Stack>

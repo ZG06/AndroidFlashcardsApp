@@ -1,10 +1,12 @@
 import EditProfileSettingsHeader from "@/components/EditProfileSettingsHeader";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
+import Text from "@/components/Text";
+import TextInput from "@/components/TextInput";
 import { useAuth } from "@/context/authContext";
 import { auth } from "@/firebaseConfig";
 import { pickImageFromLibrary } from "@/utils/imagePicker";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
+import { Save, User, X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -12,8 +14,6 @@ import {
     Image,
     Platform,
     ScrollView,
-    Text,
-    TextInput,
     TouchableOpacity,
     View
 } from "react-native";
@@ -180,11 +180,11 @@ export default function EditProfileSettings() {
                     // Profile picture block
                 }
                 <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6 gap-y-6"}>
-                    <Text className={"text-[24px] font-bold"}>
+                    <Text weight="bold" className={"text-[24px]"}>
                         Profile Picture
                     </Text>
                     <View className={"flex-row"}>
-                        <View className={"items-center justify-center rounded-full size-16 mr-2"} style={{backgroundColor: '#dbeaff'}}>
+                        <View className={"items-center justify-center rounded-full size-20 mr-2"} style={{backgroundColor: '#dbeaff'}}>
 
                             {
                                 // User profile picture
@@ -195,20 +195,20 @@ export default function EditProfileSettings() {
                                 <Image
                                     source={{uri: profilePicture}}
                                     style={{
-                                        height: 60,
-                                        width: 60,
-                                        borderRadius: 30,
+                                        height: 74,
+                                        width: 74,
+                                        borderRadius: 37,
                                         resizeMode: 'cover',
                                     }}
                                 />
                             ) : (
-                                <MaterialIcons name={'person'} size={38} color={'#2863e9'} />
+                                <User size={40} color={'#2863e9'} />
                             )}
 
                         </View>
                         <View className={"justify-center"}>
                             <View className={""}>
-                                <Text className={"text-lg font-semibold"}>
+                                <Text weight="semibold" className={"text-lg"}>
                                     Change Profile Picture
                                 </Text>
                                 <Text
@@ -226,10 +226,7 @@ export default function EditProfileSettings() {
                                     }
                                     <TouchableOpacity className={"border rounded-md border-gray-300 px-2.5 py-2"}>
                                         <Text
-                                            className={"font-semibold"}
-                                            style={{
-
-                                            }}
+                                            weight="medium"
                                             onPress={onChooseImage}
                                         >
                                             Upload Photo
@@ -241,7 +238,7 @@ export default function EditProfileSettings() {
                                     }
                                     <TouchableOpacity className={"border rounded-md border-gray-300 px-2.5 py-2"}>
                                         <Text
-                                            className={"font-semibold"}
+                                            weight="medium"
                                             style={{
 
                                             }}
@@ -260,7 +257,7 @@ export default function EditProfileSettings() {
                     // Personal information block
                 }
                 <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6 gap-y-6"}>
-                    <Text className={"text-[24px] font-bold"}>
+                    <Text weight="semibold" className={"text-[24px]"}>
                         Personal Information
                     </Text>
 
@@ -292,11 +289,11 @@ export default function EditProfileSettings() {
                         // Bio input
                     }
                     <View>
-                        <Text className={"font-medium mb-3"}>
+                        <Text weight="medium" className={"mb-3 text-gray-700"}>
                             Bio
                         </Text>
                         <TextInput
-                            className={"font-semibold border-gray-200 border rounded-md min-h-20 p-3 mb-1"}
+                            className={"border-gray-200 border rounded-md min-h-20 p-3 mb-1"}
                             multiline={true}
                             maxLength={200}
                             value={bioText}
@@ -304,7 +301,7 @@ export default function EditProfileSettings() {
                             placeholder={"Tell us about yourself..."}
                             placeholderTextColor={"gray"}
                         />
-                        <Text className={"text-gray-400"}>
+                        <Text className={"text-gray-500 text-[13px] mt-1"}>
                             {bioText.length}/200 characters
                         </Text>
                     </View>
@@ -334,7 +331,7 @@ export default function EditProfileSettings() {
                     // Account Settings
                 }
                 <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6 gap-y-6"}>
-                    <Text className={"text-[24px] font-bold"}>
+                    <Text weight="semibold" className={"text-[24px]"}>
                         Account Settings
                     </Text>
 
@@ -342,9 +339,9 @@ export default function EditProfileSettings() {
                         // Change password
                     }
                     <View className={"flex-1 flex-row justify-between items-center rounded-md bg-gray-100 p-3.5"}>
-                        <View className={""}>
+                        <View>
                             <Text
-                                className={"font-bold"}
+                                weight={"medium"}
                                 style={{
                                     fontSize: Platform.OS === 'web' ? 16 : 14
                                 }}
@@ -364,7 +361,7 @@ export default function EditProfileSettings() {
                             className={"border border-gray-300 bg-white rounded-md p-2.5"}
                             onPress={() => router.push('/settings/change-password')}
                         >
-                            <Text className={"font-medium"}>
+                            <Text weight="medium">
                                 Change
                             </Text>
                         </TouchableOpacity>
@@ -374,9 +371,9 @@ export default function EditProfileSettings() {
                         // Two-Factor authentication
                     }
                     <View className={"flex-1 flex-row justify-between items-center rounded-md bg-gray-100 p-3.5"}>
-                        <View className={""}>
+                        <View>
                             <Text
-                                className={"font-bold"}
+                                weight="medium"
                                 style={{
                                     fontSize: Platform.OS === 'web' ? 16 : 14
                                 }}
@@ -395,7 +392,7 @@ export default function EditProfileSettings() {
                         <TouchableOpacity
                             className={"border border-gray-300 bg-white rounded-md p-2.5"}
                         >
-                            <Text className={"font-medium"}>
+                            <Text weight="medium">
                                 Enable
                             </Text>
                         </TouchableOpacity>
@@ -407,7 +404,8 @@ export default function EditProfileSettings() {
                     <View className={"flex-1 flex-row justify-between items-center rounded-md border border-red-300 bg-red-50 p-3.5"}>
                         <View className={""}>
                             <Text
-                                className={"font-bold"}
+                                weight="medium"
+                                className="text-red-900"
                                 style={{
                                     fontSize: Platform.OS === 'web' ? 16 : 14
                                 }}
@@ -415,9 +413,10 @@ export default function EditProfileSettings() {
                                 Delete Account
                             </Text>
                             <Text
-                                className={"color-red-600 font-medium leading-8"}
+                                className={"color-red-600"}
                                 style={{
-                                    fontSize: Platform.OS === 'web' ? 14 : 12
+                                    fontSize: Platform.OS === 'web' ? 14 : 12,
+                                    maxWidth: Platform.OS === 'android' ? 200 : undefined
                                 }}
                             >
                                 Permanently delete your account and data
@@ -427,7 +426,7 @@ export default function EditProfileSettings() {
                             className={"border border-red-300 rounded-md p-2.5"}
                             onPress={confirmDeleteAccount}
                         >
-                            <Text className={"color-red-600 font-medium"}>
+                            <Text weight="medium" className={"color-red-600"}>
                                 Delete
                             </Text>
                         </TouchableOpacity>
@@ -446,7 +445,7 @@ export default function EditProfileSettings() {
                         className={"flex-1 flex-row items-center justify-center gap-x-2 bg-white h-10 w-[120px] rounded-md px-3"}
                         onPress={() => router.push('settings')}
                     >
-                        <MaterialIcons name={"close"} color={"black"} size={15}/>
+                        <X color="black" size={16}/>
                         <Text>Cancel</Text>
                     </TouchableOpacity>
 
@@ -457,8 +456,8 @@ export default function EditProfileSettings() {
                         className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
                         onPress={handleSaveProfileData}
                     >
-                        <MaterialIcons name={"save"} color={"white"} size={15}/>
-                        <Text className={"text-white font-semibold text-[13px]"}>Save Changes</Text>
+                        <Save color="white" size={16}/>
+                        <Text weight="semibold" className={"text-white text-[14px]"}>Save Changes</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

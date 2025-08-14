@@ -1,12 +1,13 @@
-import React, {useState} from "react";
-import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
-import AuthInput from "@/components/AuthInput";
-import {router} from "expo-router";
-import AuthErrorBox from "@/components/AuthErrorBox";
-import {ErrorType} from "@/types/ErrorType";
-import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import ActivityIndicator from "@/components/ActivityIndicator";
-import {useAuth} from "@/context/authContext";
+import AuthErrorBox from "@/components/AuthErrorBox";
+import AuthInput from "@/components/AuthInput";
+import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import Text from "@/components/Text";
+import { useAuth } from "@/context/authContext";
+import { ErrorType } from "@/types/ErrorType";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import { Image, Platform, TouchableOpacity, View } from "react-native";
 
 
 export default function Login() {
@@ -53,12 +54,12 @@ export default function Login() {
                     source={require('../../assets/icon.png')}
                     className={"mb-2"}
                     style={{
-                        height: 96,
-                        width: 96
+                        height: 80,
+                        width: 80
                     }}
                 />
-                <Text className={"font-bold text-3xl mb-3"}>Welcome Back</Text>
-                <Text className={"text-gray-600 text-xl mb-8"}>Sign in to your FlashMaster account</Text>
+                <Text weight="bold" className={"text-3xl mb-3"}>Welcome Back</Text>
+                <Text className={"text-gray-600 text-xl mb-8"}>Sign in to your account</Text>
                 <View
                     className={"bg-white p-6 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2"}
                     style={{
@@ -104,7 +105,7 @@ export default function Login() {
                     <TouchableOpacity
                         onPress={() => router.push('/forgot-password')}
                     >
-                        <Text className={"text-blue-500"}>Forgot password?</Text>
+                        <Text className={"text-end text-blue-600"}>Forgot password?</Text>
                     </TouchableOpacity>
 
                     {
@@ -122,7 +123,7 @@ export default function Login() {
                             }}
                             onPress={() => handleSignIn(email, password)}
                         >
-                            <Text className={"text-white font-medium text-lg"}>
+                            <Text weight="medium" className={"text-white text-lg"}>
                                 Sign In
                             </Text>
                         </TouchableOpacity>
@@ -132,13 +133,13 @@ export default function Login() {
                         // Create account button
                     }
                     <View className={"flex-row justify-center"}>
-                        <Text>
+                        <Text className="text-gray-600">
                             Don&#39;t have an account?
                         </Text>
                         <TouchableOpacity
                             onPress={() => router.push('/register')}
                         >
-                            <Text className={"text-blue-500 font-semibold ml-1"}>
+                            <Text weight="semibold" className={"text-blue-600 ml-1"}>
                                 Create account
                             </Text>
                         </TouchableOpacity>

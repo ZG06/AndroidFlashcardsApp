@@ -1,6 +1,8 @@
-import {Text, TextInput, TouchableOpacity, View} from "react-native";
-import React, {useState} from "react";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Text from "@/components/Text";
+import TextInput from '@/components/TextInput';
+import { Eye, EyeOff, Trash2 } from "lucide-react-native";
+import React, { useState } from "react";
+import { TouchableOpacity, View } from "react-native";
 
 export function NewFlashcard({
      index = 1,
@@ -30,7 +32,7 @@ export function NewFlashcard({
             {isFlipped ? (
                 <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
                     <View className={"flex-row justify-between mb-5"}>
-                        <Text className={"font-semibold text-[16px]"}>Card {index}</Text>
+                        <Text weight="semibold" className={"= text-[16px]"}>Card {index}</Text>
                         <View className={"flex-row items-center gap-x-3"}>
                             {
                                 // Preview icon
@@ -40,9 +42,9 @@ export function NewFlashcard({
                                 onPress={togglePreview}
                             >
                                 {isFlipped ? (
-                                    <MaterialIcons name='visibility-off' size={18} color="black"/>
+                                    <EyeOff size={16} color="black"/>
                                 ) : (
-                                    <MaterialIcons name='visibility' size={18} color="black"/>
+                                    <Eye size={16} color="black"/>
                                 )}
                                 <Text className={"text-sm"}>Preview</Text>
                             </TouchableOpacity>
@@ -54,7 +56,7 @@ export function NewFlashcard({
                                     className={"hover:bg-gray-100 hover:rounded-md h-6 w-8 items-center"}
                                     onPress={onDelete}
                                 >
-                                    <MaterialIcons name={"delete"} size={18} color={"red"}/>
+                                    <Trash2 size={18} color="red"/>
                                 </TouchableOpacity>
                             )}
                         </View>
@@ -67,10 +69,10 @@ export function NewFlashcard({
                                 onPress={() => setIsPreviewFront(false)}
                             >
                                 <View className={"items-center"}>
-                                    <Text className={"text-center mb-2 text-gray-500"}>
+                                    <Text className={"text-center text-xs mb-2 text-gray-500"}>
                                         QUESTION
                                     </Text>
-                                    <Text className={"text-center text-sm font-semibold"}>
+                                    <Text weight="semibold" className={"text-center text-gray-900 text-sm"}>
                                         { frontValue || 'Front side content...'}
                                     </Text>
                                 </View>
@@ -88,7 +90,7 @@ export function NewFlashcard({
                                     <Text className={"text-center mb-2 text-gray-500"}>
                                         ANSWER
                                     </Text>
-                                    <Text className={"text-center text-sm font-semibold"}>
+                                    <Text weight="semibold" className={"text-center text-sm"}>
                                         { backValue || 'Back side content...'}
                                     </Text>
                                 </View>
@@ -100,7 +102,7 @@ export function NewFlashcard({
             ) : (
                 <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
                     <View className={"flex-row justify-between mb-5"}>
-                        <Text className={"font-semibold text-[16px]"}>Card {index}</Text>
+                        <Text weight="semibold" className={"text-[16px]"}>Card {index}</Text>
                         <View className={"flex-row items-center gap-x-3"}>
                             {
                                 // Preview icon
@@ -110,11 +112,11 @@ export function NewFlashcard({
                                 onPress={togglePreview}
                             >
                                 {isFlipped ? (
-                                    <MaterialIcons name='visibility-off' size={18} color="black"/>
+                                    <EyeOff size={16} color="black"/>
                                 ) : (
-                                    <MaterialIcons name='visibility' size={18} color="black"/>
+                                    <Eye size={16} color="black"/>
                                 )}
-                                <Text className={"text-sm"}>Preview</Text>
+                                <Text weight="medium" className={"text-sm"}>Preview</Text>
                             </TouchableOpacity>
                             {
                                 // Delete icon
@@ -124,7 +126,7 @@ export function NewFlashcard({
                                     className={"hover:bg-gray-100 hover:rounded-md h-6 w-8 items-center"}
                                     onPress={onDelete}
                                 >
-                                    <MaterialIcons name={"delete"} size={18} color={"red"}/>
+                                    <Trash2 size={16} color="red"/>
                                 </TouchableOpacity>
                             )}
                         </View>
@@ -133,26 +135,28 @@ export function NewFlashcard({
                         // Deck question
                     }
                     <View className={"mb-5"}>
-                        <Text className={"mb-1.5"}>Front (Question)</Text>
+                        <Text weight="medium" className={"mb-1.5 text-gray-700"}>Front (Question)</Text>
                         <TextInput
                             multiline={true}
                             value={frontValue}
                             onChangeText={onFrontChange}
                             className={"border-gray-200 border rounded-md px-3 min-h-[70px] pt-2.5"}
                             placeholder={"Enter the question or prompt..."}
+                            placeholderTextColor={"#6B7280"}
                         />
                     </View>
                     <View>
                         {
                             // Deck answer
                         }
-                        <Text className={"mb-1.5"}>Back (Answer)</Text>
+                        <Text weight="medium" className={"mb-1.5 text-gray-700"}>Back (Answer)</Text>
                         <TextInput
                             multiline={true}
                             value={backValue}
                             onChangeText={onBackChange}
                             className={"border-gray-200 border rounded-md px-3 min-h-[70px] pt-2.5"}
                             placeholder={"Enter the answer or explanation..."}
+                            placeholderTextColor={"#6B7280"}
                         />
                     </View>
                 </View>

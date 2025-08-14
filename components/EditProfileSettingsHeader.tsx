@@ -1,14 +1,16 @@
+import Text from "@/components/Text";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useNavigation } from "expo-router";
+import { Save } from "lucide-react-native";
 import React from "react";
-import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 
 
 type Props = {
     title: string,
     description: string;
     isSaveButtonVisible: boolean;
-    onSave: () => void;
+    onSave?: () => void;
 }
 
 const EditProfileSettingsHeader = ({title, description, isSaveButtonVisible, onSave}: Props) => {
@@ -30,7 +32,8 @@ const EditProfileSettingsHeader = ({title, description, isSaveButtonVisible, onS
                     }
                     <View>
                         <Text
-                            className={"font-bold"}
+                            weight="bold"
+                            className="text-gray-900"
                             style={{
                                 fontSize: Platform.OS === 'web' ? 25 : 20
                             }}
@@ -51,15 +54,16 @@ const EditProfileSettingsHeader = ({title, description, isSaveButtonVisible, onS
                 {isSaveButtonVisible && (
                     // Save settings button
                     <TouchableOpacity
-                        className={"flex-row items-center justify-center gap-x-2 bg-black h-10 rounded-md"}
+                        className={"flex-row items-center justify-center gap-x-3 bg-black h-10 rounded-md"}
                         style={{
-                            paddingHorizontal: Platform.OS === 'web' ? 14 : 8
+                            paddingHorizontal: Platform.OS === 'web' ? 16 : 12
                         }}
                         onPress={onSave}
                     >
-                        <MaterialIcons name={"save"} color={"white"} size={Platform.OS === 'web' ? 22 : 16}/>
+                        <Save size={16} color={"white"}/>
                         <Text
-                            className={"text-white font-medium"}
+                            weight="medium"
+                            className={"text-white"}
                             style={{
                                 fontSize: Platform.OS === 'web' ? 16 : 14
                             }}
