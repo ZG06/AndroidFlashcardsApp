@@ -12,7 +12,27 @@ export default function SettingsLayout() {
             <Stack.Screen
                 name="edit"
                 options={{
-                    header: () => (<EditProfileSettingsHeader />)
+                    headerShown: true,
+                    header: () => (
+                        <EditProfileSettingsHeader
+                            title="Edit Profile"
+                            description="Update your personal information"
+                            isSaveButtonVisible={true}
+                        />
+                    )
+                }}
+            />
+            <Stack.Screen 
+                name="change-password/index"
+                options={{
+                    headerShown: true,
+                    header: () => (
+                        <EditProfileSettingsHeader
+                            title="Change Password"
+                            description="Update your account password"
+                            isSaveButtonVisible={false}
+                        />
+                    )
                 }}
             />
         </Stack>

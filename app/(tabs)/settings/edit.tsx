@@ -167,7 +167,6 @@ export default function EditProfileSettings() {
             style={{backgroundColor: '#E6EDFF'}}
             contentContainerStyle={{ paddingBottom: 60 }}
         >
-
             {
                 // Profile picture block
             }
@@ -354,6 +353,7 @@ export default function EditProfileSettings() {
                     </View>
                     <TouchableOpacity
                         className={"border border-gray-300 bg-white rounded-md p-2.5"}
+                        onPress={() => router.push('/settings/change-password')}
                     >
                         <Text className={"font-medium"}>
                             Change
