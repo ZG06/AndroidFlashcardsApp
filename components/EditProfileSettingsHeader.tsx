@@ -1,9 +1,16 @@
-import {useNavigation} from "expo-router";
-import {Platform, Text, TouchableOpacity, View} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useNavigation } from "expo-router";
 import React from "react";
+import { Platform, Text, TouchableOpacity, View } from "react-native";
 
-const EditProfileSettingsHeader = () => {
+
+type Props = {
+    title: string,
+    description: string;
+    isSaveButtonVisible: boolean;
+}
+
+const EditProfileSettingsHeader = ({title, description, isSaveButtonVisible}: Props) => {
     const navigation = useNavigation();
 
     return (
@@ -27,7 +34,7 @@ const EditProfileSettingsHeader = () => {
                                 fontSize: Platform.OS === 'web' ? 25 : 20
                             }}
                         >
-                            Edit Profile
+                            {title}
                         </Text>
                         <Text
                             className={"text-gray-600 leading-8"}
@@ -35,30 +42,30 @@ const EditProfileSettingsHeader = () => {
                                 fontSize: Platform.OS === 'web' ? 18 : 14
                             }}
                         >
-                            Update your personal information
+                            {description}
                         </Text>
                     </View>
                 </View>
 
-                {
+                {isSaveButtonVisible && (
                     // Save settings button
-                }
-                <TouchableOpacity
-                    className={"flex-row items-center justify-center gap-x-2 bg-black h-10 rounded-md"}
-                    style={{
-                        paddingHorizontal: Platform.OS === 'web' ? 14 : 8
-                    }}
-                >
-                    <MaterialIcons name={"save"} color={"white"} size={Platform.OS === 'web' ? 22 : 16}/>
-                    <Text
-                        className={"text-white font-medium"}
+                    <TouchableOpacity
+                        className={"flex-row items-center justify-center gap-x-2 bg-black h-10 rounded-md"}
                         style={{
-                            fontSize: Platform.OS === 'web' ? 16 : 14
+                            paddingHorizontal: Platform.OS === 'web' ? 14 : 8
                         }}
                     >
-                        Save
-                    </Text>
-                </TouchableOpacity>
+                        <MaterialIcons name={"save"} color={"white"} size={Platform.OS === 'web' ? 22 : 16}/>
+                        <Text
+                            className={"text-white font-medium"}
+                            style={{
+                                fontSize: Platform.OS === 'web' ? 16 : 14
+                            }}
+                        >
+                            Save
+                        </Text>
+                    </TouchableOpacity>
+                )}
             </View>
         </View>
     )
