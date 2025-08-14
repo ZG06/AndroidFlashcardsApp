@@ -1,6 +1,8 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Text from "@/components/Text";
+import TextInput from "@/components/TextInput";
+import { Mail, User } from "lucide-react-native";
 import React from 'react';
-import { Text, TextInput, View } from "react-native";
+import { View } from "react-native";
 
 
 type Props = {
@@ -15,14 +17,15 @@ type Props = {
 function EditProfileTextInput({title, placeholder, icon = '', required = false, value, onChangeText}: Props) {
     return (
         <View className={"gap-y-3"}>
-            <Text className={"font-medium"}>
+            <Text weight="medium" className="text-gray-700">
                 {title} {required && '*'}
             </Text>
             {icon ? (
                 <View className={"flex-row items-center border-gray-200 border rounded-md min-h-12 pl-3"}>
-                    <MaterialIcons name={icon as any} size={18} color={'gray'} />
+                    {icon === 'person' && <User size={18} color={'#9CA3AF'} style={{ marginRight: 10 }} />}
+                    {icon === 'email' && <Mail size={18} color={'#9CA3AF'} style={{ marginRight: 10 }} />}
                     <TextInput
-                        className={"flex-1 h-full px-2 font-semibold"}
+                        className={"flex-1 h-full px-2"}
                         placeholder={placeholder}
                         placeholderTextColor={"gray"}
                         value={value}
@@ -31,7 +34,7 @@ function EditProfileTextInput({title, placeholder, icon = '', required = false, 
                 </View>
             ) : (
                 <TextInput
-                    className={"font-semibold border-gray-200 border rounded-md min-h-12 px-3"}
+                    className={"border-gray-200 border rounded-md min-h-12 px-3"}
                     placeholder={placeholder}
                     placeholderTextColor={"gray"}
                     value={value}

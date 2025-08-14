@@ -1,12 +1,13 @@
-import React, {useState} from "react";
-import {Image, Platform, Text, TouchableOpacity, View} from "react-native";
-import AuthInput from "@/components/AuthInput";
-import {router} from "expo-router";
-import {ErrorType} from "@/types/ErrorType";
-import AuthErrorBox from "@/components/AuthErrorBox";
-import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
-import {useAuth} from "@/context/authContext";
 import ActivityIndicator from "@/components/ActivityIndicator";
+import AuthErrorBox from "@/components/AuthErrorBox";
+import AuthInput from "@/components/AuthInput";
+import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import Text from "@/components/Text";
+import { useAuth } from "@/context/authContext";
+import { ErrorType } from "@/types/ErrorType";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import { Image, Platform, TouchableOpacity, View } from "react-native";
 
 
 export default function Register() {
@@ -71,11 +72,11 @@ export default function Register() {
                     source={require('../../assets/icon.png')}
                     className={"mb-2"}
                     style={{
-                        height: 96,
-                        width: 96
+                        height: 84,
+                        width: 84
                     }}
                 />
-                <Text className={"font-bold text-3xl mb-3"}>Create Account</Text>
+                <Text weight="bold" className={" text-3xl mb-3"}>Create Account</Text>
                 <Text className={"text-gray-600 text-xl mb-8"}>Join FlashMaster today</Text>
                 <View
                     className={"bg-white p-6 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2"}
@@ -96,8 +97,8 @@ export default function Register() {
                         // Username input
                     }
                     <AuthInput
-                        label={"Login"}
-                        placeholder={"Enter your login"}
+                        label={"Username"}
+                        placeholder={"Enter your username"}
                         icon={"person"}
                         value={username}
                         onChangeText={setUsername}
@@ -157,7 +158,7 @@ export default function Register() {
                                 handleAccountCreate(username, email, password, confirmPassword);
                             }}
                         >
-                            <Text className={"text-white font-medium text-lg"}>
+                            <Text weight="medium" className={"text-white text-[15px]"}>
                                 Create Account
                             </Text>
                         </TouchableOpacity>
@@ -167,13 +168,13 @@ export default function Register() {
                         // Create account button
                     }
                     <View className={"flex-row justify-center"}>
-                        <Text>
+                        <Text className={"text-gray-600"}>
                             Already have an account?
                         </Text>
                         <TouchableOpacity
                             onPress={() => router.push('/login')}
                         >
-                            <Text className={"text-blue-500 font-semibold ml-1"}>
+                            <Text weight="semibold" className={"text-blue-600 ml-1"}>
                                 Sign in
                             </Text>
                         </TouchableOpacity>

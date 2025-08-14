@@ -1,6 +1,7 @@
+import Text from "@/components/Text";
+import { router } from "expo-router";
 import React from "react";
-import {Text, View, Image, TouchableOpacity, ScrollView, Platform} from "react-native";
-import {router} from "expo-router";
+import { Image, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
 
 export default function Index() {
@@ -11,13 +12,14 @@ export default function Index() {
         >
             <View className={"flex-1 items-center justify-center"}>
                 <Image
+                className="mb-3"
                     source={require('../../assets/icon.png')}
                     style={{
-                        height: 128,
-                        width: 128
+                        height: 96,
+                        width: 96
                     }}
                 />
-                <Text className={"font-bold text-4xl mb-3"}>FlashMaster</Text>
+                <Text weight="bold" className={"text-4xl mb-3"}>FlashMaster</Text>
                 <Text className={"text-gray-600 text-xl mb-8"}>Digital flashcards for learning</Text>
 
                 {
@@ -31,7 +33,7 @@ export default function Index() {
                     }}
                     onPress={() => router.push('/register')}
                 >
-                    <Text className={"text-white font-bold text-lg"}>Create Account</Text>
+                    <Text weight="medium" className={"text-white text-lg"}>Create Account</Text>
                 </TouchableOpacity>
 
                 {
@@ -45,9 +47,9 @@ export default function Index() {
                     }}
                     onPress={() => router.push('/login')}
                 >
-                    <Text className={"text-black font-bold text-lg"}>Sign In</Text>
+                    <Text weight="medium" className={"text-black text-lg"}>Sign In</Text>
                 </TouchableOpacity>
-                <Text className={"text-center text-gray-500 mt-8"}>
+                <Text className={"text-center text-xs text-gray-500 mt-8"}>
                     By continuing, you agree to our Terms of Service and Privacy Policy
                 </Text>
             </View>

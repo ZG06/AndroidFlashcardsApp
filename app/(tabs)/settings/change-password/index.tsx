@@ -2,12 +2,13 @@ import ActivityIndicator from "@/components/ActivityIndicator";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import AuthInput from "@/components/AuthInput";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
 import { ErrorType } from "@/types/ErrorType";
 import { router } from "expo-router";
 import { Lock, Save } from 'lucide-react-native';
 import { useState } from "react";
-import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, TouchableOpacity, View } from "react-native";
 
 export default function ChangePasswordSettings() {
     const [currentPassword, setCurrentPassword] = useState('');
@@ -78,12 +79,12 @@ export default function ChangePasswordSettings() {
                 <View
                     className={"bg-white p-6 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2"}
                     style={{
-                        maxWidth: Platform.OS === 'web' ? 500 : 370
+                        maxWidth: Platform.OS === 'web' ? 440 : 370
                     }}
                 >
                     <View className="flex-row items-center gap-x-2 mb-2">
                         <Lock size={20} color={"#2563eb"} />
-                        <Text className="text-2xl font-semibold">
+                        <Text weight="semibold" className="text-2xl">
                             Password Security
                         </Text>
                     </View>
@@ -139,7 +140,7 @@ export default function ChangePasswordSettings() {
                             <ActivityIndicator size={50} />
                         </View>
                     ) : (
-                        <View className="flex-row items-center justify-between gap-x-12 mt-4">
+                        <View className="flex-row items-center justify-between gap-x-4 mt-4">
                             {/* Cancel button */ }
                             <TouchableOpacity
                                 className={"flex-1 bg-white items-center justify-center rounded-md border border-gray-200"}
@@ -148,7 +149,7 @@ export default function ChangePasswordSettings() {
                                 }}
                                 onPress={() => router.back()}
                             >
-                                <Text className={"text-black font-medium text-[16px]"}>
+                                <Text weight="medium" className={"text-black text-[14px]"}>
                                     Cancel
                                 </Text>
                             </TouchableOpacity>
@@ -163,7 +164,7 @@ export default function ChangePasswordSettings() {
                             >
                                 <View className="flex-row items-center gap-x-2">
                                     <Save size={16} color={'white'} />
-                                    <Text className={`text-white font-medium ${Platform.OS === 'web' ? 'text-[16px]' : 'text-[14px]'}`}>
+                                    <Text weight="medium" className={"text-white text-[14px]"}>
                                         Update Password
                                     </Text>
                                 </View>

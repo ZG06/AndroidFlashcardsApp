@@ -1,17 +1,16 @@
-import { Text, View } from "react-native";
+import Text from "@/components/Text";
+import { View } from "react-native";
 
-type HeaderProps = {
+type GeneralHeaderProps = {
     title: string;
     description: string;
 }
 
-const Header = ({title, description}: HeaderProps) => {
+export default function GeneralHeader({title, description}: GeneralHeaderProps) {
     return (
         <View className={"flex justify-center items-start h-[120px] px-4 bg-white"}>
-            <Text className={"text-[24px] font-bold"}>{title}</Text>
-            <Text className={"text-gray-500 font-medium text-lg"}>{description}</Text>
+            <Text weight="bold" className={"text-[24px]"}>{title}</Text>
+            <Text weight="medium" className={"text-gray-500 text-lg"}>{description}</Text>
         </View>
     )
 }
-
-export default Header;

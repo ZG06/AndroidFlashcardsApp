@@ -1,8 +1,9 @@
-import {ScrollView, Text, TouchableOpacity, View} from "react-native";
+import Text from "@/components/Text";
+import { router } from "expo-router";
+import { Play, Plus, TrendingUp } from "lucide-react-native";
 import React from "react";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import * as Progress from 'react-native-progress';
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {router} from "expo-router";
 
 export default function Index() {
     return (
@@ -10,15 +11,18 @@ export default function Index() {
             {
                 // Today's progress card
             }
-            <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
-                <Text className={"font-bold text-2xl mb-2"}>Today&#39;s Progress</Text>
+            <View className={"bg-white p-6 rounded-md justify-center shadow-sm shadow-gray-200 mb-6"}>
+                <View className={"flex-row items-center gap-x-2 mb-3"}>
+                    <TrendingUp size={20} color="#2563EB" />
+                    <Text weight="semibold" className={"text-2xl"}>Today&#39;s Progress</Text>
+                </View>
                 <View className={"flex-row justify-center gap-x-20 mb-5"}>
                     <View className={"items-center"}>
-                        <Text className={"text-blue-600 font-bold text-xl"}>47</Text>
+                        <Text weight="bold" className={"text-blue-600 text-xl"}>47</Text>
                         <Text className={"text-gray-500"}>Cards Studied</Text>
                     </View>
                     <View className={"items-center"}>
-                        <Text className={"text-green-600 font-bold text-xl"}>32m</Text>
+                        <Text weight="bold" className={"text-green-600 text-xl"}>32m</Text>
                         <Text className={"text-gray-500"}>Time Spent</Text>
                     </View>
                 </View>
@@ -38,9 +42,9 @@ export default function Index() {
                     // Quick study button
                 }
                 <TouchableOpacity className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}>
-                    <MaterialIcons name={"play-arrow"} color={"#2563eb"} size={38} />
-                    <Text className={"font-bold text-lg"}>Quick Study</Text>
-                    <Text className={"text-gray-500"}>Continue learning</Text>
+                    <Play color={"#2563eb"} size={32} style={{marginBottom: 10}} />
+                    <Text weight="bold" className={"text-lg"}>Quick Study</Text>
+                    <Text className={"text-gray-600"}>Continue learning</Text>
                 </TouchableOpacity>
                 {
                     // Create deck button
@@ -49,17 +53,17 @@ export default function Index() {
                     className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}
                     onPress={() => router.push('/decks/new')}
                 >
-                    <MaterialIcons name={"add"} color={'#16a34a'} size={38} />
-                    <Text className={"font-bold text-lg"}>Create deck</Text>
-                    <Text className={"text-gray-500"}>Add new cards</Text>
+                    <Plus color={'#16a34a'} size={32} style={{marginBottom: 10}}/>
+                    <Text weight="bold" className={"text-lg"}>Create deck</Text>
+                    <Text className={"text-gray-600"}>Add new cards</Text>
                 </TouchableOpacity>
             </View>
 
             <View>
                 <View className={"flex-row justify-between mb-20"}>
-                    <Text className={"font-bold text-xl"}>Recent Decks</Text>
+                    <Text weight="semibold" className={"text-xl"}>Recent Decks</Text>
                     <TouchableOpacity className={"h-7 w-20 hover:bg-gray-200 hover:rounded-md items-center"}>
-                        <Text className={"text-[16px]"}>View All</Text>
+                        <Text weight="medium" className={"text-[16px]"}>View All</Text>
                     </TouchableOpacity>
                 </View>
                 <View className={"justify-center items-center"}>

@@ -1,10 +1,13 @@
-import {ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
-import React, {useState} from "react";
-import {router, Stack, useNavigation} from "expo-router";
+import { NewFlashcard } from "@/components/NewFlashcard";
+import Text from "@/components/Text";
+import TextInput from '@/components/TextInput';
+import { FlashCard } from "@/types/FlashCard";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {NewFlashcard} from "@/components/NewFlashcard";
+import { router, Stack, useNavigation } from "expo-router";
+import { Save } from "lucide-react-native";
+import React, { useState } from "react";
+import { Platform, ScrollView, TouchableOpacity, View } from "react-native";
 import uuid from 'react-native-uuid';
-import {FlashCard} from "@/types/FlashCard";
 
 
 type HeaderProps = {
@@ -24,7 +27,7 @@ const NewDeckHeader = ({flashcardsLength, flashcards}: HeaderProps) => {
                         <MaterialIcons name={"arrow-back"} size={24} color={"black"} />
                     </TouchableOpacity>
                     <View>
-                        <Text className={"text-2xl font-bold"}>Create New Deck</Text>
+                        <Text weight="bold" className={"text-2xl"}>Create New Deck</Text>
                         <Text className={"text-gray-600"}>{filledFlashCards ? filledFlashCards.length : '0'} of {flashcardsLength} cards completed</Text>
                     </View>
                 </View>
@@ -32,10 +35,14 @@ const NewDeckHeader = ({flashcardsLength, flashcards}: HeaderProps) => {
                     // Save deck button
                 }
                 <TouchableOpacity
-                    className={"flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
+                    className={"flex-row items-center justify-center gap-x-2 bg-black rounded-md px-3"}
+                    style={{
+                        height: Platform.OS === 'web' ? 40 : 35,
+                        width: Platform.OS === 'web' ? 130 : 120
+                    }}
                 >
-                    <MaterialIcons name={"save"} color={"white"} size={15}/>
-                    <Text className={"text-white font-semibold text-[13px]"}>Save Deck</Text>
+                    <Save color={"white"} size={16}/>
+                    <Text weight="semibold" className={"text-white text-[15px]"}>Save Deck</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -81,7 +88,7 @@ export default function NewDeck() {
                     // Deck information block
                 }
                 <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
-                    <Text className={"font-semibold text-xl mb-5"}>Deck Information</Text>
+                    <Text weight="semibold" className={"text-xl mb-5"}>Deck Information</Text>
                     {
                         // Deck name
                     }
@@ -92,6 +99,7 @@ export default function NewDeck() {
                             value={deckName}
                             onChangeText={setDeckName}
                             placeholder={"e.g., Spanish vocabulary"}
+                            placeholderTextColor={"#6B7280"}
                         />
                     </View>
                     <View>
@@ -105,21 +113,26 @@ export default function NewDeck() {
                             value={deckDescription}
                             onChangeText={setDeckDescription}
                             placeholder={"Brief description of what this deck"}
+                            placeholderTextColor={"#6B7280"}
                         />
                     </View>
                 </View>
 
                 <View className={"flex-row justify-between w-full mb-6"}>
-                    <Text className={"text-[18px] font-bold mb-4"}>Flashcards</Text>
+                    <Text weight="bold" className={"text-[18px] mb-4"}>Flashcards</Text>
                     {
                         // Add card button
                     }
                     <TouchableOpacity
-                        className={"flex-row items-center justify-center gap-x-2 bg-black h-9 w-[110px] rounded-md px-3"}
+                        className={"flex-row items-center justify-center gap-x-2 bg-black rounded-md px-3"}
+                        style={{
+                            height: Platform.OS === 'web' ? 40 : 35,
+                            width: Platform.OS === 'web' ? 130 : 120
+                        }}
                         onPress={addFlashcard}
                     >
-                        <MaterialIcons name={"add"} color={"white"} size={15}/>
-                        <Text className={"text-white font-semibold text-[13px]"}>Add card</Text>
+                        <MaterialIcons name={"add"} color={"white"} size={16}/>
+                        <Text weight="medium" className={"text-white text-[16px]"}>Add card</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -159,7 +172,7 @@ export default function NewDeck() {
                         className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
                     >
                         <MaterialIcons name={"save"} color={"white"} size={15}/>
-                        <Text className={"text-white font-semibold text-[13px]"}>Save Deck</Text>
+                        <Text weight="semibold" className={"text-white text-[13px]"}>Save Deck</Text>
                     </TouchableOpacity>
                 </View>
             </View>

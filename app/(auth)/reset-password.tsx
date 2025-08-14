@@ -1,13 +1,14 @@
 import AuthErrorBox from "@/components/AuthErrorBox";
 import AuthInput from "@/components/AuthInput";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
+import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
 import { auth } from "@/firebaseConfig";
 import { ErrorType } from "@/types/ErrorType";
 import { router, useLocalSearchParams } from "expo-router";
 import { verifyPasswordResetCode } from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
     export default function ResetPassword() {
         const [newPassword, setNewPassword] = useState('');
@@ -63,11 +64,11 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity,
                         source={require('../../assets/icon.png')}
                         className={"mb-2"}
                         style={{
-                            height: 96,
-                            width: 96
+                            height: 84,
+                            width: 84
                         }}
                     />
-                    <Text className={"font-bold text-3xl mb-3"}>Reset Password</Text>
+                    <Text weight="bold" className={"text-3xl mb-3"}>Reset Password</Text>
                     <Text className={"text-gray-600 text-xl mb-8"}>Enter your new password</Text>
                     <View
                         className={"bg-white p-6 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2"}
@@ -125,7 +126,7 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity,
                                 }}
                                 onPress={() => handlePasswordReset(normalizedOobCode, newPassword)}
                             >
-                                <Text className={"text-white font-medium text-lg"}>
+                                <Text weight="medium" className={"text-white text-lg"}>
                                     Reset Password
                                 </Text>
                             </TouchableOpacity>
@@ -135,13 +136,13 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity,
                             // Sign In button
                         }
                         <View className={"flex-row justify-center"}>
-                            <Text>
+                            <Text className={"text-gray-600"}>
                                 Remember your password?
                             </Text>
                             <TouchableOpacity
                                 onPress={() => router.push('/login')}
                             >
-                                <Text className={"text-blue-500 font-semibold ml-1"}>
+                                <Text weight="semibold" className={"text-blue-600 ml-1"}>
                                     Sign in
                                 </Text>
                             </TouchableOpacity>
@@ -159,7 +160,7 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity,
                     <View
                         className={"bg-white p-6 rounded-md shadow-md w-full mx-auto mt-2"}
                         style={{
-                            maxWidth: Platform.OS === 'web' ? 420 : 320
+                            maxWidth: Platform.OS === 'web' ? 460 : 320
                         }}
                     >
                         {
@@ -174,10 +175,10 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity,
                                     errorType={errorType}
                                 />
                             )}
-                            <Text className={"font-bold text-red-600 text-xl mb-3"}>
+                            <Text weight="bold" className={" text-red-600 text-xl mb-3"}>
                                 Invalid Reset Link
                             </Text>
-                            <Text className={"text-center text-[16px] text-gray-600 mx-3"}>
+                            <Text className={"text-center text-[16px] text-gray-600 mx-3 mb-2"}>
                                 This password reset link is invalid or has expired.
                             </Text>
                         </View>
@@ -191,7 +192,7 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity,
                                 height: Platform.OS === 'web' ? 40 : 40
                             }}
                         >
-                            <Text className={"text-white font-medium text-[16px]"}>
+                            <Text weight="medium" className={"text-white text-[16px]"}>
                                 Request New Reset Link
                             </Text>
                         </TouchableOpacity>

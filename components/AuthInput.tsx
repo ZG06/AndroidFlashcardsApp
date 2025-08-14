@@ -1,12 +1,14 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Text from "@/components/Text";
+import TextInput from "@/components/TextInput";
+import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react-native';
 import React from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 
 type AuthProps = {
     label: string;
     placeholder: string;
-    icon: keyof typeof MaterialIcons.glyphMap;
+    icon: string;
     value: string;
     onChangeText: (text: string) => void;
     isPasswordSecure?: boolean;
@@ -17,16 +19,18 @@ const AuthInput = ({
    label,
    placeholder,
    icon,
-   value,
+   value, 
    onChangeText,
    onShowPasswordPress,
    isPasswordSecure
 }: AuthProps) => {
     return (
         <View>
-            <Text className={"text-gray-700 font-[500] mb-3"}>{label}</Text>
+            <Text weight="medium" className={"text-gray-700 mb-3"}>{label}</Text>
             <View className={`flex-row border-[0.5px] border-gray-300 rounded-lg items-center h-12 ${icon === 'lock' ? 'pr-1' : ''}`}>
-                <MaterialIcons name={icon} size={18} color={"gray"} className={"ml-2"} />
+            {icon === 'email' && <Mail size={16} color={"#9CA3AF"} style={{ marginLeft: 10 }} />}
+            {icon === 'lock' && <Lock size={16} color={"#9CA3AF"} style={{ marginLeft: 10 }} />}
+            {icon === 'person' && <User size={16} color={"#9CA3AF"} style={{ marginLeft: 10 }} />}
                 <View className={"flex-1 flex-row justify-between items-center space-x-2 size-full"}>
                     <TextInput
                         className={"flex-1 ml-2 pl-2 pr-2 size-full"}
@@ -41,7 +45,11 @@ const AuthInput = ({
                             className={"items-center justify-center size-6"}
                             onPress={onShowPasswordPress}
                         >
-                            <MaterialIcons name={`${isPasswordSecure ? 'visibility-off' : 'visibility'}`} size={18} color={"gray"} className={"text-center"} />
+                            {isPasswordSecure ? (
+                                <EyeOff size={16} color={"gray"} />
+                            ) : (
+                                <Eye size={16} color={"gray"} />
+                            )}
                         </TouchableOpacity>
                     )}
                 </View>

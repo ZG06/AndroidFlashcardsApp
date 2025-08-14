@@ -1,16 +1,24 @@
 import GeneralHeader from "@/components/GeneralHeader";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
+import { Home, Library, Settings } from "lucide-react-native";
 import React from 'react';
 import { Text, View } from "react-native";
 
 
-const TabIcon = ({ focused, icon, title }) => {
+type Props = {
+    focused: boolean;
+    icon: string;
+    title: string;
+}
+
+const TabIcon = ({ focused, icon, title }: Props) => {
     const color = focused ? '#2563EB' : '#9CA3AF';
 
     return (
-        <View className={"justify-center items-center min-w-[100px]"}>
-            <MaterialIcons name={icon} color={color} size={24} />
+        <View className={"justify-center items-center min-w-[100px] gap-y-1"}>
+            {icon === 'home' && <Home size={24} color={color} />}
+            {icon === 'layers' && <Library size={24} color={color} />}
+            {icon === 'settings' && <Settings size={24} color={color} />}
             <Text className={focused ? "text-blue-600 font-medium" : "text-gray-400"} numberOfLines={1}>{title}</Text>
         </View>
     )
