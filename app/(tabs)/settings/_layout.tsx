@@ -23,7 +23,7 @@ export default function SettingsLayout() {
                 }}
             />
             <Stack.Screen 
-                name="change-password/index"
+                name="change-password"
                 options={{
                     headerShown: true,
                     header: () => (

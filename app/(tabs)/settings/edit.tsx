@@ -142,7 +142,7 @@ export default function EditProfileSettings() {
         getData();
     }, [isAuthReady, user])
     
-    const handleSave = async () => {
+    const handleSaveProfileData = async () => {
         if (!user) return;
 
         try {
@@ -446,7 +446,7 @@ export default function EditProfileSettings() {
                 }
                 <TouchableOpacity
                     className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
-                    onPress={handleSave}
+                    onPress={handleSaveProfileData}
                 >
                     <MaterialIcons name={"save"} color={"white"} size={15}/>
                     <Text className={"text-white font-semibold text-[13px]"}>Save Changes</Text>

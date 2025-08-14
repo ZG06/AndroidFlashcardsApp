@@ -1,6 +1,6 @@
-import {Text, View} from "react-native";
+import { ErrorType } from "@/types/ErrorType";
 import React from "react";
-import {ErrorType} from "@/types/ErrorType";
+import { Text, View } from "react-native";
 
 
 type AuthErrorBoxProps = {
@@ -30,6 +30,9 @@ const AuthErrorBox = ({errorType}: AuthErrorBoxProps) => {
                 {errorType === 'registrationNotAllowed' && 'Email/password registration is not enabled. Please contact support.'}
                 {errorType === 'profilePermissionDenied' && 'You don’t have permission to update this profile.'}
                 {errorType === 'userDocumentNotFound' && 'User profile not found. Please try again.'}
+                {errorType === 'wrongPassword' && 'The password is incorrect. Please try again.'}
+                {errorType === 'internalError' && 'An internal error occurred. Please try again later.'}
+                {errorType === 'samePasswords' && 'The new password is the same as the current password. Please try again.'}
             </Text>
         </View>
     );
