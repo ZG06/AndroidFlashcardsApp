@@ -346,14 +346,16 @@ export const AuthContextProvider = ({children}) => {
         }
     }
     
-    const getUserData = async (
-        setUsername,
-        setEmail,
-        setBio,
-        setLocation,
-        setWebsite,
-        setProfilePicture
-    ) => {
+    const getUserData = async (options = {}) => {
+        const {
+            setUsername = () => {},
+            setEmail = () => {},
+            setBio = () => {},
+            setLocation = () => {},
+            setWebsite = () => {},
+            setProfilePicture = () => {}
+        } = options;
+
         const userId = auth.currentUser?.uid;
         try {
             const userDoc = await getDoc(doc(db, 'users', userId));

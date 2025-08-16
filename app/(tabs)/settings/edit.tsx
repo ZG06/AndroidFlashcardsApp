@@ -24,7 +24,7 @@ export default function EditProfileSettings() {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [bioText, setBioText] = useState('');
+    const [bio, setBio] = useState('');
     const [location, setLocation] = useState('');
     const [website, setWebsite] = useState('');
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -124,14 +124,14 @@ export default function EditProfileSettings() {
         const getData = async () => {
             try {
                 setIsProfilePictureLoading(true);
-                await getUserData(
+                await getUserData({
                     setUsername,
                     setEmail,
-                    setBioText,
+                    setBio,
                     setLocation,
                     setWebsite,
                     setProfilePicture
-                );
+                });
                 
                 setIsProfilePictureLoading(false);
             } catch (error) {
@@ -150,7 +150,7 @@ export default function EditProfileSettings() {
             await saveUserData(
                 username,
                 email,
-                bioText,
+                bio,
                 location,
                 website,
                 profilePicture
@@ -296,13 +296,13 @@ export default function EditProfileSettings() {
                             className={"border-gray-200 border rounded-md min-h-20 p-3 mb-1"}
                             multiline={true}
                             maxLength={200}
-                            value={bioText}
-                            onChangeText={setBioText}
+                            value={bio}
+                            onChangeText={setBio}
                             placeholder={"Tell us about yourself..."}
                             placeholderTextColor={"gray"}
                         />
                         <Text className={"text-gray-500 text-[13px] mt-1"}>
-                            {bioText.length}/200 characters
+                            {bio.length}/200 characters
                         </Text>
                     </View>
 
