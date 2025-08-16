@@ -88,7 +88,7 @@ export default function NewDeck() {
         setIsLoading(true);
 
         try {
-            await createDeck(deckName);
+            await createDeck(deckName, deckDescription);
 
             router.replace('/decks');
             setIsLoading(false);
