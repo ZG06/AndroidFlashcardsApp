@@ -1,6 +1,8 @@
+import ActivityIndicator from "@/components/ActivityIndicator";
 import { NewFlashcard } from "@/components/NewFlashcard";
 import Text from "@/components/Text";
 import TextInput from '@/components/TextInput';
+import { createDeck } from "@/lib/decks";
 import { FlashCard } from "@/types/FlashCard";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, Stack, useNavigation } from "expo-router";
@@ -54,6 +56,8 @@ export default function NewDeck() {
     const [deckDescription, setDeckDescription] = useState('');
     const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [previewCard, setPreviewCard] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const addFlashcard = () => {
         const newCard: FlashCard = {
@@ -76,6 +80,24 @@ export default function NewDeck() {
         setPreviewCard(prev => (prev === id ? null : id));
     }
 
+    const handleDeckSave = async () => {
+        if (!deckName.trim()) {
+            setError('Provide a deck name');
+        }
+
+        setIsLoading(true);
+
+        try {
+            await createDeck(deckName);
+
+            router.replace('/decks');
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            console.error(error);
+        }
+    }
+
     return (
         <>
             <Stack.Screen
@@ -93,20 +115,28 @@ export default function NewDeck() {
                         // Deck name
                     }
                     <View className={"mb-4"}>
-                        <Text className={"mb-1.5"}>Deck Name *</Text>
+                        <Text weight="medium" className={"mb-1.5 text-gray-700"}>Deck Name *</Text>
                         <TextInput
                             className={"border-gray-200 border rounded-md min-h-12 px-3"}
                             value={deckName}
-                            onChangeText={setDeckName}
+                            onChangeText={(text) => {
+                                setDeckName(text);
+                                if (error) setError(null);
+                            }}
                             placeholder={"e.g., Spanish vocabulary"}
                             placeholderTextColor={"#6B7280"}
                         />
+                        {error && (
+                            <Text weight="medium" className="mt-1 text-xs text-red-600">
+                                {error}
+                            </Text>
+                        )}
                     </View>
                     <View>
                         {
                             // Deck description
                         }
-                        <Text className={"mb-1.5"}>Description</Text>
+                        <Text weight="medium" className={"mb-1.5 text-gray-700"}>Description</Text>
                         <TextInput
                             multiline={true}
                             className={"border-gray-200 border rounded-md px-3 min-h-[70px] pt-2.5"}
@@ -155,26 +185,32 @@ export default function NewDeck() {
 
             </ScrollView>
             <View className={"absolute bottom-8 left-6 right-6"}>
-                <View className={"flex-row gap-x-6"}>
-                    {
-                        // Cancel button
-                    }
-                    <TouchableOpacity
-                        className={"flex-1 items-center justify-center gap-x-2 bg-white h-10 w-[120px] rounded-md px-3"}
-                        onPress={() => router.push('decks')}
-                    >
-                        <Text>Cancel</Text>
-                    </TouchableOpacity>
-                    {
-                        // Save button
-                    }
-                    <TouchableOpacity
-                        className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
-                    >
-                        <MaterialIcons name={"save"} color={"white"} size={15}/>
-                        <Text weight="semibold" className={"text-white text-[13px]"}>Save Deck</Text>
-                    </TouchableOpacity>
-                </View>
+                {isLoading ? (
+                    <ActivityIndicator size={50} />
+                ) : (
+                    <View className={"flex-row gap-x-6"}>
+                        {
+                            // Cancel button
+                        }
+                        <TouchableOpacity
+                            className={"flex-1 items-center justify-center gap-x-2 bg-white h-10 w-[120px] rounded-md px-3"}
+                            onPress={() => router.push('decks')}
+                        >
+                            <Text>Cancel</Text>
+                        </TouchableOpacity>
+                        {
+                            // Save button
+                        }
+                        <TouchableOpacity
+                            className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
+                            disabled={isLoading}
+                            onPress={handleDeckSave}
+                        >
+                            <MaterialIcons name={"save"} color={"white"} size={15}/>
+                            <Text weight="semibold" className={"text-white text-[13px]"}>Save Deck</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
         </>
     );
