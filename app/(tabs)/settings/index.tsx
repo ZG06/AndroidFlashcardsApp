@@ -1,44 +1,53 @@
 import GeneralHeader from "@/components/GeneralHeader";
 import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
-import { router, useFocusEffect } from "expo-router";
+import { auth } from "@/firebaseConfig";
+import { router } from "expo-router";
 import { User } from "lucide-react-native";
-import React, { useCallback, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Image, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
 export default function Settings() {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [isAuthReady, setIsAuthReady] = useState(false);
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
     const [isProfilePictureLoading, setIsProfilePictureLoading] = useState(false);
 
-    const {logout, fetchProfilePicture} = useAuth();
+    const {user, logout, getUserData} = useAuth();
 
     const handleLogout = async () => {
         await logout();
     }
 
-    useFocusEffect(
-        useCallback(() => {
-            let isActive = true;
+    useEffect(() => {
+            const unsubscribe = auth.onAuthStateChanged((user) => {
+                setIsAuthReady(true);
+            });
+    
+            return () => unsubscribe();
+        }, []);
 
-            const loadProfilePicture = async () => {
+    useEffect(() => {
+        const getData = async () => {
+            if (!isAuthReady && !user) return;
+
+            try {
                 setIsProfilePictureLoading(true);
-                await fetchProfilePicture((url: string) => {
-                    if (isActive) {
-                        setProfilePicture(url);
-                    }
+                await getUserData({
+                    setUsername,
+                    setEmail,
+                    setProfilePicture
                 });
-                if (isActive) {
-                    setIsProfilePictureLoading(false);
-                }
-            };
 
-            loadProfilePicture();
-
-            return () => {
-                isActive = false;
+                setIsProfilePictureLoading(false);
+            } catch {
+                setIsProfilePictureLoading(false);
             }
-        }, [])
-    )
+        }
+
+        getData();
+    }, [isAuthReady, user])
 
     return (
         <View className={"flex-1"}>
@@ -98,10 +107,10 @@ export default function Settings() {
                             <View className={"justify-center"}>
                                 <View>
                                     <Text weight="semibold" className={"text-lg"}>
-                                        John Doe
+                                        {username}
                                     </Text>
-                                    <Text className={"text-gray-500 text-[16px]"}>
-                                        john.doe@example.com
+                                    <Text className={`text-gray-500 text-[16px] ${Platform.OS === 'android' && 'max-w-[170px]'}`}>
+                                        {email}
                                     </Text>
                                 </View>
                             </View>
