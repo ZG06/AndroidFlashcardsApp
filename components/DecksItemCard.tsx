@@ -5,13 +5,15 @@ import { Platform, TouchableOpacity, View } from 'react-native';
 
 
 type Props = {
+    deckId: string;
     deckName: string;
     deckDescription?: string;
+    onDelete: () => void;
 }
 
-const DecksItemCard = ({deckName, deckDescription}: Props) => {
+const DecksItemCard = ({deckId, deckName, deckDescription, onDelete}: Props) => {
     return (
-        <View className="bg-white p-3 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2">
+        <View className="bg-white p-4 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2">
             <View className="flex-row items-center justify-between">
                 <View className='gap-y-1'>
                     <Text weight="semibold" className={`${Platform.OS === 'web' ? 'text-[17px]' : 'text-[15px]'}`}>
@@ -25,6 +27,7 @@ const DecksItemCard = ({deckName, deckDescription}: Props) => {
                 </View>
                 <TouchableOpacity
                     className='items-center justify-center size-9 rounded-md hover:bg-gray-200'
+                    onPress={onDelete}
                 >
                     <Trash2 size={16} color="red" />
                 </TouchableOpacity>
