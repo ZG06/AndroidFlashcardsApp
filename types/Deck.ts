@@ -3,5 +3,6 @@ import { Timestamp } from "firebase/firestore";
 export interface Deck {
     id: string;
     name: string;
-    createdAt?: Timestamp
+    description?: string;
+    createdAt: Timestamp
 }

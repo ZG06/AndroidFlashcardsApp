@@ -1,4 +1,5 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
+import DecksItemCard from "@/components/DecksItemCard";
 import SearchBar from "@/components/SearchBar";
 import Text from "@/components/Text";
 import { auth, db } from "@/firebaseConfig";
@@ -33,6 +34,7 @@ export default function Decks() {
                 mapped.push({
                     id: doc.id,
                     name: data.name,
+                    description: data.description,
                     createdAt: data.createdAt
                 })
             });
@@ -71,17 +73,23 @@ export default function Decks() {
                 </View>
                 <SearchBar />
             </View>
-            <View className={"justify-center items-center mt-20"}>
+            <View className={"justify-center items-center mt-8"}>
                 {isLoading ? (
                     <ActivityIndicator size={50} />
                 ) : decks.length === 0 ? (
                     <Text className={"text-gray-500"}>No decks found.</Text>
                 ) : (
-                    decks.map((deck) => (
-                        <Text>
-                            {deck.name}
-                        </Text>
-                    ))
+                    <View
+                        className="w-full gap-y-2 p-6"
+                    >
+                        {decks.map((deck) => (
+                            <DecksItemCard
+                                key={deck.id}
+                                deckName={deck.name}
+                                deckDescription={deck.description}
+                            />
+                        ))}
+                    </View>
                 )}
             </View>
         </ScrollView>
