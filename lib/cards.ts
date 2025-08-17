@@ -1,4 +1,5 @@
 import { auth, db } from "@/firebaseConfig";
+import { FlashCard } from "@/types/FlashCard";
 import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
 
 export const saveCardsForDeck = async (deckId: string, cards: Array<{id: string; front: string; back: string}>) => {
@@ -25,6 +26,64 @@ export const saveCardsForDeck = async (deckId: string, cards: Array<{id: string;
             }
         }
     })
+
+    await batch.commit();
+}
+
+export const upsertAndDeleteCards = async (
+    deckId: string,
+    toCreate: Array<FlashCard>,
+    toUpdate: Array<FlashCard>,
+    toDeleteIds: Array<string>,
+) => {
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) return;
+
+    const batch = writeBatch(db);
+
+    toCreate.forEach((card) => {
+        const cardId = card.id;
+
+        try {
+            const docRef = doc(db, `users/${userId}/decks/${deckId}/cards/${cardId}`);
+
+            batch.set(docRef, {
+                front: card.front,
+                back: card.back,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    toUpdate.forEach((card) => {
+        const cardId = card.id;
+
+        try {
+            const docRef = doc(db, `users/${userId}/decks/${deckId}/cards/${cardId}`);
+
+            batch.set(docRef, {
+                front: card.front,
+                back: card.back,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    toDeleteIds.forEach((id) => {
+        try {
+            const docRef = doc(db, `users/${userId}/decks/${deckId}/cards/${id}`);
+
+            batch.delete(docRef);
+        } catch (error) {
+            console.error(error);
+        }
+    });
 
     await batch.commit();
 }
