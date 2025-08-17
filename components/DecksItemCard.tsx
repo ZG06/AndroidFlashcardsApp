@@ -1,20 +1,22 @@
 import Text from '@/components/Text';
 import { router } from 'expo-router';
-import { Edit, Trash2 } from 'lucide-react-native';
+import { BookOpen, Edit, Trash2 } from 'lucide-react-native';
 import React from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
+import * as Progress from 'react-native-progress';
 
 
 type Props = {
     deckId: string;
     deckName: string;
     deckDescription?: string;
+    cardsCount: number;
     onDelete: () => void;
 }
 
-const DecksItemCard = ({deckId, deckName, deckDescription, onDelete}: Props) => {
+const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, onDelete}: Props) => {
     return (
-        <View className="bg-white p-4 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2">
+        <View className="bg-white p-4 rounded-md shadow-md w-full mx-auto mt-2">
             <View className="flex-row items-center justify-between">
                 <View className='gap-y-1'>
                     <Text weight="semibold" className={`${Platform.OS === 'web' ? 'text-[17px]' : 'text-[15px]'}`}>
@@ -32,6 +34,21 @@ const DecksItemCard = ({deckId, deckName, deckDescription, onDelete}: Props) => 
                 >
                     <Trash2 size={16} color="red" />
                 </TouchableOpacity>
+            </View>
+            <View className="flex-row items-center gap-x-1 mt-3">
+                <BookOpen color={"#6B7280"} size={16} />
+                <Text className="text-gray-500">
+                    {cardsCount} cards
+                </Text>
+            </View>
+            <View className="gap-y-1 mb-3 mt-3">
+                <View className={"flex-row justify-between"}>
+                    <Text>Progress</Text>
+                    <Text>0/{cardsCount}</Text>
+                </View>
+                <View className={"w-full"}>
+                    <Progress.Bar progress={(0/cardsCount)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
+                </View>
             </View>
             <View className='flex-row items-center justify-center gap-x-2'>
                 <TouchableOpacity

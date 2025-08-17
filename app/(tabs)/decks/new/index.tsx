@@ -51,8 +51,10 @@ export default function NewDeck() {
         setIsLoading(true);
 
         try {
-            const deckId = await createDeck(deckName, deckDescription);
             const filteredFlashcards = flashcards.filter(card => (card.front.trim() && card.back.trim()));
+            const cardsCount = filteredFlashcards.length;
+
+            const deckId = await createDeck(deckName, cardsCount, deckDescription);
 
             await saveCardsForDeck(deckId as string, filteredFlashcards);
 

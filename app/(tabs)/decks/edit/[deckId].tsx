@@ -104,6 +104,8 @@ const EditDeck = () => {
         const toCreate = currentMeaningful.filter(card => !initialIds.has(card.id));
         const toUpdate = currentMeaningful.filter(card => initialIds.has(card.id));
 
+        const cardsCount = currentMeaningful.length;
+
         setIsLoading(true);
 
         try {
@@ -116,7 +118,8 @@ const EditDeck = () => {
 
             await updateDeck(deckId as string, {
                 name: deckName,
-                description: deckDescription
+                description: deckDescription,
+                cardsCount: cardsCount
             });
 
             router.replace('/decks');
