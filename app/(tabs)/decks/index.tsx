@@ -72,6 +72,7 @@ export default function Decks() {
                     id: doc.id,
                     name: data.name,
                     description: data.description,
+                    cardsCount: data.cardsCount,
                     createdAt: data.createdAt
                 })
             });
@@ -125,6 +126,7 @@ export default function Decks() {
                                 deckId={deck.id}
                                 deckName={deck.name}
                                 deckDescription={deck.description}
+                                cardsCount={deck.cardsCount}
                                 onDelete={() => confirmDeckDelete(deck.id)}
                             />
                         ))}

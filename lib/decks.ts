@@ -1,13 +1,14 @@
 import { auth, db } from "@/firebaseConfig";
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 
-export const createDeck = async (name: string, description?: string) => {
+export const createDeck = async (name: string, cardsCount: number, description?: string) => {
     const userId = auth.currentUser?.uid;
 
     try {
         const response = await addDoc(collection(db, `users/${userId}/decks`), {
             name,
             description,
+            cardsCount,
             createdAt: serverTimestamp()
         });
 
@@ -29,7 +30,14 @@ export const deleteDeck = async (deckId: string) => {
     }
 }
 
-export const updateDeck = async (deckId: string, data: {name?: string; description?: string}) => {
+export const updateDeck = async (
+    deckId: string,
+    data: {
+        name?: string;
+        description?: string;
+        cardsCount: number;
+    }
+) => {
     const userId = auth.currentUser?.uid;
     
     try {
@@ -38,6 +46,7 @@ export const updateDeck = async (deckId: string, data: {name?: string; descripti
         await updateDoc(decksRef, {
             name: data.name,
             description: data.description,
+            cardsCount: data.cardsCount,
             updatedAt: serverTimestamp()
         });
     } catch (error) {
