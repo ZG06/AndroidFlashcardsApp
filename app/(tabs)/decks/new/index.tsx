@@ -3,6 +3,7 @@ import DeckForm from "@/components/DeckForm";
 import DeckHeader from "@/components/DeckHeader";
 import { NewFlashcard } from "@/components/NewFlashcard";
 import Text from "@/components/Text";
+import { saveCardsForDeck } from "@/lib/cards";
 import { createDeck } from "@/lib/decks";
 import { FlashCard } from "@/types/FlashCard";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -50,7 +51,10 @@ export default function NewDeck() {
         setIsLoading(true);
 
         try {
-            await createDeck(deckName, deckDescription);
+            const deckId = await createDeck(deckName, deckDescription);
+            const filteredFlashcards = flashcards.filter(card => (card.front.trim() && card.back.trim()));
+
+            await saveCardsForDeck(deckId as string, filteredFlashcards);
 
             router.replace('/decks');
             setIsLoading(false);
