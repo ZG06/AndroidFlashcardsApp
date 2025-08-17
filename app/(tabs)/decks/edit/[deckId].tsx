@@ -25,6 +25,7 @@ const EditDeck = () => {
     const [deckDescription, setDeckDescription] = useState('');
     const [initialDeckDescription, setInitialDeckDescription] = useState('');
     const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
+    const [initialFlashcards, setInitialFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [previewCard, setPreviewCard] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -48,6 +49,41 @@ const EditDeck = () => {
 
     const togglePreview = (id: string) => {
         setPreviewCard(prev => (prev === id ? null : id));
+    }
+
+    const hasFlashcardChanges = (): boolean => {
+        const initialMeaningful = initialFlashcards.filter(card => card.front.trim() && card.back.trim());
+        const currentMeaningful = flashcards.filter(card => card.front.trim() && card.back.trim());
+        
+        const initialIds = new Set(initialMeaningful.map(card => String(card.id)));
+        const currentIds = new Set(currentMeaningful.map(card => String(card.id)));
+
+        const hasAdded = [...currentIds].some(id => !initialIds.has(id));
+        const hasDeleted = [...initialIds].some(id => !currentIds.has(id));
+
+        if (hasAdded || hasDeleted) {
+            return true;
+        } else {
+            const initialById = new Map(initialMeaningful.map(c => [String(c.id), {
+                front: c.front.trim(), back: c.back.trim()
+            }]));
+
+            const currentById = new Map(currentMeaningful.map(c => [String(c.id), {
+                front: c.front.trim(), back: c.back.trim()
+            }]));
+
+            const hasModified = Array.from(initialIds).some(id => {
+                const a = initialById.get(id);
+                const b = currentById.get(id);
+                return !a || !b || a.front !== b.front || a.back !== b.back;
+            });
+
+            if (hasModified) return true;
+        }
+
+        return false;
+        
+        
     }
 
     const handleDeckUpdate = async () => {
@@ -114,6 +150,7 @@ const EditDeck = () => {
                     });
 
                     setFlashcards(cards.length ? cards : [{ id: uuid.v4() as string, front: '', back: '' }]);
+                    setInitialFlashcards(cards.length ? cards : [{ id: uuid.v4() as string, front: '', back: '' }]);
                 }));
 
                 return unsubscribe;
@@ -138,7 +175,7 @@ const EditDeck = () => {
                             flashcards={flashcards}
                             saveButtonText="Save Changes"
                             onPress={handleDeckUpdate}
-                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription)}
+                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription) && !hasFlashcardChanges()}
                         />
                     )
                 }}
@@ -211,7 +248,7 @@ const EditDeck = () => {
                         }
                         <TouchableOpacity
                             className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
-                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription)}
+                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription) && !hasFlashcardChanges()}
                             onPress={handleDeckUpdate}
                         >
                             <MaterialIcons name={"save"} color={"white"} size={15}/>
