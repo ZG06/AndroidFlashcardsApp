@@ -5,6 +5,7 @@ import { NewFlashcard } from '@/components/NewFlashcard'
 import Text from '@/components/Text'
 import { useAuth } from '@/context/authContext'
 import { db } from '@/firebaseConfig'
+import { upsertAndDeleteCards } from '@/lib/cards'
 import { updateDeck } from '@/lib/decks'
 import { FlashCard } from '@/types/FlashCard'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -92,13 +93,31 @@ const EditDeck = () => {
             return
         }
 
+        const currentMeaningful = flashcards.filter(card => card.front.trim() && card.back.trim());
+        const currentIds = new Set(currentMeaningful.map(card => String(card.id)));
+
+        const initialMeaningful = initialFlashcards.filter(card => card.front.trim() && card.back.trim());
+        const initialIds = new Set(initialMeaningful.map(card => String(card.id)));
+        
+        const toDeleteIds = [...initialIds].filter(id => !currentIds.has(id));
+        
+        const toCreate = currentMeaningful.filter(card => !initialIds.has(card.id));
+        const toUpdate = currentMeaningful.filter(card => initialIds.has(card.id));
+
         setIsLoading(true);
 
         try {
+            await upsertAndDeleteCards(
+                deckId as string,
+                toCreate,
+                toUpdate,
+                toDeleteIds
+            );
+
             await updateDeck(deckId as string, {
                 name: deckName,
                 description: deckDescription
-            })
+            });
 
             router.replace('/decks');
             setIsLoading(false);
