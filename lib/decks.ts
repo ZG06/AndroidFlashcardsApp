@@ -1,5 +1,5 @@
 import { auth, db } from "@/firebaseConfig";
-import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc, writeBatch } from "firebase/firestore";
 
 export const createDeck = async (name: string, cardsCount: number, description?: string) => {
     const userId = auth.currentUser?.uid;
@@ -20,11 +20,19 @@ export const createDeck = async (name: string, cardsCount: number, description?:
 
 export const deleteDeck = async (deckId: string) => {
     const userId = auth.currentUser?.uid;
+    const batch = writeBatch(db);
 
     try {
-        const decksRef = doc(db, `users/${userId}/decks/${deckId}`);
+        const deckRef = doc(db, `users/${userId}/decks/${deckId}`);
+        const cardDocs = await getDocs(collection(db, `users/${userId}/decks/${deckId}/cards`));
+
+        cardDocs.forEach((doc) => {
+            batch.delete(doc.ref);
+        })
         
-        await deleteDoc(decksRef);
+        await batch.commit();
+
+        await deleteDoc(deckRef);
     } catch (error) {
         console.error(error);
     }
