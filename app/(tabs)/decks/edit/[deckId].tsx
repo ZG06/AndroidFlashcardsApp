@@ -4,6 +4,7 @@ import DeckHeader from '@/components/DeckHeader'
 import Text from '@/components/Text'
 import { useAuth } from '@/context/authContext'
 import { db } from '@/firebaseConfig'
+import { updateDeck } from '@/lib/decks'
 import { FlashCard } from '@/types/FlashCard'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
@@ -19,7 +20,9 @@ const EditDeck = () => {
     const {user} = useAuth();
 
     const [deckName, setDeckName] = useState('');
+    const [initialDeckName, setInitialDeckName] = useState('');
     const [deckDescription, setDeckDescription] = useState('');
+    const [initialDeckDescription, setInitialDeckDescription] = useState('');
     const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [previewCard, setPreviewCard] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -30,12 +33,16 @@ const EditDeck = () => {
         
         if (!deckName.trim()) {
             setError('Provide a deck name');
+            return
         }
 
         setIsLoading(true);
 
         try {
-            
+            await updateDeck(deckId as string, {
+                name: deckName,
+                description: deckDescription
+            })
 
             router.replace('/decks');
             setIsLoading(false);
@@ -60,12 +67,16 @@ const EditDeck = () => {
                 if (snap.exists()) {
                     setDeckName(data?.name ?? '');
                     setDeckDescription(data?.description ?? '');
+                    setInitialDeckName(data?.name ?? '');
+                    setInitialDeckDescription(data?.description ?? '');
                 } else {
                     if (Platform.OS === 'web') {
                         window.alert('Deck not found');
                     } else {
                         Alert.alert('Deck not found');
                     }
+
+                    router.back()
                 }
             } catch (error) {
                 console.error(error);
@@ -85,7 +96,8 @@ const EditDeck = () => {
                             flashcardsLength={flashcards.length} 
                             flashcards={flashcards}
                             saveButtonText="Save Changes"
-                            onPress={() => {}}
+                            onPress={handleDeckUpdate}
+                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription)}
                         />
                     )
                 }}
@@ -101,6 +113,7 @@ const EditDeck = () => {
                     setDeckDescription={setDeckDescription}
                     error={error}
                     setError={setError}
+                    editable={!isLoading}
                 />
             </ScrollView>
             <View className={"absolute bottom-8 left-6 right-6"}>
@@ -122,8 +135,8 @@ const EditDeck = () => {
                         }
                         <TouchableOpacity
                             className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
-                            disabled={isLoading}
-                            onPress={() => {}}
+                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription)}
+                            onPress={handleDeckUpdate}
                         >
                             <MaterialIcons name={"save"} color={"white"} size={15}/>
                             <Text weight="semibold" className={"text-white text-[13px]"}>Save Changes</Text>

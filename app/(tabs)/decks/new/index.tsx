@@ -44,6 +44,7 @@ export default function NewDeck() {
     const handleDeckSave = async () => {
         if (!deckName.trim()) {
             setError('Provide a deck name');
+            return;
         }
 
         setIsLoading(true);
@@ -70,6 +71,7 @@ export default function NewDeck() {
                             flashcards={flashcards}
                             saveButtonText="Save Deck"
                             onPress={handleDeckSave}
+                            disabled={isLoading}
                         />
                     )
                 }}
@@ -85,6 +87,7 @@ export default function NewDeck() {
                     setDeckDescription={setDeckDescription}
                     error={error}
                     setError={setError}
+                    editable={!isLoading}
                 />
 
                 <View className={"flex-row justify-between w-full mb-6"}>

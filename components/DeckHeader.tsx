@@ -12,9 +12,10 @@ type HeaderProps = {
     flashcards: FlashCard[];
     saveButtonText: string;
     onPress: () => void;
+    disabled: boolean;
 }
 
-const DeckHeader = ({title, flashcardsLength, flashcards, saveButtonText, onPress}: HeaderProps) => {
+const DeckHeader = ({title, flashcardsLength, flashcards, saveButtonText, onPress, disabled}: HeaderProps) => {
     const navigation = useNavigation();
     const filledFlashCards = flashcards.filter((card) => card.front !== '' && card.back !== '')
 
@@ -42,6 +43,7 @@ const DeckHeader = ({title, flashcardsLength, flashcards, saveButtonText, onPres
                             : Platform.OS === 'web' ? 160 : 142
                     }}
                     onPress={onPress}
+                    disabled={disabled}
                 >
                     <Save color={"white"} size={16}/>
                     <Text weight="semibold" className={"text-white text-[15px]"}>{saveButtonText}</Text>

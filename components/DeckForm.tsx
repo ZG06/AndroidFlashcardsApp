@@ -10,6 +10,7 @@ type Props = {
     setDeckDescription: (desc: string) => void;
     error: string | null;
     setError: (error: string | null) => void;
+    editable: boolean;
 }
 
 const DeckForm = ({
@@ -18,7 +19,8 @@ const DeckForm = ({
     deckDescription,
     setDeckDescription,
     error,
-    setError
+    setError,
+    editable
 }: Props) => {
     return (
         <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
@@ -37,6 +39,7 @@ const DeckForm = ({
                     }}
                     placeholder={"e.g., Spanish vocabulary"}
                     placeholderTextColor={"#6B7280"}
+                    editable={editable}
                 />
                 {error && (
                     <Text weight="medium" className="mt-1 text-xs text-red-600">
