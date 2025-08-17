@@ -1,6 +1,7 @@
 import ActivityIndicator from '@/components/ActivityIndicator'
 import DeckForm from '@/components/DeckForm'
 import DeckHeader from '@/components/DeckHeader'
+import { NewFlashcard } from '@/components/NewFlashcard'
 import Text from '@/components/Text'
 import { useAuth } from '@/context/authContext'
 import { db } from '@/firebaseConfig'
@@ -8,7 +9,7 @@ import { updateDeck } from '@/lib/decks'
 import { FlashCard } from '@/types/FlashCard'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, onSnapshot, orderBy, query } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { Alert, Platform, ScrollView, TouchableOpacity, View } from 'react-native'
 import uuid from 'react-native-uuid'
@@ -28,9 +29,28 @@ const EditDeck = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const addFlashcard = () => {
+        const newCard: FlashCard = {
+            id: uuid.v4(),
+            front: '',
+            back: ''
+        }
+        setFlashcards(prev => [...prev, newCard]);
+    }
+
+    const updateFlashcard = (id: string, field: keyof FlashCard, value: string) => {
+        setFlashcards(flashcards.map((card) => (card.id === id) ? { ...card, [field]: value } : card));
+    }
+
+    const deleteFlashcard = (id: string) => {
+        setFlashcards(flashcards.filter((card) => card.id !== id));
+    }
+
+    const togglePreview = (id: string) => {
+        setPreviewCard(prev => (prev === id ? null : id));
+    }
+
     const handleDeckUpdate = async () => {
-        
-        
         if (!deckName.trim()) {
             setError('Provide a deck name');
             return
@@ -53,6 +73,7 @@ const EditDeck = () => {
     }
 
     useEffect(() => {
+        let unsubscribe: (() => void) | undefined
         const getData = async () => {
             const userId = user?.uid;
 
@@ -61,7 +82,8 @@ const EditDeck = () => {
             }
 
             try {
-                const snap = await getDoc(doc(db, `/users/${userId}/decks/${deckId}`));
+                const deckRef = doc(db, `users/${userId}/decks/${deckId}`);
+                const snap = await getDoc(deckRef);
                 const data = snap.data()
     
                 if (snap.exists()) {
@@ -78,12 +100,31 @@ const EditDeck = () => {
 
                     router.back()
                 }
+                
+                const q = query(collection(deckRef, 'cards'), orderBy('createdAt', 'desc'));
+                unsubscribe = onSnapshot(q, (snapshot => {
+                    const cards: FlashCard[] = snapshot.docs.map((d) => {
+                        const data = d.data() as { front?: string; back?: string };
+
+                        return {
+                            id: d.id,
+                            front: data?.front ?? '',
+                            back: data?.back ?? '',
+                        };
+                    });
+
+                    setFlashcards(cards.length ? cards : [{ id: uuid.v4() as string, front: '', back: '' }]);
+                }));
+
+                return unsubscribe;
+
             } catch (error) {
                 console.error(error);
             }
         }
 
         getData();
+        return () => unsubscribe?.();
     }, [deckId, user])
 
     return (
@@ -115,6 +156,41 @@ const EditDeck = () => {
                     setError={setError}
                     editable={!isLoading}
                 />
+
+                <View className={"flex-row justify-between w-full mb-6"}>
+                    <Text weight="bold" className={"text-[18px] mb-4"}>Flashcards</Text>
+                    {
+                        // Add card button
+                    }
+                    <TouchableOpacity
+                        className={"flex-row items-center justify-center gap-x-2 bg-black rounded-md px-3"}
+                        style={{
+                            height: Platform.OS === 'web' ? 40 : 35,
+                            width: Platform.OS === 'web' ? 130 : 120
+                        }}
+                        onPress={addFlashcard}
+                    >
+                        <MaterialIcons name={"add"} color={"white"} size={16}/>
+                        <Text weight="medium" className={"text-white text-[16px]"}>Add card</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View className={"pb-24"}>
+                    {flashcards.map((card, index) => (
+                        <NewFlashcard
+                            key={card.id}
+                            index={index + 1}
+                            canDelete={flashcards.length > 1}
+                            onDelete={() => deleteFlashcard(card.id)}
+                            frontValue={card.front}
+                            backValue={card.back}
+                            onFrontChange={(text) => updateFlashcard(card.id, 'front', text)}
+                            onBackChange={(text) => updateFlashcard(card.id, 'back', text)}
+                            isFlipped={previewCard === card.id}
+                            togglePreview={() => togglePreview(card.id)}
+                        />
+                    ))}
+                </View>
             </ScrollView>
             <View className={"absolute bottom-8 left-6 right-6"}>
                 {isLoading ? (
