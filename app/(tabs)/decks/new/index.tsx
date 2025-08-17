@@ -1,55 +1,16 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
+import DeckForm from "@/components/DeckForm";
+import DeckHeader from "@/components/DeckHeader";
 import { NewFlashcard } from "@/components/NewFlashcard";
 import Text from "@/components/Text";
-import TextInput from '@/components/TextInput';
 import { createDeck } from "@/lib/decks";
 import { FlashCard } from "@/types/FlashCard";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { router, Stack, useNavigation } from "expo-router";
-import { Save } from "lucide-react-native";
+import { router, Stack } from "expo-router";
 import React, { useState } from "react";
 import { Platform, ScrollView, TouchableOpacity, View } from "react-native";
 import uuid from 'react-native-uuid';
 
-
-type HeaderProps = {
-    flashcardsLength: number;
-    flashcards: FlashCard[];
-}
-
-const NewDeckHeader = ({flashcardsLength, flashcards}: HeaderProps) => {
-    const navigation = useNavigation();
-    const filledFlashCards = flashcards.filter((card) => card.front !== '' && card.back !== '')
-
-    return (
-        <View className={"justify-center h-[130px] px-4 bg-white"}>
-            <View className={"flex-row items-center justify-between w-full"}>
-                <View className={"flex-row items-center gap-x-4"}>
-                    <TouchableOpacity onPress={navigation.goBack}>
-                        <MaterialIcons name={"arrow-back"} size={24} color={"black"} />
-                    </TouchableOpacity>
-                    <View>
-                        <Text weight="bold" className={"text-2xl"}>Create New Deck</Text>
-                        <Text className={"text-gray-600"}>{filledFlashCards ? filledFlashCards.length : '0'} of {flashcardsLength} cards completed</Text>
-                    </View>
-                </View>
-                {
-                    // Save deck button
-                }
-                <TouchableOpacity
-                    className={"flex-row items-center justify-center gap-x-2 bg-black rounded-md px-3"}
-                    style={{
-                        height: Platform.OS === 'web' ? 40 : 35,
-                        width: Platform.OS === 'web' ? 130 : 120
-                    }}
-                >
-                    <Save color={"white"} size={16}/>
-                    <Text weight="semibold" className={"text-white text-[15px]"}>Save Deck</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-    )
-}
 
 export default function NewDeck() {
     const [deckName, setDeckName] = useState('');
@@ -102,51 +63,29 @@ export default function NewDeck() {
         <>
             <Stack.Screen
                 options={{
-                    header: () => (<NewDeckHeader flashcardsLength={flashcards.length} flashcards={flashcards} />)
+                    header: () => (
+                        <DeckHeader
+                            title="Create New Deck"
+                            flashcardsLength={flashcards.length} 
+                            flashcards={flashcards}
+                            saveButtonText="Save Deck"
+                            onPress={handleDeckSave}
+                        />
+                    )
                 }}
             />
             <ScrollView className={"p-6"} style={{backgroundColor: '#E6EDFF'}} showsVerticalScrollIndicator={false}>
                 {
                     // Deck information block
                 }
-                <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
-                    <Text weight="semibold" className={"text-xl mb-5"}>Deck Information</Text>
-                    {
-                        // Deck name
-                    }
-                    <View className={"mb-4"}>
-                        <Text weight="medium" className={"mb-1.5 text-gray-700"}>Deck Name *</Text>
-                        <TextInput
-                            className={"border-gray-200 border rounded-md min-h-12 px-3"}
-                            value={deckName}
-                            onChangeText={(text) => {
-                                setDeckName(text);
-                                if (error) setError(null);
-                            }}
-                            placeholder={"e.g., Spanish vocabulary"}
-                            placeholderTextColor={"#6B7280"}
-                        />
-                        {error && (
-                            <Text weight="medium" className="mt-1 text-xs text-red-600">
-                                {error}
-                            </Text>
-                        )}
-                    </View>
-                    <View>
-                        {
-                            // Deck description
-                        }
-                        <Text weight="medium" className={"mb-1.5 text-gray-700"}>Description</Text>
-                        <TextInput
-                            multiline={true}
-                            className={"border-gray-200 border rounded-md px-3 min-h-[70px] pt-2.5"}
-                            value={deckDescription}
-                            onChangeText={setDeckDescription}
-                            placeholder={"Brief description of what this deck"}
-                            placeholderTextColor={"#6B7280"}
-                        />
-                    </View>
-                </View>
+                <DeckForm
+                    deckName={deckName}
+                    setDeckName={setDeckName}
+                    deckDescription={deckDescription}
+                    setDeckDescription={setDeckDescription}
+                    error={error}
+                    setError={setError}
+                />
 
                 <View className={"flex-row justify-between w-full mb-6"}>
                     <Text weight="bold" className={"text-[18px] mb-4"}>Flashcards</Text>
