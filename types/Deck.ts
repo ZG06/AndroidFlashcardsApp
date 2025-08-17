@@ -4,5 +4,6 @@ export interface Deck {
     id: string;
     name: string;
     description?: string;
-    createdAt: Timestamp
+    createdAt: Timestamp;
+    updatedAt?: Timestamp
 }

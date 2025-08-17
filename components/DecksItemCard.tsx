@@ -1,4 +1,5 @@
 import Text from '@/components/Text';
+import { router } from 'expo-router';
 import { Edit, Trash2 } from 'lucide-react-native';
 import React from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
@@ -48,6 +49,7 @@ const DecksItemCard = ({deckId, deckName, deckDescription, onDelete}: Props) => 
                 </TouchableOpacity>
                 <TouchableOpacity
                     className="p-[10px] border border-gray-200 rounded-md hover:bg-gray-100"
+                    onPress={() => router.push(`decks/edit/${deckId}`)}
                 >
                     <Edit size={16} color="black" />
                 </TouchableOpacity>

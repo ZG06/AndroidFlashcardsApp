@@ -16,6 +16,12 @@ export default function DecksLayout() {
                     headerShown: true
                 }}
             />
+            <Stack.Screen
+                name="edit/[deckId]"
+                options={{
+                    headerShown: true
+                }}
+            />
         </Stack>
     );
 }
