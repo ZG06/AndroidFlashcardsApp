@@ -2,7 +2,7 @@ import ActivityIndicator from "@/components/ActivityIndicator";
 import DecksItemCard from "@/components/DecksItemCard";
 import SearchBar from "@/components/SearchBar";
 import Text from "@/components/Text";
-import { auth } from "@/firebaseConfig";
+import { useAuth } from "@/context/authContext";
 import { useDecks } from "@/hooks/useDecks";
 import { deleteDeck } from "@/lib/decks";
 import { router } from "expo-router";
@@ -12,7 +12,8 @@ import { Alert, Platform, ScrollView, TouchableOpacity, View } from "react-nativ
 
 
 export default function Decks() {
-    const userId = auth.currentUser?.uid;
+    const {user} = useAuth();
+    const userId = user?.uid;
     const { decks, isLoading, error } = useDecks(userId);
 
     const handleDeckDelete = async (deckId: string) => {
