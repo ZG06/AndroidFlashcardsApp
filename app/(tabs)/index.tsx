@@ -1,11 +1,24 @@
+import ActivityIndicator from "@/components/ActivityIndicator";
+import HomeDecksItemCard from "@/components/HomeDecksItemCard";
 import Text from "@/components/Text";
+import { auth } from "@/firebaseConfig";
+import { useDecks } from "@/hooks/useDecks";
 import { router } from "expo-router";
 import { Play, Plus, TrendingUp } from "lucide-react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
 export default function Index() {
+    const userId = auth.currentUser?.uid;
+    const { decks, isLoading, error } = useDecks(userId);
+
+    useEffect(() => {
+        if (error) {
+            console.error(error);
+        }
+    }, [error])
+
     return (
         <ScrollView showsVerticalScrollIndicator={false} className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
             {
@@ -60,14 +73,35 @@ export default function Index() {
             </View>
 
             <View>
-                <View className={"flex-row justify-between mb-20"}>
+                <View className={"flex-row justify-between mb-2"}>
                     <Text weight="semibold" className={"text-xl"}>Recent Decks</Text>
-                    <TouchableOpacity className={"h-7 w-20 hover:bg-gray-200 hover:rounded-md items-center"}>
+                    <TouchableOpacity
+                        className={"h-8 w-20 hover:bg-gray-100 hover:rounded-md items-center justify-center"}
+                        onPress={() => router.push(`decks`)}
+                    >
                         <Text weight="medium" className={"text-[16px]"}>View All</Text>
                     </TouchableOpacity>
                 </View>
                 <View className={"justify-center items-center"}>
-                    <Text className={"text-gray-500"}>No recent decks.</Text>
+                {isLoading ? (
+                    <ActivityIndicator size={50} />
+                ) : decks.length === 0 ? (
+                    <Text className={"text-gray-500"}>No decks found.</Text>
+                ) : (
+                    <View
+                        className="w-full gap-y-2"
+                    >
+                        {/* Render only first 3 decks */}
+                        {decks.slice(0, 3).map((deck) => (
+                            <HomeDecksItemCard
+                                key={deck.id}
+                                deckId={deck.id}
+                                deckName={deck.name}
+                                cardsCount={deck.cardsCount}
+                            />
+                        ))}
+                    </View>
+                )}
                 </View>
             </View>
         </ScrollView>

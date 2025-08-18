@@ -2,20 +2,18 @@ import ActivityIndicator from "@/components/ActivityIndicator";
 import DecksItemCard from "@/components/DecksItemCard";
 import SearchBar from "@/components/SearchBar";
 import Text from "@/components/Text";
-import { auth, db } from "@/firebaseConfig";
+import { auth } from "@/firebaseConfig";
+import { useDecks } from "@/hooks/useDecks";
 import { deleteDeck } from "@/lib/decks";
-import { Deck } from "@/types/Deck";
 import { router } from "expo-router";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { Plus } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Alert, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
 
 export default function Decks() {
-
-    const [isLoading, setIsLoading] = useState(false);
-    const [decks, setDecks] = useState<Deck[]>([]);
+    const userId = auth.currentUser?.uid;
+    const { decks, isLoading, error } = useDecks(userId);
 
     const handleDeckDelete = async (deckId: string) => {
         try {
@@ -26,65 +24,38 @@ export default function Decks() {
     }
 
     const confirmDeckDelete = async (deckId: string) => {
-            if (Platform.OS === 'web') {
-                const confirmed = window.confirm(
-                    "Are you sure you want to delete your account? This action cannot be undone."
-                );
-    
-                if (confirmed) {
-                    handleDeckDelete(deckId);
-                }
-            }
-            Alert.alert(
-                "Delete Account",
-                "Are you sure you want to delete your account? This action cannot be undone.",
-                [
-                    {
-                        text: "Cancel",
-                        style: "cancel"
-                    },
-                    {
-                        text: "Delete",
-                        style: "destructive",
-                        onPress: () => handleDeckDelete(deckId)
-                    }
-                ],
-                { cancelable: true }
+        if (Platform.OS === 'web') {
+            const confirmed = window.confirm(
+                "Are you sure you want to delete your account? This action cannot be undone."
             );
-        };
+
+            if (confirmed) {
+                handleDeckDelete(deckId);
+            }
+        }
+        Alert.alert(
+            "Delete Account",
+            "Are you sure you want to delete your account? This action cannot be undone.",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => handleDeckDelete(deckId)
+                }
+            ],
+            { cancelable: true }
+        );
+    };
 
     useEffect(() => {
-        const userId = auth.currentUser?.uid;
-
-        if (!userId) {
-            setIsLoading(false);
-            setDecks([]);
-            return;
+        if (error) {
+            console.error(error);
         }
-
-        const q = query(collection(db, `users/${userId}/decks`), orderBy('createdAt', 'desc'));
-        setIsLoading(true);
-        const unsubscribe = onSnapshot(q, (snapshot => {
-            const mapped: Deck[] = [];
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                mapped.push({
-                    id: doc.id,
-                    name: data.name,
-                    description: data.description,
-                    cardsCount: data.cardsCount,
-                    createdAt: data.createdAt
-                })
-            });
-
-            setDecks(mapped);
-            setIsLoading(false);
-        }), error => {
-            console.log(error);
-        });
-
-        return unsubscribe
-    }, [auth])
+    }, [error])
 
     return (
         <ScrollView style={{backgroundColor: '#E6EDFF'}}>
