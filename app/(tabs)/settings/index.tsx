@@ -2,9 +2,9 @@ import GeneralHeader from "@/components/GeneralHeader";
 import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
 import { auth } from "@/firebaseConfig";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { User } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Image, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
 export default function Settings() {
@@ -14,40 +14,63 @@ export default function Settings() {
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
     const [isProfilePictureLoading, setIsProfilePictureLoading] = useState(false);
 
-    const {user, logout, getUserData} = useAuth();
+    const {user, logout, getUserData, updateEmailInFirestore} = useAuth();
 
     const handleLogout = async () => {
         await logout();
     }
 
     useEffect(() => {
-            const unsubscribe = auth.onAuthStateChanged((user) => {
-                setIsAuthReady(true);
-            });
-    
-            return () => unsubscribe();
-        }, []);
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setIsAuthReady(true);
+        });
 
-    useEffect(() => {
-        const getData = async () => {
-            if (!isAuthReady && !user) return;
+        return () => unsubscribe();
+    }, []);
 
-            try {
-                setIsProfilePictureLoading(true);
-                await getUserData({
-                    setUsername,
-                    setEmail,
-                    setProfilePicture
-                });
-
-                setIsProfilePictureLoading(false);
-            } catch {
-                setIsProfilePictureLoading(false);
+    useFocusEffect(
+        useCallback(() => {
+            const syncEmailAfterVerification = async () => {
+                if (!isAuthReady || !user) return;
+                try {
+                    await user.reload?.();
+                    const authEmail = auth.currentUser?.email;
+                    if (!authEmail) return;
+                    if (authEmail !== email) {
+                        await updateEmailInFirestore(authEmail);
+                        setEmail(authEmail);
+                    }
+                } catch (error) {
+                    console.log('syncEmailAfterVerification, edit: ', error);
+                }
             }
-        }
+            
+            syncEmailAfterVerification();
+        }, [isAuthReady, user])
+    )
 
-        getData();
-    }, [isAuthReady, user])
+    useFocusEffect(
+        useCallback(() => {
+            const getData = async () => {
+                if (!isAuthReady || !user) return;
+    
+                try {
+                    setIsProfilePictureLoading(true);
+                    await getUserData({
+                        setUsername,
+                        setEmail,
+                        setProfilePicture
+                    });
+    
+                    setIsProfilePictureLoading(false);
+                } catch {
+                    setIsProfilePictureLoading(false);
+                }
+            }
+    
+            getData();
+        }, [isAuthReady, user])
+    )
 
     return (
         <View className={"flex-1"}>

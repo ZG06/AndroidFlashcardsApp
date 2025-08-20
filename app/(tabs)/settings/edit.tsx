@@ -1,13 +1,14 @@
 import EditProfileSettingsHeader from "@/components/EditProfileSettingsHeader";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
+import EmailChangeModal from "@/components/EmailChangeModal";
 import Text from "@/components/Text";
 import TextInput from "@/components/TextInput";
 import { useAuth } from "@/context/authContext";
 import { auth } from "@/firebaseConfig";
 import { pickImageFromLibrary } from "@/utils/imagePicker";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { Save, User, X } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -22,8 +23,11 @@ import {
 export default function EditProfileSettings() {
     const [isAuthReady, setIsAuthReady] = useState(false);
 
+    const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [initialEmail, setInitialEmail] = useState('');
+    const [isEmailChangeModalVisible, setIsEmailChangeModalVisible] = useState(false);
     const [bio, setBio] = useState('');
     const [location, setLocation] = useState('');
     const [website, setWebsite] = useState('');
@@ -38,7 +42,8 @@ export default function EditProfileSettings() {
         saveProfilePictureURL,
         fetchProfilePicture,
         getUserData,
-        saveUserData
+        saveUserData,
+        updateEmailInFirestore
     } = useAuth();
 
     const confirmDeleteAccount = () => {
@@ -118,38 +123,56 @@ export default function EditProfileSettings() {
         return () => unsubscribe();
     }, []);
 
-    useEffect(() => {
-        if (!isAuthReady || !user) return;
+    useFocusEffect(
+        useCallback(() => {
+            if (!isAuthReady || !user) return;
         
-        const getData = async () => {
-            try {
-                setIsProfilePictureLoading(true);
-                await getUserData({
-                    setUsername,
-                    setEmail,
-                    setBio,
-                    setLocation,
-                    setWebsite,
-                    setProfilePicture
-                });
-                
-                setIsProfilePictureLoading(false);
-            } catch (error) {
-                console.log('UseEffect, edit: ', error);
-                setIsProfilePictureLoading(false);
+            const getData = async () => {
+                try {
+                    setIsProfilePictureLoading(true);
+                    await getUserData({
+                        setUsername,
+                        setEmail,
+                        setBio,
+                        setLocation,
+                        setWebsite,
+                        setProfilePicture
+                    });
+    
+                    setInitialEmail(email);
+                    
+                    setIsProfilePictureLoading(false);
+                } catch {
+                    setIsProfilePictureLoading(false);
+                }
             }
-        }
-
-        getData();
-    }, [isAuthReady, user])
+    
+            getData();
+        }, [isAuthReady, user])
+    )
     
     const handleSaveProfileData = async () => {
         if (!user) return;
 
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!regex.test(email)) {
+            if (Platform.OS === 'web') {
+                window.alert('Invalid email format');
+            } else {
+                Alert.alert('Invalid email format');
+            }
+            return;
+        }
+
+        if (email !== initialEmail) {
+            setIsEmailChangeModalVisible(true);
+            return;
+        }
+
         try {
             await saveUserData(
                 username,
-                email,
                 bio,
                 location,
                 website,
@@ -160,6 +183,32 @@ export default function EditProfileSettings() {
             console.log('handleSave, edit: ', error);
         }
     }
+    
+    useEffect(() => {
+        if (!initialEmail && email) {
+          setInitialEmail(email);
+        }
+    }, [email, initialEmail]);
+
+    useEffect(() => {
+        const syncEmailAfterVerification = async () => {
+            if (!isAuthReady || !user) return;
+            try {
+                await user.reload?.();
+                const authEmail = auth.currentUser?.email;
+                if (!authEmail) return;
+                if (authEmail !== email) {
+                    await updateEmailInFirestore(authEmail);
+                    setEmail(authEmail);
+                    setInitialEmail(authEmail);
+                }
+            } catch (error) {
+                console.log('syncEmailAfterVerification, edit: ', error);
+            }
+        }
+        
+        syncEmailAfterVerification();
+    }, [isAuthReady, user])
 
     return (
         <View className="flex-1">
@@ -284,6 +333,28 @@ export default function EditProfileSettings() {
                         value={email}
                         onChangeText={setEmail}
                     />
+
+                    {
+                        // Email change modal
+                    }
+                    <EmailChangeModal
+                        visible={isEmailChangeModalVisible}
+                        email={email}
+                        onClose={() => setIsEmailChangeModalVisible(false)}
+                        handleSaveProfileData={async () => {
+                            setInitialEmail(email);
+                            setPassword('');
+                            if (Platform.OS === 'web') {
+                                window.confirm('Your email has been changed successfully! Please verify your new email address.');
+                            } else {
+                                Alert.alert('Your email has been changed successfully! Please verify your new email address.');
+                            }
+                            await handleSaveProfileData();
+                            setIsEmailChangeModalVisible(false);
+                        }}
+                    >
+
+                    </EmailChangeModal>
 
                     {
                         // Bio input

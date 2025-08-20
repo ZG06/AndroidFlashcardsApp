@@ -13,6 +13,7 @@ import {
     signInWithEmailAndPassword,
     signOut,
     updatePassword,
+    verifyBeforeUpdateEmail,
     verifyPasswordResetCode
 } from 'firebase/auth';
 import { deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -389,10 +390,8 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
-
     const saveUserData = async (
         username,
-        email,
         bio,
         location,
         website,
@@ -404,7 +403,6 @@ export const AuthContextProvider = ({children}) => {
         try {
             await updateDoc(userRef, {
                 username,
-                email,
                 bio,
                 location,
                 website,
@@ -475,6 +473,80 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
+    const changeEmail = async (newEmail, currentPassword) => {
+        try {
+            const currentUser = auth.currentUser;
+            if (!currentUser?.email) {
+                return { success: false, error: 'unexpectedError' };
+            }
+
+            const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+            await reauthenticateWithCredential(currentUser, credential);
+            await verifyBeforeUpdateEmail(currentUser, newEmail);
+
+            return { success: true }
+        } catch (error) {
+            let msg = error.code;
+
+            switch (msg) {
+                case 'auth/wrong-password':
+                    msg = 'wrongPassword';
+                    break;
+                case 'auth/user-disabled':
+                    msg = 'userDisabled';
+                    break;
+                case 'auth/network-request-failed':
+                    msg = 'networkRequestFailed';
+                    break;
+                case 'auth/too-many-requests':
+                    msg = 'tooManyRequests';
+                    break;
+                case 'auth/internal-error':
+                    msg = 'internalError';
+                    break;
+                case 'auth/invalid-credential':
+                    msg = 'wrongPassword';
+                    break;
+                case 'auth/operation-not-allowed':
+                    console.log(error);
+                    msg = 'operationNotAllowed';
+                    break;
+                default:
+                    console.log(msg)
+                    msg = 'unexpectedError';
+            }
+
+            return { success: false, error:msg };
+        }
+    }
+
+    const updateEmailInFirestore = async (newEmail) => {
+        const userId = auth.currentUser?.uid;
+        if (!userId) return;
+        const userRef = doc(db, 'users', userId);
+        try {
+            await updateDoc(userRef, { email: newEmail });
+            return { success: true };
+        } catch (error) {
+            let msg = error.code;
+
+            switch (msg) {
+                case 'permission-denied':
+                    msg = 'profilePermissionDenied';
+                    break;
+                case 'not-found':
+                    msg = 'userDocumentNotFound';
+                    break;
+                case 'internal':
+                    msg = 'networkRequestFailed';
+                    break;
+                default:
+                    msg = 'unexpectedError';
+            }
+            return { success: false, msg };
+        }
+    }
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -491,7 +563,9 @@ export const AuthContextProvider = ({children}) => {
             resetPassword,
             getUserData,
             saveUserData,
-            changePassword
+            changePassword,
+            changeEmail,
+            updateEmailInFirestore
         }}>
             {children}
         </AuthContext.Provider>
