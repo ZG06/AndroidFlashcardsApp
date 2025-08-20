@@ -17,4 +17,6 @@ export type ErrorType =
     'wrongPassword' |
     'internalError' |
     'samePasswords' |
+    'emptyPassword' |
+    'operationNotAllowed' |
     null;

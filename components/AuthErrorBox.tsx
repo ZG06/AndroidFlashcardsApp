@@ -34,6 +34,8 @@ const AuthErrorBox = ({errorType}: AuthErrorBoxProps) => {
                 {errorType === 'wrongPassword' && 'The password is incorrect. Please try again.'}
                 {errorType === 'internalError' && 'An internal error occurred. Please try again later.'}
                 {errorType === 'samePasswords' && 'The new password is the same as the current password. Please try again.'}
+                {errorType === 'emptyPassword' && 'Please enter a password.'}
+                {errorType === 'operationNotAllowed' && 'Please verify your current email before updating your profile.'}
             </Text>
         </View>
     );

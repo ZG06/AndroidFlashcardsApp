@@ -18,7 +18,7 @@ export default function Decks() {
 
     const handleDeckDelete = async (deckId: string) => {
         try {
-            await deleteDeck(deckId); 
+            await deleteDeck(deckId);
         } catch (error) {
             console.error(error);
         }
