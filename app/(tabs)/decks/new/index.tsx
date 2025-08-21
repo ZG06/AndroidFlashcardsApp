@@ -5,6 +5,7 @@ import { NewFlashcard } from "@/components/NewFlashcard";
 import Text from "@/components/Text";
 import { saveCardsForDeck } from "@/lib/cards";
 import { createDeck } from "@/lib/decks";
+import { DeckCategory } from "@/types/DeckCategory";
 import { FlashCard } from "@/types/FlashCard";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, Stack } from "expo-router";
@@ -16,6 +17,7 @@ import uuid from 'react-native-uuid';
 export default function NewDeck() {
     const [deckName, setDeckName] = useState('');
     const [deckDescription, setDeckDescription] = useState('');
+    const [deckCategory, setDeckCategory] = useState<DeckCategory | null>(null);
     const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [previewCard, setPreviewCard] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -91,6 +93,8 @@ export default function NewDeck() {
                     setDeckName={setDeckName}
                     deckDescription={deckDescription}
                     setDeckDescription={setDeckDescription}
+                    deckCategory={deckCategory}
+                    setDeckCategory={setDeckCategory}
                     error={error}
                     setError={setError}
                     editable={!isLoading}

@@ -1,0 +1,1 @@
+export type DeckCategory = 'Language' | 'Math' | 'History' | 'Science' | 'Technology' | 'Other';

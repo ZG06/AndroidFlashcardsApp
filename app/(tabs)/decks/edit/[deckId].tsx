@@ -7,6 +7,7 @@ import { useAuth } from '@/context/authContext'
 import { db } from '@/firebaseConfig'
 import { upsertAndDeleteCards } from '@/lib/cards'
 import { updateDeck } from '@/lib/decks'
+import { DeckCategory } from '@/types/DeckCategory'
 import { FlashCard } from '@/types/FlashCard'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
@@ -24,6 +25,7 @@ const EditDeck = () => {
     const [deckName, setDeckName] = useState('');
     const [initialDeckName, setInitialDeckName] = useState('');
     const [deckDescription, setDeckDescription] = useState('');
+    const [deckCategory, setDeckCategory] = useState<DeckCategory | null>(null);
     const [initialDeckDescription, setInitialDeckDescription] = useState('');
     const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [initialFlashcards, setInitialFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
@@ -211,6 +213,8 @@ const EditDeck = () => {
                     setDeckName={setDeckName}
                     deckDescription={deckDescription}
                     setDeckDescription={setDeckDescription}
+                    deckCategory={deckCategory}
+                    setDeckCategory={setDeckCategory}
                     error={error}
                     setError={setError}
                     editable={!isLoading}
