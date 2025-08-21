@@ -18,12 +18,12 @@ type Props = {
 }
 
 const dropdownData: { label: DeckCategory; value: string }[] = [
-    { label: 'Language', value: '1' },
-    { label: 'Math', value: '2' },
-    { label: 'History', value: '3' },
-    { label: 'Science', value: '4' },
-    { label: 'Technology', value: '5' },
-    { label: 'Other', value: '6' },
+    { label: 'Language', value: 'Language' },
+    { label: 'Math', value: 'Math' },
+    { label: 'History', value: 'History' },
+    { label: 'Science', value: 'Science' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Other', value: 'Other' },
 ];
 
 const DeckForm = ({
@@ -85,6 +85,7 @@ const DeckForm = ({
                     data={dropdownData}
                     labelField={"label"}
                     valueField={"value"}
+                    value={deckCategory}
                     onChange={(item) => setDeckCategory(item.label)}
                     style={{
                         borderColor: '#e5e7eb',
