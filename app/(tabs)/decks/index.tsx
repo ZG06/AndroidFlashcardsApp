@@ -7,14 +7,24 @@ import { useDecks } from "@/hooks/useDecks";
 import { deleteDeck } from "@/lib/decks";
 import { router } from "expo-router";
 import { Plus } from "lucide-react-native";
-import React, { useEffect } from "react";
-import { Alert, Platform, ScrollView, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, FlatList, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
+
+const categoryData = [
+    'All',
+    'Language',
+    'Math',
+    'History',
+    'Science',
+    'Technology'
+];
 
 export default function Decks() {
     const {user} = useAuth();
     const userId = user?.uid;
     const { decks, isLoading, error } = useDecks(userId);
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
     const handleDeckDelete = async (deckId: string) => {
         try {
@@ -63,7 +73,7 @@ export default function Decks() {
             {
                 // Header
             }
-            <View className={"flex justify-center items-start h-[160px] px-6 bg-white"}>
+            <View className={"flex justify-center items-start px-6 bg-white"}>
                 <View className={"flex-row justify-between w-full py-4"}>
                     <Text weight="bold" className={"text-[24px] mb-4"}>My Decks</Text>
                     {
@@ -82,6 +92,25 @@ export default function Decks() {
                     </TouchableOpacity>
                 </View>
                 <SearchBar />
+                <FlatList
+                    className={"mt-4 mb-8"}
+                    data={categoryData}
+                    keyExtractor={(item) => item}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerClassName={"items-center gap-x-2"}
+                    renderItem={(item) => (
+                        <TouchableOpacity 
+                            className={`px-3 py-2 border border-gray-200 rounded-md ${selectedCategory === item.item ? 'bg-black hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+                            onPress={() => setSelectedCategory(item.item)}
+                        >
+                            <Text weight="medium" className={`text-[15px] ${selectedCategory === item.item && 'text-white'}`}>
+                                {item.item}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                />
+                
             </View>
             <View className={"justify-center items-center mt-8"}>
                 {isLoading ? (
