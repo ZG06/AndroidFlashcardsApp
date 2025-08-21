@@ -161,7 +161,9 @@ export default function NewDeck() {
             </ScrollView>
             <View className={"absolute bottom-8 left-6 right-6"}>
                 {isLoading ? (
-                    <ActivityIndicator size={50} />
+                    <View className='items-center'>
+                        <ActivityIndicator size={50}  />
+                    </View>
                 ) : (
                     <View className={"flex-row gap-x-6"}>
                         {
