@@ -4,7 +4,7 @@ import { collection, FirestoreError, onSnapshot, orderBy, query } from "firebase
 import { useEffect, useState } from "react";
 
 
-export const useDecks = (userId?: string) => {
+export const useDecks = (category: string, userId?: string) => {
     const [decks, setDecks] = useState<Deck[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<FirestoreError | undefined>(undefined);
@@ -23,14 +23,25 @@ export const useDecks = (userId?: string) => {
             const mapped: Deck[] = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                mapped.push({
-                    id: doc.id,
-                    name: data.name,
-                    description: data.description,
-                    category: data.category,
-                    cardsCount: data.cardsCount,
-                    createdAt: data.createdAt
-                });
+                if (data.category === category) {
+                    mapped.push({
+                        id: doc.id,
+                        name: data.name,
+                        description: data.description,
+                        category: data.category,
+                        cardsCount: data.cardsCount,
+                        createdAt: data.createdAt
+                    });
+                } else if (category === 'All') {
+                    mapped.push({
+                        id: doc.id,
+                        name: data.name,
+                        description: data.description,
+                        category: data.category,
+                        cardsCount: data.cardsCount,
+                        createdAt: data.createdAt
+                    });
+                }
             });
 
             setDecks(mapped);
@@ -41,7 +52,7 @@ export const useDecks = (userId?: string) => {
         });
 
         return unsubscribe;
-    }, [userId])
+    }, [category, userId])
 
     return { decks, isLoading, error };
 }

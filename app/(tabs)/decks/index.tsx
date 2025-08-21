@@ -17,14 +17,15 @@ const categoryData = [
     'Math',
     'History',
     'Science',
-    'Technology'
+    'Technology',
+    'Other'
 ];
 
 export default function Decks() {
     const {user} = useAuth();
     const userId = user?.uid;
-    const { decks, isLoading, error } = useDecks(userId);
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const { decks, isLoading, error } = useDecks(selectedCategory, userId);
 
     const handleDeckDelete = async (deckId: string) => {
         try {
