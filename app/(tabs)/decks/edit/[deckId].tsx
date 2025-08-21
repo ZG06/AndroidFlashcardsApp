@@ -31,7 +31,7 @@ const EditDeck = () => {
     const [initialFlashcards, setInitialFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [previewCard, setPreviewCard] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string[]>([]);
 
     const addFlashcard = () => {
         const newCard: FlashCard = {
@@ -90,9 +90,31 @@ const EditDeck = () => {
     }
 
     const handleDeckUpdate = async () => {
-        if (!deckName.trim()) {
-            setError('Provide a deck name');
-            return
+        // Check if only deck name is not selected
+        if (!deckName.trim() && deckCategory) {
+            setError(prev => {
+                const updated = [...prev];
+                updated.push('name');
+                return updated;
+            });
+            return;
+            
+        // Check if only category is not selected
+        } else if (deckName.trim() && !deckCategory) {
+            setError(prev => {
+                const updated = [...prev];
+                updated.push('category');
+                return updated;
+            });
+            return;
+        // Check if both deck name and category are not selected
+        } else if (!deckName.trim() && !deckCategory) {
+            setError(prev => {
+                const updated = [...prev];
+                updated.push('name', 'category');
+                return updated;
+            });
+            return;
         }
 
         const currentMeaningful = flashcards.filter(card => card.front.trim() && card.back.trim());
