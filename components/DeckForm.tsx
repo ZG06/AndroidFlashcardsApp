@@ -12,8 +12,8 @@ type Props = {
     setDeckDescription: (desc: string) => void;
     deckCategory: DeckCategory | null;
     setDeckCategory: (category: DeckCategory | null) => void;
-    error: string | null;
-    setError: (error: string | null) => void;
+    error: string[];
+    setError: (error: string[]) => void;
     editable: boolean;
 }
 
@@ -50,15 +50,15 @@ const DeckForm = ({
                     value={deckName}
                     onChangeText={(text) => {
                         setDeckName(text);
-                        if (error) setError(null);
+                        if (error) setError([]);
                     }}
                     placeholder={"e.g., Spanish vocabulary"}
                     placeholderTextColor={"#6B7280"}
                     editable={editable}
                 />
-                {error && (
+                {error.includes('name') && (
                     <Text weight="medium" className="mt-1 text-xs text-red-600">
-                        {error}
+                        Provide a deck name
                     </Text>
                 )}
             </View>
@@ -94,6 +94,11 @@ const DeckForm = ({
                         paddingHorizontal: 12
                     }}
                 />
+                {error.includes('category') && (
+                    <Text weight="medium" className="mt-1 text-xs text-red-600">
+                        Select a category
+                    </Text>
+                )}
             </View>
         </View>
     );
