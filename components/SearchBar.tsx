@@ -1,18 +1,22 @@
 import TextInput from '@/components/TextInput';
 import { Search } from 'lucide-react-native';
-import React, { useState } from "react";
+import React from "react";
 import { View } from "react-native";
 
-export default function SearchBar() {
-    const [query, setQuery] = useState('');
 
+type Props = {
+    searchQuery: string;
+    setSearchQuery: (query: string) => void;
+}
+
+export default function SearchBar({searchQuery, setSearchQuery}: Props) {
     return (
-        <View className={"flex-row items-center border-gray-200 h-12 border rounded-md px-2 w-full"}>
+        <View className={"flex-row items-center border-gray-200 h-12 border rounded-md pl-2 w-full"}>
             <Search color={"#9CA3AF"} size={18} />
             <TextInput
-                className={"border-gray-500 pl-2"}
-                value={query}
-                onChangeText={setQuery}
+                className={"flex-1 border-gray-500 ml-2 pl-2 size-full"}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
                 placeholder={"Search decks..."}
                 placeholderTextColor={"#6B7280"}
                 style={{

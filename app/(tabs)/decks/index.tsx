@@ -24,8 +24,10 @@ const categoryData = [
 export default function Decks() {
     const {user} = useAuth();
     const userId = user?.uid;
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const { decks, isLoading, error } = useDecks(selectedCategory, userId);
+    const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
 
     const handleDeckDelete = async (deckId: string) => {
         try {
@@ -92,7 +94,10 @@ export default function Decks() {
                         <Text weight="semibold" className={"text-white text-[15px]"}>New Deck</Text>
                     </TouchableOpacity>
                 </View>
-                <SearchBar />
+                <SearchBar
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                />
                 <FlatList
                     className={"mt-4 mb-8"}
                     data={categoryData}
@@ -122,16 +127,17 @@ export default function Decks() {
                     <View
                         className="w-full gap-y-2 p-6"
                     >
-                        {decks.map((deck) => (
-                            <DecksItemCard
-                                key={deck.id}
-                                deckId={deck.id}
-                                deckName={deck.name}
-                                deckDescription={deck.description}
-                                cardsCount={deck.cardsCount}
-                                onDelete={() => confirmDeckDelete(deck.id)}
-                            />
-                        ))}
+                        {decks.filter(deck => deck.name.trim().toLocaleLowerCase().includes(normalizedQuery))
+                            .map((deck) => (
+                                <DecksItemCard
+                                    key={deck.id}
+                                    deckId={deck.id}
+                                    deckName={deck.name}
+                                    deckDescription={deck.description}
+                                    cardsCount={deck.cardsCount}
+                                    onDelete={() => confirmDeckDelete(deck.id)}
+                                />
+                            ))}
                     </View>
                 )}
             </View>
