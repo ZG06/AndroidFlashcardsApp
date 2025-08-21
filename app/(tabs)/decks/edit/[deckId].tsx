@@ -25,8 +25,9 @@ const EditDeck = () => {
     const [deckName, setDeckName] = useState('');
     const [initialDeckName, setInitialDeckName] = useState('');
     const [deckDescription, setDeckDescription] = useState('');
-    const [deckCategory, setDeckCategory] = useState<DeckCategory | null>(null);
     const [initialDeckDescription, setInitialDeckDescription] = useState('');
+    const [deckCategory, setDeckCategory] = useState<DeckCategory | null>(null);
+    const [initialDeckCategory, setInitialDeckCategory] = useState<DeckCategory | null>(null);
     const [flashcards, setFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [initialFlashcards, setInitialFlashcards] = useState<FlashCard[]>([{id: uuid.v4(), front: '', back: ''}]);
     const [previewCard, setPreviewCard] = useState<string | null>(null);
@@ -143,6 +144,7 @@ const EditDeck = () => {
             await updateDeck(deckId as string, {
                 name: deckName,
                 description: deckDescription,
+                category: deckCategory!,
                 cardsCount: cardsCount
             });
 
@@ -171,8 +173,10 @@ const EditDeck = () => {
                 if (snap.exists()) {
                     setDeckName(data?.name ?? '');
                     setDeckDescription(data?.description ?? '');
+                    setDeckCategory(data?.category ?? null);
                     setInitialDeckName(data?.name ?? '');
                     setInitialDeckDescription(data?.description ?? '');
+                    setInitialDeckCategory(data?.category ?? null);
                 } else {
                     if (Platform.OS === 'web') {
                         window.alert('Deck not found');
@@ -221,7 +225,13 @@ const EditDeck = () => {
                             flashcards={flashcards}
                             saveButtonText="Save Changes"
                             onPress={handleDeckUpdate}
-                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription) && !hasFlashcardChanges()}
+                            disabled={
+                                isLoading || (
+                                    initialDeckName === deckName
+                                    && initialDeckDescription === deckDescription
+                                    && initialDeckCategory === deckCategory
+                                ) && !hasFlashcardChanges()
+                            }
                         />
                     )
                 }}
@@ -279,7 +289,10 @@ const EditDeck = () => {
             </ScrollView>
             <View className={"absolute bottom-8 left-6 right-6"}>
                 {isLoading ? (
-                    <ActivityIndicator size={50} />
+                    <View className='items-center'>
+                        <ActivityIndicator size={50}  />
+                    </View>
+                    
                 ) : (
                     <View className={"flex-row gap-x-6"}>
                         {
@@ -296,7 +309,13 @@ const EditDeck = () => {
                         }
                         <TouchableOpacity
                             className={"flex-1 flex-row items-center justify-center gap-x-2 bg-black h-10 w-[120px] rounded-md px-3"}
-                            disabled={isLoading || (initialDeckName === deckName && initialDeckDescription === deckDescription) && !hasFlashcardChanges()}
+                            disabled={
+                                isLoading || (
+                                    initialDeckName === deckName
+                                    && initialDeckDescription === deckDescription
+                                    && initialDeckCategory === deckCategory
+                                ) && !hasFlashcardChanges()
+                            }
                             onPress={handleDeckUpdate}
                         >
                             <MaterialIcons name={"save"} color={"white"} size={15}/>

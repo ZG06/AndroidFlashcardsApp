@@ -27,6 +27,7 @@ export const useDecks = (userId?: string) => {
                     id: doc.id,
                     name: data.name,
                     description: data.description,
+                    category: data.category,
                     cardsCount: data.cardsCount,
                     createdAt: data.createdAt
                 });
