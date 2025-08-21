@@ -1,6 +1,8 @@
 import Text from '@/components/Text';
 import TextInput from '@/components/TextInput';
+import { DeckCategory } from '@/types/DeckCategory';
 import { View } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 
 
 type Props = {
@@ -8,26 +10,39 @@ type Props = {
     setDeckName: (name: string) => void;
     deckDescription: string;
     setDeckDescription: (desc: string) => void;
+    deckCategory: DeckCategory | null;
+    setDeckCategory: (category: DeckCategory | null) => void;
     error: string | null;
     setError: (error: string | null) => void;
     editable: boolean;
 }
+
+const dropdownData: { label: DeckCategory; value: string }[] = [
+    { label: 'Language', value: '1' },
+    { label: 'Math', value: '2' },
+    { label: 'History', value: '3' },
+    { label: 'Science', value: '4' },
+    { label: 'Technology', value: '5' },
+    { label: 'Other', value: '6' },
+];
 
 const DeckForm = ({
     deckName,
     setDeckName,
     deckDescription,
     setDeckDescription,
+    deckCategory,
+    setDeckCategory,
     error,
     setError,
     editable
 }: Props) => {
+
     return (
         <View className={"bg-white p-6 rounded-md shadow-sm shadow-gray-200 mb-6"}>
             <Text weight="semibold" className={"text-xl mb-5"}>Deck Information</Text>
-            {
-                // Deck name
-            }
+
+            {/* Deck name */}
             <View className={"mb-4"}>
                 <Text weight="medium" className={"mb-1.5 text-gray-700"}>Deck Name *</Text>
                 <TextInput
@@ -47,10 +62,9 @@ const DeckForm = ({
                     </Text>
                 )}
             </View>
-            <View>
-                {
-                    // Deck description
-                }
+
+            {/* Deck description */}
+            <View className={"mb-4"}>
                 <Text weight="medium" className={"mb-1.5 text-gray-700"}>Description</Text>
                 <TextInput
                     multiline={true}
@@ -59,6 +73,26 @@ const DeckForm = ({
                     onChangeText={setDeckDescription}
                     placeholder={"Brief description of what this deck"}
                     placeholderTextColor={"#6B7280"}
+                />
+            </View>
+
+            {/* Deck category */}
+            <View>
+                <Text weight="medium" className={"mb-1.5 text-gray-700"}>Category *</Text>
+                
+                <Dropdown
+                    search={false}
+                    data={dropdownData}
+                    labelField={"label"}
+                    valueField={"value"}
+                    onChange={(item) => setDeckCategory(item.label)}
+                    style={{
+                        borderColor: '#e5e7eb',
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        height: 40,
+                        paddingHorizontal: 12
+                    }}
                 />
             </View>
         </View>
