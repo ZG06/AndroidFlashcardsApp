@@ -11,7 +11,7 @@ import * as Progress from 'react-native-progress';
 
 export default function Index() {
     const userId = auth.currentUser?.uid;
-    const { decks, isLoading, error } = useDecks(userId);
+    const { decks, isLoading, error } = useDecks('All', userId);
 
     useEffect(() => {
         if (error) {
