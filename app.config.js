@@ -7,6 +7,9 @@ export default {
         android: {
             package: "com.zg06.flashcardapp"
         },
+        ios: {
+            bundleIdentifier: "com.zg06.flashcardapp"
+        },
         extra: {
             FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
             FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
