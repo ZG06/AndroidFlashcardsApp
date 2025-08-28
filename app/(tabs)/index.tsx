@@ -98,6 +98,7 @@ export default function Index() {
                                 deckId={deck.id}
                                 deckName={deck.name}
                                 cardsCount={deck.cardsCount}
+                                onStudy={() => router.push(`/decks/study/${deck.id}`)}
                             />
                         ))}
                     </View>

@@ -22,6 +22,12 @@ export default function DecksLayout() {
                     headerShown: true
                 }}
             />
+            <Stack.Screen
+                name="study/[deckId]"
+                options={{
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 }

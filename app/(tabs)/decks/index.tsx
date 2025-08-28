@@ -136,6 +136,7 @@ export default function Decks() {
                                     deckDescription={deck.description}
                                     cardsCount={deck.cardsCount}
                                     onDelete={() => confirmDeckDelete(deck.id)}
+                                    onStudy={() => router.push(`/decks/study/${deck.id}`)}
                                 />
                             ))}
                     </View>

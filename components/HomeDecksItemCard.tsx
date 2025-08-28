@@ -8,9 +8,10 @@ type Props = {
     deckId: string;
     deckName: string;
     cardsCount: number;
+    onStudy: () => void;
 }
 
-const HomeDecksItemCard = ({deckId, deckName, cardsCount}: Props) => {
+const HomeDecksItemCard = ({deckId, deckName, cardsCount, onStudy}: Props) => {
     return (
         <View className="flex-row items-center justify-center bg-white p-4 rounded-md shadow-md w-full gap-x-4 mx-auto mt-2">
             <View className="flex-1">
@@ -41,6 +42,7 @@ const HomeDecksItemCard = ({deckId, deckName, cardsCount}: Props) => {
             >
                 <TouchableOpacity
                     className="bg-black items-center justify-center rounded-md hover:opacity-80 size-full"
+                    onPress={onStudy}
                 >
                     <Text
                         weight='medium'
