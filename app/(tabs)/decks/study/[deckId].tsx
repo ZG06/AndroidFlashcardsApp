@@ -1,5 +1,6 @@
 import Text from '@/components/Text';
 import { auth } from '@/firebaseConfig';
+import { useCards } from '@/hooks/useCards';
 import { useDecks } from '@/hooks/useDecks';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -17,6 +18,9 @@ export default function NewDeck() {
     const { decks, isLoading, error: deckError } = useDecks('All', userId);
     const deck = decks.find((deck) => deck.id === deckId);
     const deckLength = deck?.cardsCount;
+
+    const { cards, error: cardsError } = useCards(deckId as string, userId);
+    
 
     const [isPreviewFront, setIsPreviewFront] = useState(true);
     const [frontValue, setFrontValue] = useState('');
