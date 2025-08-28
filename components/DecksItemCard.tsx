@@ -12,9 +12,10 @@ type Props = {
     deckDescription?: string;
     cardsCount: number;
     onDelete: () => void;
+    onStudy: () => void;
 }
 
-const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, onDelete}: Props) => {
+const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, onDelete, onStudy}: Props) => {
     return (
         <View className="bg-white p-4 rounded-md shadow-md w-full mx-auto mt-2">
             <View className="flex-row items-center justify-between">
@@ -56,6 +57,7 @@ const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, onDelete}
                     style={{
                         height: Platform.OS === 'web' ? 40 : 35
                     }}
+                    onPress={onStudy}
                 >
                     <Text
                         weight='medium'
