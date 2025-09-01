@@ -1,3 +1,4 @@
+import { CompleteDeckStudyModal } from '@/components/CompleteDeckStudyModal';
 import Text from '@/components/Text';
 import { auth } from '@/firebaseConfig';
 import { useCards } from '@/hooks/useCards';
@@ -29,13 +30,31 @@ export default function NewDeck() {
     const [backValue, setBackValue] = useState('');
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [learnedCards, setLearnedCards] = useState<{ cardId: string; difficulty: 'easy' | 'hard' | null }[]>([]);
+    const [isDeckLearned, setIsDeckLearned] = useState(false);
 
     const easyCards = learnedCards.filter((card) => card.difficulty === 'easy').length;
     const hardCards = learnedCards.filter((card) => card.difficulty === 'hard').length;
     const cardAccuracy = (easyCards / (easyCards + hardCards) * 100) | 0;
-    const currentCardDifficulty = learnedCards.find((card) => card.cardId === cards[currentCardIndex].id)?.difficulty;
 
     const handleSelectDifficulty = (difficulty: 'easy' | 'hard') => {
+        // If it is the last card, set isDeckLearned to true and add the last card to learnedCards
+        if (currentCardIndex === cards.length - 1) {
+            setIsDeckLearned(true);
+            setLearnedCards(prev => {
+                const updated = [...prev];
+                const currentCard = cards[currentCardIndex];
+
+                updated.push({
+                    cardId: cards[currentCardIndex].id,
+                    difficulty: difficulty
+                });
+
+                return updated
+            });
+
+            return;
+        }
+        
         setLearnedCards(prev => {
             const updated = [...prev];
             const currentCard = cards[currentCardIndex];
@@ -67,6 +86,12 @@ export default function NewDeck() {
             )
         );
         setCurrentCardIndex(prev => prev - 1);
+    }
+
+    const handleReset = () => {
+        setLearnedCards([]);
+        setCurrentCardIndex(0);
+        setIsFront(true);
     }
 
     useEffect(() => {
@@ -110,7 +135,7 @@ export default function NewDeck() {
                 <View className={"flex-row items-center"} >
                     {/* Back button */}
                     <TouchableOpacity
-                        onPress={() => router.back()}
+                        onPress={() => router.push('/decks')}
                     >
                         <View className='items-center justify-center p-2 hover:bg-gray-100 rounded-md'>
                             <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
@@ -135,10 +160,7 @@ export default function NewDeck() {
                             style={[
                                 { opacity: (currentCardIndex === 0) ? 0.4 : 1 }
                             ]}
-                            onPress={() => {
-                                setCurrentCardIndex(0);
-                                setIsFront(true);
-                            }}
+                            onPress={handleReset}
                         >
                             <RotateCcw color={"black"} size={16} />
                             <Text weight='medium'>
@@ -308,12 +330,7 @@ export default function NewDeck() {
                         {!isTrackProgressMode ? (
                             // Next button
                             <TouchableOpacity
-                                className={`flex-row items-center justify-center gap-x-[4px] border border-gray-200 rounded-md p-2.5 bg-white ${currentCardIndex === (deckLength! - 1) ? '' : 'hover:bg-gray-100'}`}
-                                // Disable the 'Next' button on the last card in the decks
-                                disabled={currentCardIndex === (deckLength! - 1)}
-                                style={[
-                                    { opacity: (currentCardIndex === (deckLength! - 1)) ? 0.4 : 1 }
-                                ]}
+                                className={`flex-row items-center justify-center gap-x-[4px] border border-gray-200 rounded-md p-2.5 bg-white hover:bg-gray-100`}
                                 onPress={() => handleSelectDifficulty('easy')}
                             >
                                 <Text weight='medium'>
@@ -339,6 +356,19 @@ export default function NewDeck() {
                     </View>
                 </View>
             </View>
+
+            {isDeckLearned && (
+                <CompleteDeckStudyModal
+                    isVisible={isDeckLearned}
+                    deckName={deck.name}
+                    cardsStudied={learnedCards.length}
+                    cardAccuracy={cardAccuracy}
+                    correctAnswers={easyCards}
+                    wrongAnswers={hardCards}
+                    onStudyAgain={handleReset}
+                    onClose={() => setIsDeckLearned(false)}
+                />
+            )}
         </ScrollView>
     );
 }
