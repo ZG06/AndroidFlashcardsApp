@@ -1,3 +1,4 @@
+import { ConfirmAccountDeleteModal } from "@/components/ConfirmAccountDeleteModal";
 import EditProfileSettingsHeader from "@/components/EditProfileSettingsHeader";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
 import EmailChangeModal from "@/components/EmailChangeModal";
@@ -34,6 +35,8 @@ export default function EditProfileSettings() {
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
 
     const [isProfilePictureLoading, setIsProfilePictureLoading] = useState(false);
+    const [isAccountDeleteLoading, setIsAccountDeleteLoading] = useState(false);
+    const [isConfirmDeleteModalVisible, setIsConfirmDeleteModalVisible] = useState(false);
 
     const {
         user,
@@ -46,36 +49,10 @@ export default function EditProfileSettings() {
         updateEmailInFirestore
     } = useAuth();
 
-    const confirmDeleteAccount = () => {
-        if (Platform.OS === 'web') {
-            const confirmed = window.confirm(
-                "Are you sure you want to delete your account? This action cannot be undone."
-            );
-
-            if (confirmed) {
-                deleteAccountHandler();
-            }
-        }
-        Alert.alert(
-            "Delete Account",
-            "Are you sure you want to delete your account? This action cannot be undone.",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: deleteAccountHandler
-                }
-            ],
-            { cancelable: true }
-        );
-    };
-
     const deleteAccountHandler = async () => {
+        setIsAccountDeleteLoading(true);
         const result = await deleteAccount();
+        setIsAccountDeleteLoading(false);
         if (result.success) router.replace('(auth)');
     }
 
@@ -355,7 +332,7 @@ export default function EditProfileSettings() {
                     >
 
                     </EmailChangeModal>
-
+                        
                     {
                         // Bio input
                     }
@@ -495,7 +472,7 @@ export default function EditProfileSettings() {
                         </View>
                         <TouchableOpacity
                             className={"border border-red-300 rounded-md p-2.5"}
-                            onPress={confirmDeleteAccount}
+                            onPress={() => setIsConfirmDeleteModalVisible(true)}
                         >
                             <Text weight="medium" className={"color-red-600"}>
                                 Delete
@@ -531,6 +508,13 @@ export default function EditProfileSettings() {
                         <Text weight="semibold" className={"text-white text-[14px]"}>Save Changes</Text>
                     </TouchableOpacity>
                 </View>
+
+                <ConfirmAccountDeleteModal
+                    visible={isConfirmDeleteModalVisible}
+                    isLoading={isAccountDeleteLoading}
+                    onClose={() => setIsConfirmDeleteModalVisible(false)}
+                    onDeleteAccount={deleteAccountHandler}
+                />
             </ScrollView>
         </View>
         
