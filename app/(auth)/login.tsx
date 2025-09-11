@@ -1,6 +1,7 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
 import AuthErrorBox from "@/components/AuthErrorBox";
 import AuthInput from "@/components/AuthInput";
+import { GoogleSignInCustomButton } from "@/components/GoogleSignInCustomButton";
 import KeyboardAvoidingContainer from "@/components/KeyboardAvoidingContainer";
 import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
@@ -59,13 +60,25 @@ export default function Login() {
                     }}
                 />
                 <Text weight="bold" className={"text-3xl mb-3"}>Welcome Back</Text>
-                <Text className={"text-gray-600 text-xl mb-8"}>Sign in to your account</Text>
+                <Text className={"text-gray-500 text-xl mb-8"}>Sign in to your account</Text>
                 <View
                     className={"bg-white p-6 rounded-md shadow-md w-full mx-auto gap-y-5 mt-2"}
                     style={{
                         maxWidth: Platform.OS === 'web' ? 500 : 370
                     }}
                 >
+
+                    
+                    <GoogleSignInCustomButton />
+
+                    <View className="flex-row items-center justify-between gap-x-6 w-full mt-1">
+                        <View className="flex-1 border-b border-gray-300" />
+                        <Text className="text-gray-500">
+                            or continue with email
+                        </Text>
+                        <View className="flex-1 border-b border-gray-300" />
+                    </View>
+
                     {
                         // Error box
                     }

@@ -9,9 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./android/app/google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "",
         "backgroundColor": "#ffffff"
@@ -42,6 +43,7 @@
     },
     "plugins": [
       "expo-router",
+      "@react-native-google-signin/google-signin",
       [
         "expo-splash-screen",
         {
@@ -59,7 +61,13 @@
       "router": {},
       "eas": {
         "projectId": "0952f20f-8e2a-4afa-8816-94273779bfa5"
-      }
+      },
+      "FIREBASE_API_KEY": "@FIREBASE_API_KEY",
+      "FIREBASE_AUTH_DOMAIN": "@FIREBASE_AUTH_DOMAIN",
+      "FIREBASE_PROJECT_ID": "@FIREBASE_PROJECT_ID",
+      "FIREBASE_STORAGE_BUCKET": "@FIREBASE_STORAGE_BUCKET",
+      "FIREBASE_MESSAGING_SENDER_ID": "@FIREBASE_MESSAGING_SENDER_ID",
+      "FIREBASE_APP_ID": "@FIREBASE_APP_ID"
     }
   }
 }
