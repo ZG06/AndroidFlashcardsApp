@@ -7,6 +7,7 @@ import {
     statusCodes
 } from '@react-native-google-signin/google-signin';
 import * as Google from 'expo-auth-session/providers/google';
+import Constants from "expo-constants";
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
@@ -14,13 +15,17 @@ import { useState } from 'react';
 import { Alert, Image, Platform, TouchableOpacity, View } from 'react-native';
 
 
+const {
+    GOOGLE_WEB_CLIENT_ID
+} = Constants.expoConfig?.extra || {};
+
 WebBrowser.maybeCompleteAuthSession();
 
 export const GoogleSignInCustomButton = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: 'REDACTED',
+        clientId: GOOGLE_WEB_CLIENT_ID,
         responseType: 'id_token'
     });
 
@@ -30,7 +35,7 @@ export const GoogleSignInCustomButton = () => {
 
         try {
             GoogleSignin.configure({
-                webClientId: "REDACTED",
+                webClientId: GOOGLE_WEB_CLIENT_ID,
             });
             
             setIsLoading(true);

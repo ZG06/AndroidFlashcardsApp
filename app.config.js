@@ -18,6 +18,7 @@ export default {
             FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
             FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
             CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+            GOOGLE_WEB_CLIENT_ID: process.env.GOOGLE_WEB_CLIENT_ID,
             eas: {
                 projectId: "0952f20f-8e2a-4afa-8816-94273779bfa5"
             }
