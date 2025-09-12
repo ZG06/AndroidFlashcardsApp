@@ -1,7 +1,6 @@
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Text from '@/components/Text';
-import { auth, db } from '@/firebaseConfig';
-import { decodeJWT } from '@/utils/decodeJWT';
+import { auth } from '@/firebaseConfig';
 import {
     GoogleSignin,
     isErrorWithCode,
@@ -12,7 +11,6 @@ import Constants from "expo-constants";
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useState } from 'react';
 import { Alert, Image, Platform, TouchableOpacity, View } from 'react-native';
 
@@ -31,19 +29,6 @@ export const GoogleSignInCustomButton = () => {
         responseType: 'id_token'
     });
 
-    const checkUserExists = async (email: string): Promise<boolean> => {
-        try {
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('email', '==', email));
-            const querySnapshot = await getDocs(q);
-
-            return !querySnapshot.empty;
-            
-        } catch (error) {
-            console.error('Error checking user existence:', error);
-            return false;
-        }
-    };
 
     // Android Google sign in function
     const handleAndroidGoogleSignIn = async () => {
@@ -56,15 +41,6 @@ export const GoogleSignInCustomButton = () => {
             setIsLoading(true);
             await GoogleSignin.hasPlayServices();
             const response = await GoogleSignin.signIn();
-
-            // Check if user existst before signing in
-            const userExists = await checkUserExists(response.data?.user.email!);
-            if (!userExists) {
-                Alert.alert('Account does not exist', 'Please register an account with your email first.');
-                await GoogleSignin.signOut();
-                return;
-            }
-
             const googleCredential = GoogleAuthProvider.credential(response.data?.idToken);
             await signInWithCredential(auth, googleCredential);
             router.replace('/(tabs)');
@@ -94,24 +70,13 @@ export const GoogleSignInCustomButton = () => {
 
             if (result?.type === 'success') {
                 const idToken = result.params?.id_token;
-                const decodedToken = decodeJWT(result.params?.id_token);
-                const userEmail = decodedToken?.email;
-                console.log(userEmail);
+                const accessToken = result.params?.access_token;
                 
+    
                 if (idToken) {
-
-                    const userExists = await checkUserExists(userEmail);
-                    console.log(userExists)
+                    const credential = GoogleAuthProvider.credential(idToken, accessToken);
+                    setIsLoading(true);
                     
-                    if (!userExists) {
-                        window.confirm('Please register an account with your email before signing in.');
-                        return;
-                    }
-                    
-                    const credential = GoogleAuthProvider.credential(
-                        result.params.id_token,
-                        result.params.access_token
-                    );
                     await signInWithCredential(auth, credential);
                     router.replace('/(tabs)');
                 }
