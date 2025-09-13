@@ -1,6 +1,8 @@
 import Text from '@/components/Text';
+import { getLastStudied } from '@/utils/getLastStudied';
 import { router } from 'expo-router';
-import { BookOpen, Edit, Trash2 } from 'lucide-react-native';
+import { Timestamp } from 'firebase/firestore';
+import { BookOpen, Clock, Edit, Trash2 } from 'lucide-react-native';
 import React from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
@@ -11,11 +13,13 @@ type Props = {
     deckName: string;
     deckDescription?: string;
     cardsCount: number;
+    createdAt: Timestamp;
+    lastStudied: Timestamp;
     onDelete: () => void;
     onStudy: () => void;
 }
 
-const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, onDelete, onStudy}: Props) => {
+const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, createdAt, lastStudied, onDelete, onStudy}: Props) => {
     return (
         <View className="bg-white p-4 rounded-md shadow-md w-full mx-auto mt-2">
             <View className="flex-row items-center justify-between">
@@ -36,11 +40,19 @@ const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, onDelete,
                     <Trash2 size={16} color="red" />
                 </TouchableOpacity>
             </View>
-            <View className="flex-row items-center gap-x-1 mt-3">
-                <BookOpen color={"#6B7280"} size={16} />
-                <Text className="text-gray-500">
-                    {cardsCount} cards
-                </Text>
+            <View className="flex-row items-center gap-x-4 mt-3">
+                <View className='flex-row items-center justify-center gap-x-1'>
+                    <BookOpen color={"#6B7280"} size={16} />
+                    <Text className="text-gray-500">
+                        {cardsCount} cards
+                    </Text>
+                </View>
+                <View className='flex-row items-center justify-center gap-x-1'>
+                    <Clock color={"#6B7280"} size={16} />
+                    <Text className='text-gray-600'>
+                        {getLastStudied(createdAt, lastStudied)}
+                    </Text>
+                </View>
             </View>
             <View className="gap-y-1 mb-3 mt-3">
                 <View className={"flex-row justify-between"}>

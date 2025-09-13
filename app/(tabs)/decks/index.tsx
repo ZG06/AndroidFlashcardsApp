@@ -4,7 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
 import { useDecks } from "@/hooks/useDecks";
-import { deleteDeck } from "@/lib/decks";
+import { deleteDeck, updateLastStudied } from "@/lib/decks";
 import { router } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -65,6 +65,11 @@ export default function Decks() {
         );
     };
 
+    const handleDeckStudyPress = async (deckId: string) => {
+        await updateLastStudied(deckId);
+        router.push(`/decks/study/${deckId}`);
+    }
+
     useEffect(() => {
         if (error) {
             console.error(error);
@@ -72,7 +77,7 @@ export default function Decks() {
     }, [error])
 
     return (
-        <ScrollView style={{backgroundColor: '#E6EDFF'}}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#E6EDFF'}}>
             {
                 // Header
             }
@@ -135,8 +140,10 @@ export default function Decks() {
                                     deckName={deck.name}
                                     deckDescription={deck.description}
                                     cardsCount={deck.cardsCount}
+                                    createdAt={deck.createdAt}
+                                    lastStudied={deck.lastStudied}
                                     onDelete={() => confirmDeckDelete(deck.id)}
-                                    onStudy={() => router.push(`/decks/study/${deck.id}`)}
+                                    onStudy={async () => handleDeckStudyPress(deck.id)}
                                 />
                             ))}
                     </View>

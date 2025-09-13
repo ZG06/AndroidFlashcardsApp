@@ -30,7 +30,8 @@ export const useDecks = (category: string, userId?: string) => {
                         description: data.description,
                         category: data.category,
                         cardsCount: data.cardsCount,
-                        createdAt: data.createdAt
+                        createdAt: data.createdAt,
+                        lastStudied: data.lastStudied
                     });
                 } else if (category === 'All') {
                     mapped.push({
@@ -39,7 +40,8 @@ export const useDecks = (category: string, userId?: string) => {
                         description: data.description,
                         category: data.category,
                         cardsCount: data.cardsCount,
-                        createdAt: data.createdAt
+                        createdAt: data.createdAt,
+                        lastStudied: data.lastStudied
                     });
                 }
             });

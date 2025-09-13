@@ -1,17 +1,20 @@
 import Text from '@/components/Text';
+import { getLastStudied } from '@/utils/getLastStudied';
+import { Timestamp } from 'firebase/firestore';
 import React from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
 
 type Props = {
-    deckId: string;
     deckName: string;
     cardsCount: number;
+    createdAt: Timestamp;
+    lastStudied: Timestamp;
     onStudy: () => void;
 }
 
-const HomeDecksItemCard = ({deckId, deckName, cardsCount, onStudy}: Props) => {
+const HomeDecksItemCard = ({deckName, cardsCount, createdAt, lastStudied, onStudy}: Props) => {
     return (
         <View className="flex-row items-center justify-center bg-white p-4 rounded-md shadow-md w-full gap-x-4 mx-auto mt-2">
             <View className="flex-1">
@@ -25,6 +28,12 @@ const HomeDecksItemCard = ({deckId, deckName, cardsCount, onStudy}: Props) => {
                 <View className="flex-row items-center gap-x-1 mt-2">
                     <Text className="text-gray-600">
                         0/{cardsCount} cards
+                    </Text>
+                    <Text className='text-gray-600'>
+                        •
+                    </Text>
+                    <Text className='text-gray-600'>
+                        {getLastStudied(createdAt, lastStudied)}
                     </Text>
                 </View>
                 <View className="gap-y-1 mt-3">

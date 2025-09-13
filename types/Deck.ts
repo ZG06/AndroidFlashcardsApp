@@ -8,5 +8,6 @@ export interface Deck {
     category: DeckCategory;
     cardsCount: number;
     createdAt: Timestamp;
-    updatedAt?: Timestamp
+    updatedAt?: Timestamp;
+    lastStudied: Timestamp;
 }

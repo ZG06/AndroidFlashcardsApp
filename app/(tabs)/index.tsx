@@ -3,6 +3,7 @@ import HomeDecksItemCard from "@/components/HomeDecksItemCard";
 import Text from "@/components/Text";
 import { auth } from "@/firebaseConfig";
 import { useDecks } from "@/hooks/useDecks";
+import { updateLastStudied } from "@/lib/decks";
 import { router } from "expo-router";
 import { Play, Plus, TrendingUp } from "lucide-react-native";
 import React, { useEffect } from "react";
@@ -13,6 +14,11 @@ export default function Index() {
     const userId = auth.currentUser?.uid;
     const { decks, isLoading, error } = useDecks('All', userId);
 
+    const handleDeckStudyPress = async (deckId: string) => {
+        await updateLastStudied(deckId);
+        router.push(`/decks/study/${deckId}`);
+    }
+
     useEffect(() => {
         if (error) {
             console.error(error);
@@ -20,7 +26,11 @@ export default function Index() {
     }, [error])
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false} className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
+        <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 24 }}
+            style={{backgroundColor: '#E6EDFF'}}
+        >
             {
                 // Today's progress card
             }
@@ -95,10 +105,11 @@ export default function Index() {
                         {decks.slice(0, 3).map((deck) => (
                             <HomeDecksItemCard
                                 key={deck.id}
-                                deckId={deck.id}
                                 deckName={deck.name}
                                 cardsCount={deck.cardsCount}
-                                onStudy={() => router.push(`/decks/study/${deck.id}`)}
+                                createdAt={deck.createdAt}
+                                lastStudied={deck.lastStudied}
+                                onStudy={async () => handleDeckStudyPress(deck.id)}
                             />
                         ))}
                     </View>

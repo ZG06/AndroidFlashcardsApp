@@ -11,7 +11,8 @@ export const createDeck = async (name: string, cardsCount: number, category: Dec
             description,
             category,
             cardsCount,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            lastStudied: serverTimestamp()
         });
 
         return response.id;
@@ -64,4 +65,19 @@ export const updateDeck = async (
     } catch (error) {
         console.error(error);
     }
+}
+
+export const updateLastStudied = async (deckId: string) => {
+    const userId = auth.currentUser?.uid;
+
+    try {
+        const decksRef = doc(db, `users/${userId}/decks/${deckId}`);
+
+        await updateDoc(decksRef, {
+            lastStudied: serverTimestamp()
+        });
+    } catch (error) {
+        console.error(error);
+    }
+    
 }
