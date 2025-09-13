@@ -15,11 +15,23 @@ type Props = {
     cardsCount: number;
     createdAt: Timestamp;
     lastStudied: Timestamp;
+    learnedCount: number;
     onDelete: () => void;
     onStudy: () => void;
 }
 
-const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, createdAt, lastStudied, onDelete, onStudy}: Props) => {
+const DecksItemCard = ({
+    deckId,
+    deckName,
+    deckDescription,
+    cardsCount,
+    createdAt,
+    lastStudied,
+    learnedCount,
+    onDelete,
+    onStudy
+}: Props) => {
+    console.log("learned: ", learnedCount)
     return (
         <View className="bg-white p-4 rounded-md shadow-md w-full mx-auto mt-2">
             <View className="flex-row items-center justify-between">
@@ -57,10 +69,18 @@ const DecksItemCard = ({deckId, deckName, deckDescription, cardsCount, createdAt
             <View className="gap-y-1 mb-3 mt-3">
                 <View className={"flex-row justify-between"}>
                     <Text>Progress</Text>
-                    <Text>0/{cardsCount}</Text>
+                    {learnedCount ? (
+                        <Text>
+                            {learnedCount}/{cardsCount}
+                        </Text>
+                    ) : (
+                        <Text>
+                            0/{cardsCount}
+                        </Text>
+                    )}
                 </View>
                 <View className={"w-full"}>
-                    <Progress.Bar progress={(0/cardsCount)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
+                    <Progress.Bar progress={((learnedCount ? learnedCount : 0)/cardsCount)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
                 </View>
             </View>
             <View className='flex-row items-center justify-center gap-x-2'>

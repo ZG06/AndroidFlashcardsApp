@@ -11,10 +11,18 @@ type Props = {
     cardsCount: number;
     createdAt: Timestamp;
     lastStudied: Timestamp;
+    learnedCount: number;
     onStudy: () => void;
 }
 
-const HomeDecksItemCard = ({deckName, cardsCount, createdAt, lastStudied, onStudy}: Props) => {
+const HomeDecksItemCard = ({
+    deckName,
+    cardsCount,
+    createdAt,
+    lastStudied,
+    learnedCount,
+    onStudy
+}: Props) => {
     return (
         <View className="flex-row items-center justify-center bg-white p-4 rounded-md shadow-md w-full gap-x-4 mx-auto mt-2">
             <View className="flex-1">
@@ -26,9 +34,15 @@ const HomeDecksItemCard = ({deckName, cardsCount, createdAt, lastStudied, onStud
                     </View>
                 </View>
                 <View className="flex-row items-center gap-x-1 mt-2">
-                    <Text className="text-gray-600">
-                        0/{cardsCount} cards
-                    </Text>
+                    {learnedCount ? (
+                        <Text className='text-gray-600'>
+                            {learnedCount}/{cardsCount}
+                        </Text>
+                    ) : (
+                        <Text className='text-gray-600'>
+                            0/{cardsCount}
+                        </Text>
+                    )}
                     <Text className='text-gray-600'>
                         •
                     </Text>
@@ -38,7 +52,7 @@ const HomeDecksItemCard = ({deckName, cardsCount, createdAt, lastStudied, onStud
                 </View>
                 <View className="gap-y-1 mt-3">
                     <View className={"w-full"}>
-                        <Progress.Bar progress={(0/cardsCount)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={4} />
+                        <Progress.Bar progress={((learnedCount ? learnedCount : 0)/cardsCount)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={4} />
                     </View>
                 </View>
             </View>

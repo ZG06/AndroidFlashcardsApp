@@ -12,7 +12,8 @@ export const createDeck = async (name: string, cardsCount: number, category: Dec
             category,
             cardsCount,
             createdAt: serverTimestamp(),
-            lastStudied: serverTimestamp()
+            lastStudied: serverTimestamp(),
+            learnedCount: 0
         });
 
         return response.id;
@@ -48,6 +49,7 @@ export const updateDeck = async (
         description?: string;
         category?: DeckCategory;
         cardsCount: number;
+        learnedCount: number;
     }
 ) => {
     const userId = auth.currentUser?.uid;
@@ -60,7 +62,8 @@ export const updateDeck = async (
             description: data.description,
             category: data.category,
             cardsCount: data.cardsCount,
-            updatedAt: serverTimestamp()
+            updatedAt: serverTimestamp(),
+            learnedCount: 0
         });
     } catch (error) {
         console.error(error);

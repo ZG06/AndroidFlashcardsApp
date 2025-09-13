@@ -145,7 +145,8 @@ const EditDeck = () => {
                 name: deckName,
                 description: deckDescription,
                 category: deckCategory!,
-                cardsCount: cardsCount
+                cardsCount: cardsCount,
+                learnedCount: 0
             });
 
             router.replace('/decks');

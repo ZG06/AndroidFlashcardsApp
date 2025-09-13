@@ -109,6 +109,7 @@ export default function Index() {
                                 cardsCount={deck.cardsCount}
                                 createdAt={deck.createdAt}
                                 lastStudied={deck.lastStudied}
+                                learnedCount={deck.learnedCount}
                                 onStudy={async () => handleDeckStudyPress(deck.id)}
                             />
                         ))}

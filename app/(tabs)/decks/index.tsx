@@ -142,6 +142,7 @@ export default function Decks() {
                                     cardsCount={deck.cardsCount}
                                     createdAt={deck.createdAt}
                                     lastStudied={deck.lastStudied}
+                                    learnedCount={deck.learnedCount}
                                     onDelete={() => confirmDeckDelete(deck.id)}
                                     onStudy={async () => handleDeckStudyPress(deck.id)}
                                 />

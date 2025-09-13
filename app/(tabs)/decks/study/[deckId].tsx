@@ -1,12 +1,13 @@
 import { CompleteDeckStudyModal } from '@/components/CompleteDeckStudyModal';
 import Text from '@/components/Text';
-import { auth } from '@/firebaseConfig';
+import { auth, db } from '@/firebaseConfig';
 import { useCards } from '@/hooks/useCards';
 import { useDecks } from '@/hooks/useDecks';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
+import { doc, updateDoc } from 'firebase/firestore';
 import { Check, ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react-native';
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
@@ -42,7 +43,6 @@ export default function NewDeck() {
             setIsDeckLearned(true);
             setLearnedCards(prev => {
                 const updated = [...prev];
-                const currentCard = cards[currentCardIndex];
 
                 updated.push({
                     cardId: cards[currentCardIndex].id,
@@ -55,6 +55,7 @@ export default function NewDeck() {
             return;
         }
         
+        // Add new card to learnedCards list
         setLearnedCards(prev => {
             const updated = [...prev];
             const currentCard = cards[currentCardIndex];
@@ -72,11 +73,29 @@ export default function NewDeck() {
             return updated
         });
 
+        // Increment current card index by 1 as long as the card is not the last one
         if (currentCardIndex !== cards.length - 1) {
             setCurrentCardIndex(prev => prev + 1);
         }
     };
 
+    // Load the number of learned cards (easy cards) to the database
+    const updateLearnedCount = useCallback( async (deckId: string) => {
+        const userId = auth.currentUser?.uid;
+
+        try {
+            const decksRef = doc(db, `users/${userId}/decks/${deckId}`);
+
+            await updateDoc(decksRef, {
+                learnedCount: easyCards
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }, [easyCards]);
+    
+
+    // Going back to the previous card
     const handleTrackModeBack = () => {
 
         setLearnedCards(prev => 
@@ -85,9 +104,11 @@ export default function NewDeck() {
                 card.cardId !== cards[currentCardIndex - 1].id
             )
         );
+
         setCurrentCardIndex(prev => prev - 1);
     }
 
+    // Resetting a deck progress
     const handleReset = () => {
         setLearnedCards([]);
         setCurrentCardIndex(0);
@@ -108,6 +129,15 @@ export default function NewDeck() {
             setIsFront(true);
         }
     }, [currentCardIndex, cards]); 
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // Update the number of learned cards
+            updateLearnedCount(deckId as string);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [easyCards, deckId, updateLearnedCount]);
 
     const isLoading = isDeckLoading || isCardLoading || !deckId || !userId || !deck;
 
