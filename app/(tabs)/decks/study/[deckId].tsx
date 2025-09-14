@@ -3,6 +3,7 @@ import Text from '@/components/Text';
 import { auth, db } from '@/firebaseConfig';
 import { useCards } from '@/hooks/useCards';
 import { useDecks } from '@/hooks/useDecks';
+import { updateLastStudied } from '@/lib/decks';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
 import { doc, updateDoc } from 'firebase/firestore';
@@ -87,12 +88,12 @@ export default function NewDeck() {
             const decksRef = doc(db, `users/${userId}/decks/${deckId}`);
 
             await updateDoc(decksRef, {
-                learnedCount: easyCards
+                learnedCount: learnedCards.length
             });
         } catch (error) {
             console.error(error);
         }
-    }, [easyCards]);
+    }, [learnedCards]);
     
 
     // Going back to the previous card
@@ -110,6 +111,7 @@ export default function NewDeck() {
 
     // Resetting a deck progress
     const handleReset = () => {
+        updateLastStudied(deckId as string);
         setLearnedCards([]);
         setCurrentCardIndex(0);
         setIsFront(true);
@@ -165,7 +167,10 @@ export default function NewDeck() {
                 <View className={"flex-row items-center"} >
                     {/* Back button */}
                     <TouchableOpacity
-                        onPress={() => router.push('/decks')}
+                        onPress={() => {
+                            updateLastStudied(deckId as string);
+                            router.push('/decks')
+                        }}
                     >
                         <View className='items-center justify-center p-2 hover:bg-gray-100 rounded-md'>
                             <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
@@ -207,7 +212,7 @@ export default function NewDeck() {
                         </Text>
                         {/* Number of cards studies (selected as easy or hard) */}
                         <Text className='text-gray-600 text-[15px]'>
-                            0 studied
+                            {learnedCards.length} studied
                         </Text>
                     </View>
                     {/* Progres bar with number of cards reviewed */}

@@ -31,7 +31,6 @@ const DecksItemCard = ({
     onDelete,
     onStudy
 }: Props) => {
-    console.log("learned: ", learnedCount)
     return (
         <View className="bg-white p-4 rounded-md shadow-md w-full mx-auto mt-2">
             <View className="flex-row items-center justify-between">

@@ -6,13 +6,15 @@ import { useDecks } from "@/hooks/useDecks";
 import { updateLastStudied } from "@/lib/decks";
 import { router } from "expo-router";
 import { Play, Plus, TrendingUp } from "lucide-react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
 export default function Index() {
     const userId = auth.currentUser?.uid;
     const { decks, isLoading, error } = useDecks('All', userId);
+    const [learnedCardsToday, setLearnedCardsToday] = useState(0);
+    
 
     const handleDeckStudyPress = async (deckId: string) => {
         await updateLastStudied(deckId);
@@ -24,6 +26,26 @@ export default function Index() {
             console.error(error);
         }
     }, [error])
+
+    useEffect(() => {
+        if (isLoading) return;
+        
+        const todayStart = new Date(); 
+        todayStart.setHours(0, 0, 0, 0);
+
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+        let learnedCards = 0; 
+
+        decks.forEach((deck) => {
+            if (deck.lastStudied.toDate() > todayStart && deck.lastStudied.toDate() < todayEnd) {
+                learnedCards += deck.learnedCount;
+            };
+        })
+
+        setLearnedCardsToday(learnedCards);
+    }, [decks])
 
     return (
         <ScrollView
@@ -41,7 +63,7 @@ export default function Index() {
                 </View>
                 <View className={"flex-row justify-center gap-x-20 mb-5"}>
                     <View className={"items-center"}>
-                        <Text weight="bold" className={"text-blue-600 text-xl"}>47</Text>
+                        <Text weight="bold" className={"text-blue-600 text-xl"}>{learnedCardsToday}</Text>
                         <Text className={"text-gray-500"}>Cards Studied</Text>
                     </View>
                     <View className={"items-center"}>
@@ -52,10 +74,10 @@ export default function Index() {
                 <View>
                     <View className={"flex-row justify-between mb-2"}>
                         <Text>Daily Goal</Text>
-                        <Text>47/50 cards</Text>
+                        <Text>{learnedCardsToday}/50 cards</Text>
                     </View>
                     <View className={"w-full"}>
-                        <Progress.Bar progress={(47/50)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
+                        <Progress.Bar progress={(learnedCardsToday/50)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
                     </View>
                 </View>
             </View>
