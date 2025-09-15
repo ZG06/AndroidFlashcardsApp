@@ -1,10 +1,11 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
 import HomeDecksItemCard from "@/components/HomeDecksItemCard";
 import Text from "@/components/Text";
-import { auth } from "@/firebaseConfig";
+import { auth, db } from "@/firebaseConfig";
 import { useDecks } from "@/hooks/useDecks";
 import { updateLastStudied } from "@/lib/decks";
 import { router } from "expo-router";
+import { doc, onSnapshot } from "firebase/firestore";
 import { Play, Plus, TrendingUp } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
@@ -14,7 +15,8 @@ export default function Index() {
     const userId = auth.currentUser?.uid;
     const { decks, isLoading, error } = useDecks('All', userId);
     const [learnedCardsToday, setLearnedCardsToday] = useState(0);
-    
+    const [dailyGoal, setDailyGoal] = useState(50);
+    const [isTodaysProgressLoading, setIsTodaysProgressLoading] = useState(false);
 
     const handleDeckStudyPress = async (deckId: string) => {
         await updateLastStudied(deckId);
@@ -47,6 +49,35 @@ export default function Index() {
         setLearnedCardsToday(learnedCards);
     }, [decks])
 
+    useEffect(() => {
+        const userId = auth.currentUser?.uid;
+        
+        if (!userId) return;
+
+        if (!userId) {
+            setIsTodaysProgressLoading(false);
+            return;
+        }
+
+        setIsTodaysProgressLoading(true);
+
+        try {
+            const userRef = doc(db, `users/${userId}`);
+            const unsubscribe = onSnapshot(userRef, (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    setDailyGoal(data.dailyGoal);
+                }
+            });
+
+            return () => unsubscribe();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsTodaysProgressLoading(false);
+        }
+    }, [auth.currentUser?.uid])
+
     return (
         <ScrollView
             showsVerticalScrollIndicator={false}
@@ -61,25 +92,33 @@ export default function Index() {
                     <TrendingUp size={20} color="#2563EB" />
                     <Text weight="semibold" className={"text-2xl"}>Today&#39;s Progress</Text>
                 </View>
-                <View className={"flex-row justify-center gap-x-20 mb-5"}>
-                    <View className={"items-center"}>
-                        <Text weight="bold" className={"text-blue-600 text-xl"}>{learnedCardsToday}</Text>
-                        <Text className={"text-gray-500"}>Cards Studied</Text>
+                {isTodaysProgressLoading ? (
+                    <View className="items-center justify-center">
+                        <ActivityIndicator size={50} />
                     </View>
-                    <View className={"items-center"}>
-                        <Text weight="bold" className={"text-green-600 text-xl"}>32m</Text>
-                        <Text className={"text-gray-500"}>Time Spent</Text>
-                    </View>
-                </View>
-                <View>
-                    <View className={"flex-row justify-between mb-2"}>
-                        <Text>Daily Goal</Text>
-                        <Text>{learnedCardsToday}/50 cards</Text>
-                    </View>
-                    <View className={"w-full"}>
-                        <Progress.Bar progress={(learnedCardsToday/50)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
-                    </View>
-                </View>
+                ) : (
+                    <>
+                        <View className={"flex-row justify-center gap-x-20 mb-5"}>
+                            <View className={"items-center"}>
+                                <Text weight="bold" className={"text-blue-600 text-xl"}>{learnedCardsToday}</Text>
+                                <Text className={"text-gray-500"}>Cards Studied</Text>
+                            </View>
+                            <View className={"items-center"}>
+                                <Text weight="bold" className={"text-green-600 text-xl"}>32m</Text>
+                                <Text className={"text-gray-500"}>Time Spent</Text>
+                            </View>
+                        </View>
+                        <View>
+                            <View className={"flex-row justify-between mb-2"}>
+                                <Text>Daily Goal</Text>
+                                <Text>{learnedCardsToday}/{dailyGoal} cards</Text>
+                            </View>
+                            <View className={"w-full"}>
+                                <Progress.Bar progress={Math.min(learnedCardsToday/dailyGoal, 1)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
+                            </View>
+                        </View>
+                    </>
+                )}
             </View>
 
             <View className={"flex-row gap-x-5 mb-6"}>
