@@ -1,12 +1,14 @@
+import ActivityIndicator from "@/components/ActivityIndicator";
 import CustomSlider from "@/components/CustomSlider";
 import GeneralHeader from "@/components/GeneralHeader";
 import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
-import { auth } from "@/firebaseConfig";
+import { auth, db } from "@/firebaseConfig";
 import { router, useFocusEffect } from "expo-router";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Settings as SettingsIcon, User } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Image, Platform, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Platform, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 
 
 export default function Settings() {
@@ -24,10 +26,54 @@ export default function Settings() {
     const [studyRemindersTimeTemp, setStudyRemindersTimeTemp] = useState(0);
     const [isEditingReminders, setIsEditingReminders] = useState(false);
 
+    const [isStudySettingsLoading, setIsStudySettingsLoading] = useState(false);
+
     const {user, logout, getUserData, updateEmailInFirestore} = useAuth();
 
     const handleLogout = async () => {
         await logout();
+    }
+
+    const saveDailyGoal = async () => {
+        const userId = auth.currentUser?.uid;
+        const userRef = doc(db, `users/${userId}`);
+
+        if (!userId) return;
+
+        setIsStudySettingsLoading(true);
+
+        try {
+            await updateDoc(userRef, {
+                dailyGoal: dailyGoalTemp
+            });
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsStudySettingsLoading(false);
+            setIsEditingGoal(false);
+            setDailyGoal(dailyGoalTemp);
+        }
+    }
+
+    const saveStudyRemindersTime = async () => {
+        const userId = auth.currentUser?.uid;
+        const userRef = doc(db, `users/${userId}`);
+
+        if (!userId) return;
+
+        setIsStudySettingsLoading(true);
+
+        try {
+            await updateDoc(userRef, {
+                studyRemindersTime: studyRemindersTimeTemp
+            })
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsStudySettingsLoading(false);
+            setIsEditingReminders(false);
+            setStudyRemindersTime(studyRemindersTimeTemp);
+        }
     }
 
     useEffect(() => {
@@ -82,6 +128,39 @@ export default function Settings() {
         }, [isAuthReady, user])
     )
 
+    useEffect(() => {
+        const userId = auth.currentUser?.uid;
+
+        if (!userId) {
+            setIsStudySettingsLoading(false);
+            return;
+        }
+
+        setIsStudySettingsLoading(true);
+        try {
+            const userRef = doc(db, `users/${userId}`);
+            const unsubscribe = onSnapshot(userRef, (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    const newDailyGoal = Number(data.dailyGoal) ?? 50;
+                    const newStudyTime = Number(data.studyRemindersTime) ?? 0;
+
+                    setDailyGoal(newDailyGoal);
+                    setDailyGoalTemp(newDailyGoal);
+                    setStudyRemindersTime(newStudyTime);
+                    setStudyRemindersTimeTemp(newStudyTime);
+                }
+            });
+
+            return () => unsubscribe();
+            
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsStudySettingsLoading(false);
+        }
+    }, [auth.currentUser?.uid]);
+
     return (
         <View className={"flex-1"}>
             {/* Header */}
@@ -89,6 +168,7 @@ export default function Settings() {
 
             <ScrollView showsVerticalScrollIndicator={false} className={"p-6"} style={{backgroundColor: '#E6EDFF'}}>
 
+                {/* Profile settings block */}
                 <View className={"bg-white p-6 border border-gray-200 rounded-md shadow-sm shadow-gray-200 mb-6 gap-y-8"}>
                     <View className={"flex-row justify-between"}>
                         <View className={"flex-row items-center gap-x-2"}>
@@ -121,7 +201,7 @@ export default function Settings() {
                         }
                         <View className={"items-center justify-center rounded-full size-16 mr-2"} style={{backgroundColor: '#dbeaff'}}>
                             {isProfilePictureLoading ? (
-                                <ActivityIndicator size={'small'} />
+                                <ActivityIndicator size={50} />
                             ) : profilePicture ? (
                                 <Image
                                     source={{uri: profilePicture}}
@@ -172,141 +252,161 @@ export default function Settings() {
                             Study Settings
                         </Text>
                     </View>
-                    <View className="flex-row items-center justify-between">
-                        <View className="gap-y-1">
-                            <Text weight="medium" className="text-[16px]">
-                                Daily Goal
-                            </Text>
-                            <Text className="text-gray-600">
-                                {dailyGoal} {`card${dailyGoal.toString()[dailyGoal.toString().length - 1] === '1' ? '' : 's'}`} per day
-                            </Text>
+                    {/* Study settings block */}
+                    {isStudySettingsLoading ? (
+                        <View className="items-center justify-center">
+                            <ActivityIndicator size={50} />
                         </View>
-                        
-                        <TouchableOpacity
-                            className="border border-gray-200 rounded-md px-3 py-2"
-                            onPress={() => setIsEditingGoal(!isEditingGoal)}
-                        >
-                            <Text weight="medium">
-                            {isEditingGoal ? 'Cancel' : 'Change'}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {isEditingGoal && (
-                        <View className="p-4 bg-gray-50 rounded-lg">
-                            <Text className="text-gray-700 mb-2" weight="medium">Set Daily Goal</Text>
-                            <View className="flex-row items-center gap-x-3">
-                                <TextInput
-                                    className="border border-gray-200 rounded-md px-4 py-2 min-w-32"
-                                    keyboardType="number-pad"
-                                    value={dailyGoalTemp === 0 ? '' : dailyGoalTemp.toString()}
-                                    onChangeText={(text) => {
-                                        if (text === '') {
-                                            setDailyGoalTemp(0);
-                                        } else {
-                                            const num = parseInt(text, 10);
-                                            if (!isNaN(num)) {
-                                                setDailyGoalTemp(Math.min(200, Math.max(1, num)))
-                                            }
-                                        }
-                                    }}
-                                />
+                    ) : (
+                        <>
+                            <View className="flex-row items-center justify-between">
+                                {/* Daily card study goal */}
+                                <View className="gap-y-1">
+                                    <Text weight="medium" className="text-[16px]">
+                                        Daily Goal
+                                    </Text>
+        
+                                    {/* Display the number of cards to study per day */}
+                                    <Text className="text-gray-600">
+                                        {dailyGoal} {`card${dailyGoal.toString()[dailyGoal.toString().length - 1] === '1' ? '' : 's'}`} per day
+                                    </Text>
+                                </View>
+                                
+                                {/* Change the number of cards to study per day button */}
                                 <TouchableOpacity
-                                    onPress={() => {
-                                        setIsEditingGoal(false);
-                                        setDailyGoal(dailyGoalTemp);
-                                    }}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                                    className="border border-gray-200 rounded-md px-3 py-2"
+                                    onPress={() => setIsEditingGoal(!isEditingGoal)}
                                 >
-                                    <Text className="text-white" weight="medium">Save</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text className="text-xs text-gray-500 mt-2">Number of cards to study daily</Text>
-                        </View>
-                    )}
-                    
-                    {/* Divider */}
-                    <View className="border-b border-gray-200" />
-
-                    <View className="flex-row items-center justify-between">
-                        <View className="gap-y-1">
-                            <Text weight="medium" className="text-[16px]">
-                                Study Reminders
-                            </Text>
-                            <Text className="text-gray-600">
-                                {studyRemindersTime}:00 daily
-                            </Text>
-                        </View>
-                        <View className="flex-row items-center justify-center gap-x-2">
-                            {(studyRemindersTime !== studyRemindersTimeTemp) && isEditingReminders && (
-                                <TouchableOpacity
-                                    className="px-3 py-1.5"
-                                    onPress={() => {
-                                        setStudyRemindersTimeTemp(studyRemindersTime);
-                                        setIsEditingReminders(false);
-                                    }}
-                                >
-                                    <Text weight="medium" className="text-gray-600 text-[14px]">
-                                        Cancel
+                                    <Text weight="medium">
+                                    {isEditingGoal ? 'Cancel' : 'Change'}
                                     </Text>
                                 </TouchableOpacity>
+                            </View>
+        
+                            {/* Open text input to set daily goal when pressing the 'Change' button */}
+                            {isEditingGoal && (
+                                <View className="p-4 bg-gray-50 rounded-lg">
+                                    <Text className="text-gray-700 mb-2" weight="medium">Set Daily Goal</Text>
+                                    <View className="flex-row items-center gap-x-3">
+                                        {/* Text input for daily card study goal */}
+                                        <TextInput
+                                            className="border border-gray-200 rounded-md px-4 py-2 min-w-32"
+                                            keyboardType="number-pad"
+                                            value={dailyGoalTemp === 0 ? '' : dailyGoalTemp.toString()}
+                                            onChangeText={(text) => {
+                                                if (text === '') {
+                                                    setDailyGoalTemp(0);
+                                                } else {
+                                                    const num = parseInt(text, 10);
+                                                    if (!isNaN(num)) {
+                                                        setDailyGoalTemp(Math.min(200, Math.max(1, num)))
+                                                    }
+                                                }
+                                            }}
+                                        />
+        
+                                        {dailyGoal !== dailyGoalTemp && (
+                                            // Save new cards per day number
+                                            <TouchableOpacity
+                                                onPress={saveDailyGoal}
+                                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                                            >
+                                                <Text className="text-white" weight="medium">Save</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                    <Text className="text-xs text-gray-500 mt-2">Number of cards to study daily</Text>
+                                </View>
                             )}
-                            <TouchableOpacity
-                                className="border border-gray-200 rounded-md px-3 py-2"
-                                onPress={() => setIsEditingReminders(prev => !prev)}
-                            >
-                                <Text weight="medium">
-                                    {isEditingReminders ? 'Close' : 'Edit'}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    {isEditingReminders && (
-                        <View className="p-4 bg-gray-50 rounded-lg">
-                            <CustomSlider
-                                value={studyRemindersTimeTemp}
-                                onValueChange={setStudyRemindersTimeTemp}
-                                minimumValue={0}
-                                maximumValue={23}
-                                step={1}
-                                minimumTrackTintColor="#3B82F6"
-                                maximumTrackTintColor="#E5E7EB"
-                                thumbTintColor="#3B82F6"
-                            />
-                            <View className="flex-row justify-between p-2">
-                                <Text weight="medium" className="">
-                                    0:00
-                                </Text>
-                                <Text weight="medium">
-                                    23:00
-                                </Text>
-                            </View>
-                            {studyRemindersTime !== studyRemindersTimeTemp && (
-                                <View>
-                                    <Text className={`text-center text-gray-600 ${Platform.OS === 'web' ? 'text-[18px]' : 'text-[14px]'}`}>
-                                        Set to {studyRemindersTimeTemp}:00
+                            
+                            {/* Divider */}
+                            <View className="border-b border-gray-200" />
+        
+                            <View className="flex-row items-center justify-between">
+                                <View className="gap-y-1">
+                                    <Text weight="medium" className="text-[16px]">
+                                        Study Reminders
                                     </Text>
-                                    <TouchableOpacity
-                                        className="flex-1 items-center justify-center bg-gray-800 rounded-md mt-3"
-                                        style={{
-                                            paddingVertical: Platform.OS === 'web' ? 15 : 10
-                                        }}
-                                        onPress={() => {
-                                            setIsEditingReminders(false);
-                                            setStudyRemindersTime(studyRemindersTimeTemp);
-                                        }}
-                                    >
-                                        <Text
-                                            weight="medium"
-                                            className={`text-center text-[13px] text-white ${Platform.OS === 'web' ? 'text-[15px]' : 'text-[12px]'}`}
+        
+                                    {/* Display current time of study reminders */}
+                                    <Text className="text-gray-600">
+                                        {studyRemindersTime}:00 daily
+                                    </Text>
+                                </View>
+                                <View className="flex-row items-center justify-center gap-x-2">
+                                    {(studyRemindersTime !== studyRemindersTimeTemp) && isEditingReminders && (
+                                        // Cancel time change button
+                                        <TouchableOpacity
+                                            className="px-3 py-1.5"
+                                            onPress={() => {
+                                                setStudyRemindersTimeTemp(studyRemindersTime);
+                                                setIsEditingReminders(false);
+                                            }}
                                         >
-                                            Save
+                                            <Text weight="medium" className="text-gray-600 text-[14px]">
+                                                Cancel
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+        
+                                    {/* Edit the reminders time button */}
+                                    <TouchableOpacity
+                                        className="border border-gray-200 rounded-md px-3 py-2"
+                                        onPress={() => setIsEditingReminders(prev => !prev)}
+                                    >
+                                        <Text weight="medium">
+                                            {isEditingReminders ? 'Close' : 'Edit'}
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
+                            </View>
+        
+                            {isEditingReminders && (
+                                <View className="p-4 bg-gray-50 rounded-lg">
+                                    {/* Custom slider to set the reminders time */}
+                                    <CustomSlider
+                                        value={studyRemindersTimeTemp}
+                                        onValueChange={setStudyRemindersTimeTemp}
+                                        minimumValue={0}
+                                        maximumValue={23}
+                                        step={1}
+                                        minimumTrackTintColor="#3B82F6"
+                                        maximumTrackTintColor="#E5E7EB"
+                                        thumbTintColor="#3B82F6"
+                                    />
+                                    <View className="flex-row justify-between p-2">
+                                        <Text weight="medium" className="">
+                                            0:00
+                                        </Text>
+                                        <Text weight="medium">
+                                            23:00
+                                        </Text>
+                                    </View>
+                                    {studyRemindersTime !== studyRemindersTimeTemp && (
+                                        // Display the slider's current value and the save button after dragging the slider 
+                                        <View>
+                                            <Text className={`text-center text-gray-600 ${Platform.OS === 'web' ? 'text-[18px]' : 'text-[14px]'}`}>
+                                                Set to {studyRemindersTimeTemp}:00
+                                            </Text>
+                                            <TouchableOpacity
+                                                className="flex-1 items-center justify-center bg-gray-800 rounded-md mt-3"
+                                                style={{
+                                                    paddingVertical: Platform.OS === 'web' ? 15 : 10
+                                                }}
+                                                onPress={saveStudyRemindersTime}
+                                            >
+                                                <Text
+                                                    weight="medium"
+                                                    className={`text-center text-[13px] text-white ${Platform.OS === 'web' ? 'text-[15px]' : 'text-[12px]'}`}
+                                                >
+                                                    Save
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                </View>
                             )}
-                        </View>
+                        </>
                     )}
                 </View>
             </ScrollView>

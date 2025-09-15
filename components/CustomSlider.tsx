@@ -36,7 +36,7 @@ const CustomSlider = (props: Props) => {
             />
         );
     }
-  
+
     return (
         <Slider
             value={props.value}
