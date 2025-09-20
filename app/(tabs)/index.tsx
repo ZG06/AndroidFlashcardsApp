@@ -23,6 +23,22 @@ export default function Index() {
         router.push(`/decks/study/${deckId}`);
     }
 
+    const onQuickStudyPress = () => {
+        const decksLastStudied: Date[] = [];
+        decks.forEach((deck) => {
+            decksLastStudied.push(deck.lastStudied.toDate());
+        })
+
+        decksLastStudied.sort((a, b) => {
+            return b.getDate() - a.getDate();
+        });
+
+        // Get the id of the most recent studied deck
+        const recentDeckId = decks.find(deck => deck.lastStudied.toDate().getTime() === decksLastStudied[0].getTime())?.id;
+
+        router.replace(`decks/study/${recentDeckId}`);
+    }
+
     useEffect(() => {
         if (error) {
             console.error(error);
@@ -123,7 +139,10 @@ export default function Index() {
                 {
                     // Quick study button
                 }
-                <TouchableOpacity className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}>
+                <TouchableOpacity
+                    className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}
+                    onPress={onQuickStudyPress}
+                >
                     <Play color={"#2563eb"} size={32} style={{marginBottom: 10}} />
                     <Text weight="bold" className={"text-lg"}>Quick Study</Text>
                     <Text className={"text-gray-600"}>Continue learning</Text>

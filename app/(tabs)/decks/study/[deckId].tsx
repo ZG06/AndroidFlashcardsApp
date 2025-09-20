@@ -167,8 +167,8 @@ export default function NewDeck() {
                 <View className={"flex-row items-center"} >
                     {/* Back button */}
                     <TouchableOpacity
-                        onPress={() => {
-                            updateLastStudied(deckId as string);
+                        onPress={async () => {
+                            await updateLastStudied(deckId as string);
                             router.push('/decks')
                         }}
                     >
