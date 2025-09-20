@@ -1,11 +1,12 @@
 import { AuthContextProvider, useAuth } from "@/context/authContext";
-import { usePasswordResetRedirect } from "@/hooks/usePasswordResetRedirect";
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { useFonts } from "expo-font";
+import * as Notifications from 'expo-notifications';
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import './globals.css';
+
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,7 +22,26 @@ const MainLayout = () => {
         Inter_700Bold
     });
 
-    usePasswordResetRedirect();
+    {/* Configure notifications and request permissions for them when the app starts */}
+    useEffect(() => {
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldPlaySound: true,
+                shouldSetBadge: true,
+                shouldShowBanner: true,
+                shouldShowList: true
+            }),
+        });
+
+        const requestPermissions = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                console.log('Notification permissions not granted');
+            }
+        };
+        
+        requestPermissions();
+    }, [])
 
     useEffect(() => {
         if (loaded) {

@@ -96,12 +96,10 @@ export const GoogleSignInCustomButton = () => {
                 const idToken = result.params?.id_token;
                 const decodedToken = decodeJWT(result.params?.id_token);
                 const userEmail = decodedToken?.email;
-                console.log(userEmail);
                 
                 if (idToken) {
 
                     const userExists = await checkUserExists(userEmail);
-                    console.log(userExists)
                     
                     if (!userExists) {
                         window.confirm('Please register an account with your email before signing in.');

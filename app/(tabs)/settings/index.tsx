@@ -2,8 +2,10 @@ import ActivityIndicator from "@/components/ActivityIndicator";
 import CustomSlider from "@/components/CustomSlider";
 import GeneralHeader from "@/components/GeneralHeader";
 import Text from "@/components/Text";
+import { NOTIFICATION_MESSAGES } from "@/constants/notifications";
 import { useAuth } from "@/context/authContext";
 import { auth, db } from "@/firebaseConfig";
+import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect } from "expo-router";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Settings as SettingsIcon, User } from "lucide-react-native";
@@ -63,10 +65,33 @@ export default function Settings() {
 
         setIsStudySettingsLoading(true);
 
+        {/* Save the time when study-remider notifications should be sent */}
         try {
             await updateDoc(userRef, {
                 studyRemindersTime: studyRemindersTimeTemp
             })
+
+            {/* Time when the notifications will be sent */}
+            const hours = studyRemindersTimeTemp;
+
+            {/* Clear the previous scheduled notifications */}
+            await Notifications.cancelAllScheduledNotificationsAsync();
+
+            {/* Create new scheduled notifications and send them daily */}
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: '📚 Study Time!',
+                    body: NOTIFICATION_MESSAGES[Math.floor(Math.random() * NOTIFICATION_MESSAGES.length)],
+                    sound: 'default',
+                    data: { type: 'study_reminder' }
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                    hour: hours,
+                    minute: 0
+                }
+            })
+
         } catch (error) {
             console.error(error);
         } finally {

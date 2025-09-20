@@ -38,10 +38,10 @@ export default function Index() {
         const todayEnd = new Date();
         todayEnd.setHours(23, 59, 59, 999);
 
-        let learnedCards = 0; 
+        let learnedCards = 0;
 
         decks.forEach((deck) => {
-            if (deck.lastStudied.toDate() > todayStart && deck.lastStudied.toDate() < todayEnd) {
+            if (deck.lastStudied && deck.lastStudied.toDate() > todayStart && deck.lastStudied.toDate() < todayEnd) {
                 learnedCards += deck.learnedCount;
             };
         })
@@ -52,8 +52,6 @@ export default function Index() {
     useEffect(() => {
         const userId = auth.currentUser?.uid;
         
-        if (!userId) return;
-
         if (!userId) {
             setIsTodaysProgressLoading(false);
             return;
