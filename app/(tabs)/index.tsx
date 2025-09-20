@@ -24,19 +24,19 @@ export default function Index() {
     }
 
     const onQuickStudyPress = () => {
-        const decksLastStudied: Date[] = [];
-        decks.forEach((deck) => {
-            decksLastStudied.push(deck.lastStudied.toDate());
+        if (!decks || decks.length === 0) return;
+
+        const mostRecentDeck = decks.reduce((mostRecent, current) => {
+            if (!mostRecent) return current;
+
+            return current.lastStudied.toDate().getTime() > mostRecent.lastStudied.toDate().getTime()
+                ? current
+                : mostRecent;
         })
-
-        decksLastStudied.sort((a, b) => {
-            return b.getDate() - a.getDate();
-        });
-
-        // Get the id of the most recent studied deck
-        const recentDeckId = decks.find(deck => deck.lastStudied.toDate().getTime() === decksLastStudied[0].getTime())?.id;
-
-        router.replace(`decks/study/${recentDeckId}`);
+        
+        if (mostRecentDeck.id) {
+            router.replace(`decks/study/${mostRecentDeck.id}`);
+        }
     }
 
     useEffect(() => {
