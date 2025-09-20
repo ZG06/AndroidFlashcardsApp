@@ -36,23 +36,30 @@ export const AuthContextProvider = ({children}) => {
             if (user?.emailVerified) {
                 setIsAuthenticated(true);
                 setUser(user);
-            } else {
-                setIsAuthenticated(false);
-                setUser(null);
+                return;
             }
-        });
+
+            setIsAuthenticated(false);
+            setUser(null);
+        })
     }, []);
 
     const login = async (email, password) => {
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
-
             const user = response?.user;
 
-            if (!user.emailVerified) {
+            {/* Refresh the id token to get the latest email verification status */}
+            await user.reload()
+            const refreshedUser = auth.currentUser;
+
+            if (!refreshedUser.emailVerified) {
                 await signOut(auth);
                 return { success: false, msg: 'emailNotVerified' };
             }
+
+            setUser(refreshedUser);
+            setIsAuthenticated(true);
 
             return {success: true}
         } catch (error) {
@@ -106,7 +113,9 @@ export const AuthContextProvider = ({children}) => {
             await setDoc(doc(db, 'users', response?.user?.uid), {
                 username,
                 email,
-                userId: response?.user?.uid
+                userId: response?.user?.uid,
+                dailyGoal: 50,
+                studyRemindersTime: 18
             });
 
             await sendEmailVerification(user);
