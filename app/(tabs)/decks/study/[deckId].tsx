@@ -8,7 +8,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
 import { doc, updateDoc } from 'firebase/firestore';
 import { Check, ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, AppStateStatus, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
@@ -36,6 +36,7 @@ export default function NewDeck() {
 
     const [isStudying, setIsStudying] = useState(true);
     const [studyDuration, setStudyDuration] = useState(0);
+    const studySessionStartRef = useRef<number | null>(null);
 
     const easyCards = learnedCards.filter((card) => card.difficulty === 'easy').length;
     const hardCards = learnedCards.filter((card) => card.difficulty === 'hard').length;
@@ -127,8 +128,13 @@ export default function NewDeck() {
 
         if (!userId || !deckId) return;
 
+        const now = Date.now();
+        const sessionStartTime = studySessionStartRef.current;
+        const sessionDuration = sessionStartTime ? Math.floor((now - sessionStartTime) / 1000) : 0;
+        const totalDuration = studyDuration ? studyDuration : studyDuration + sessionDuration;
+
         try {
-            await updateStudyTime(deckId as string, studyDuration);
+            await updateStudyTime(deckId as string, totalDuration);
         } catch (error) {
             console.error(error);
         }
@@ -168,20 +174,19 @@ export default function NewDeck() {
 
             if (nextAppState === 'active') {
                 startTime = now;
+                studySessionStartRef.current = now;
             } else if (nextAppState === 'background' && startTime) {
                 // Difference in time between the app coming to foreground and background
                 const sessionDuration = Math.floor((now - startTime) / 1000);
-                setStudyDuration(prev => {
-                    const newTotal = prev + sessionDuration;
-                    return newTotal;
-                })
-
+                setStudyDuration(prev => prev + sessionDuration);
                 startTime = null;
+                studySessionStartRef.current = null;
             }
         }
         
         if (isStudying) {
             startTime = Date.now();
+            studySessionStartRef.current = startTime;
         }
 
         const subscription = AppState.addEventListener('change', handleAppStateChange);
@@ -223,14 +228,14 @@ export default function NewDeck() {
                 <View className={"flex-row items-center"} >
                     {/* Back button */}
                     <TouchableOpacity
+                        className='p-2 hover:bg-gray-100 rounded-md'
                         onPress={async () => {
-                            await updateLastStudied(deckId as string);
-                            router.push('/decks')
+                            await saveTodayStudySessionDuration();
+                            router.back();
                         }}
+                        
                     >
-                        <View className='items-center justify-center p-2 hover:bg-gray-100 rounded-md'>
                             <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
-                        </View>
                     </TouchableOpacity>
 
                     {/* Deck name and mode */}
