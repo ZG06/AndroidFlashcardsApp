@@ -1,14 +1,15 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
 import HomeDecksItemCard from "@/components/HomeDecksItemCard";
+import { ProgressCard } from "@/components/ProgressCard";
 import Text from "@/components/Text";
 import { auth, db } from "@/firebaseConfig";
 import { useDecks } from "@/hooks/useDecks";
 import { router } from "expo-router";
 import { doc, onSnapshot } from "firebase/firestore";
-import { Play, Plus, TrendingUp } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import { Play, Plus } from "lucide-react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
-import * as Progress from 'react-native-progress';
+
 
 export default function Index() {
     const userId = auth.currentUser?.uid;
@@ -18,12 +19,24 @@ export default function Index() {
     const [dailyGoal, setDailyGoal] = useState(50);
     const [isTodaysProgressLoading, setIsTodaysProgressLoading] = useState(false);
 
-    const onQuickStudyPress = () => {
-        if (!decks || decks.length === 0) return;
+    const todayStart = useMemo(() => {
+        const todayStart = new Date(); 
+        todayStart.setHours(0, 0, 0, 0);
+        return todayStart
+    }, []);
 
+    const todayEnd = useMemo(() => {
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+        return todayEnd;
+    }, []);
+    
+    const onQuickStudyPress = useCallback(() => {
+        if (!decks || decks.length === 0) return;
+    
         const mostRecentDeck = decks.reduce((mostRecent, current) => {
             if (!mostRecent) return current;
-
+    
             return current.lastStudied.toDate().getTime() > mostRecent.lastStudied.toDate().getTime()
                 ? current
                 : mostRecent;
@@ -32,7 +45,24 @@ export default function Index() {
         if (mostRecentDeck.id) {
             router.replace(`decks/study/${mostRecentDeck.id}`);
         }
-    }
+    }, [decks, router])
+
+    const deckList = useMemo(() => {
+        if (isLoading) return null;
+        if (decks.length === 0) return null;
+        {/* Render only first 3 decks */}
+        return decks.slice(0, 3).map((deck) => (
+            <HomeDecksItemCard
+                key={deck.id}
+                deckName={deck.name}
+                cardsCount={deck.cardsCount}
+                createdAt={deck.createdAt}
+                lastStudied={deck.lastStudied}
+                learnedCount={deck.learnedCount}
+                onStudy={() => router.push(`/decks/study/${deck.id}`)}
+            />
+        ));
+    }, [decks, isLoading, router]);
 
     useEffect(() => {
         if (error) {
@@ -42,12 +72,6 @@ export default function Index() {
 
     useEffect(() => {
         if (isLoading) return;
-        
-        const todayStart = new Date(); 
-        todayStart.setHours(0, 0, 0, 0);
-
-        const todayEnd = new Date();
-        todayEnd.setHours(23, 59, 59, 999);
 
         let learnedCards = 0;
         let sessionsDuration = 0;
@@ -61,7 +85,7 @@ export default function Index() {
 
         setLearnedCardsToday(learnedCards);
         setSessionsDurationToday(sessionsDuration);
-    }, [decks])
+    }, [decks, todayStart, todayEnd])
 
     useEffect(() => {
         const userId = auth.currentUser?.uid;
@@ -99,39 +123,12 @@ export default function Index() {
             {
                 // Today's progress card
             }
-            <View className={"bg-white p-6 rounded-md justify-center shadow-sm shadow-gray-200 mb-6"}>
-                <View className={"flex-row items-center gap-x-2 mb-3"}>
-                    <TrendingUp size={20} color="#2563EB" />
-                    <Text weight="semibold" className={"text-2xl"}>Today&#39;s Progress</Text>
-                </View>
-                {isTodaysProgressLoading ? (
-                    <View className="items-center justify-center">
-                        <ActivityIndicator size={50} />
-                    </View>
-                ) : (
-                    <>
-                        <View className={"flex-row justify-center gap-x-20 mb-5"}>
-                            <View className={"items-center"}>
-                                <Text weight="bold" className={"text-blue-600 text-xl"}>{learnedCardsToday}</Text>
-                                <Text className={"text-gray-500"}>Cards Studied</Text>
-                            </View>
-                            <View className={"items-center"}>
-                                <Text weight="bold" className={"text-green-600 text-xl"}>{Math.floor(sessionsDurationToday / 60)}m</Text>
-                                <Text className={"text-gray-500"}>Time Spent</Text>
-                            </View>
-                        </View>
-                        <View>
-                            <View className={"flex-row justify-between mb-2"}>
-                                <Text>Daily Goal</Text>
-                                <Text>{learnedCardsToday}/{dailyGoal} cards</Text>
-                            </View>
-                            <View className={"w-full"}>
-                                <Progress.Bar progress={Math.min(learnedCardsToday/dailyGoal, 1)} color={"black"} width={null} borderColor={"white"} unfilledColor={"#f3f4f6"} height={7} />
-                            </View>
-                        </View>
-                    </>
-                )}
-            </View>
+            <ProgressCard
+                learnedCardsToday={learnedCardsToday}
+                sessionsDurationToday={sessionsDurationToday}
+                dailyGoal={dailyGoal}
+                isTodaysProgressLoading={isTodaysProgressLoading}
+            />
 
             <View className={"flex-row gap-x-5 mb-6"}>
                 {
@@ -177,18 +174,7 @@ export default function Index() {
                     <View
                         className="w-full gap-y-2"
                     >
-                        {/* Render only first 3 decks */}
-                        {decks.slice(0, 3).map((deck) => (
-                            <HomeDecksItemCard
-                                key={deck.id}
-                                deckName={deck.name}
-                                cardsCount={deck.cardsCount}
-                                createdAt={deck.createdAt}
-                                lastStudied={deck.lastStudied}
-                                learnedCount={deck.learnedCount}
-                                onStudy={() => router.push(`/decks/study/${deck.id}`)}
-                            />
-                        ))}
+                        {deckList}
                     </View>
                 )}
                 </View>

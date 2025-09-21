@@ -7,7 +7,7 @@ import { useDecks } from "@/hooks/useDecks";
 import { deleteDeck } from "@/lib/decks";
 import { router } from "expo-router";
 import { Plus } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Alert, FlatList, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 
 
@@ -28,6 +28,10 @@ export default function Decks() {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const { decks, isLoading, error } = useDecks(selectedCategory, userId);
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
+
+    const filteredDecks = useMemo(() => {
+        return decks.filter(deck => deck.name.trim().toLocaleLowerCase().includes(normalizedQuery))
+    }, [decks, normalizedQuery])
 
     const handleDeckDelete = async (deckId: string) => {
         try {
@@ -121,27 +125,26 @@ export default function Decks() {
             <View className={"justify-center items-center mt-8"}>
                 {isLoading ? (
                     <ActivityIndicator size={50} />
-                ) : decks.length === 0 ? (
+                ) : filteredDecks.length === 0 ? (
                     <Text className={"text-gray-500"}>No decks found.</Text>
                 ) : (
                     <View
                         className="w-full gap-y-2 p-6"
                     >
-                        {decks.filter(deck => deck.name.trim().toLocaleLowerCase().includes(normalizedQuery))
-                            .map((deck) => (
-                                <DecksItemCard
-                                    key={deck.id}
-                                    deckId={deck.id}
-                                    deckName={deck.name}
-                                    deckDescription={deck.description}
-                                    cardsCount={deck.cardsCount}
-                                    createdAt={deck.createdAt}
-                                    lastStudied={deck.lastStudied}
-                                    learnedCount={deck.learnedCount}
-                                    onDelete={() => confirmDeckDelete(deck.id)}
-                                    onStudy={() => router.push(`/decks/study/${deck.id}`)}
-                                />
-                            ))}
+                        {filteredDecks.map((deck) => (
+                            <DecksItemCard
+                                key={deck.id}
+                                deckId={deck.id}
+                                deckName={deck.name}
+                                deckDescription={deck.description}
+                                cardsCount={deck.cardsCount}
+                                createdAt={deck.createdAt}
+                                lastStudied={deck.lastStudied}
+                                learnedCount={deck.learnedCount}
+                                onDelete={() => confirmDeckDelete(deck.id)}
+                                onStudy={() => router.push(`/decks/study/${deck.id}`)}
+                            />
+                        ))}
                     </View>
                 )}
             </View>
