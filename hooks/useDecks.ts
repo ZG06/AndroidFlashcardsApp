@@ -32,7 +32,8 @@ export const useDecks = (category: string, userId?: string) => {
                         cardsCount: data.cardsCount,
                         createdAt: data.createdAt,
                         lastStudied: data.lastStudied,
-                        learnedCount: data.learnedCount
+                        learnedCount: data.learnedCount,
+                        lastStudiedDuration: data.lastStudiedDuration
                     });
                 } else if (category === 'All') {
                     mapped.push({
@@ -43,7 +44,8 @@ export const useDecks = (category: string, userId?: string) => {
                         cardsCount: data.cardsCount,
                         createdAt: data.createdAt,
                         lastStudied: data.lastStudied,
-                        learnedCount: data.learnedCount
+                        learnedCount: data.learnedCount,
+                        lastStudiedDuration: data.lastStudiedDuration
                     });
                 }
             });

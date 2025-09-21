@@ -13,7 +13,8 @@ export const createDeck = async (name: string, cardsCount: number, category: Dec
             cardsCount,
             createdAt: serverTimestamp(),
             lastStudied: serverTimestamp(),
-            learnedCount: 0
+            learnedCount: 0,
+            lastStudiedDuration: 0
         });
 
         return response.id;

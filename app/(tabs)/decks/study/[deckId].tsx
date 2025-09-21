@@ -6,10 +6,10 @@ import { useDecks } from '@/hooks/useDecks';
 import { updateLastStudied } from '@/lib/decks';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { Check, ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, AppState, AppStateStatus, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
 
@@ -34,6 +34,9 @@ export default function NewDeck() {
     const [learnedCards, setLearnedCards] = useState<{ cardId: string; difficulty: 'easy' | 'hard' | null }[]>([]);
     const [isDeckLearned, setIsDeckLearned] = useState(false);
 
+    const [isStudying, setIsStudying] = useState(true);
+    const [studyDuration, setStudyDuration] = useState(0);
+
     const easyCards = learnedCards.filter((card) => card.difficulty === 'easy').length;
     const hardCards = learnedCards.filter((card) => card.difficulty === 'hard').length;
     const cardAccuracy = (easyCards / (easyCards + hardCards) * 100) | 0;
@@ -42,6 +45,8 @@ export default function NewDeck() {
         // If it is the last card, set isDeckLearned to true and add the last card to learnedCards
         if (currentCardIndex === cards.length - 1) {
             setIsDeckLearned(true);
+            setIsStudying(false);
+            console.log('Finish', studyDuration)
             setLearnedCards(prev => {
                 const updated = [...prev];
 
@@ -111,10 +116,29 @@ export default function NewDeck() {
 
     // Resetting a deck progress
     const handleReset = () => {
+        setStudyDuration(0);
+        setIsStudying(true);
         updateLastStudied(deckId as string);
         setLearnedCards([]);
         setCurrentCardIndex(0);
         setIsFront(true);
+    }
+
+    const saveStudySessionDuration = async () => {
+        const userId = auth.currentUser?.uid;
+
+        if (!userId || !deckId) return;
+
+        try {
+            const deckRef = doc(db, `users/${userId}/decks/${deckId}`);
+            
+            await updateDoc(deckRef, {
+                lastStudied: serverTimestamp(),
+                lastStudiedDuraion: studyDuration
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     useEffect(() => {
@@ -140,6 +164,45 @@ export default function NewDeck() {
 
         return () => clearTimeout(timer);
     }, [easyCards, deckId, updateLearnedCount]);
+
+    useEffect(() => {
+        let startTime: number | null = null;
+
+        const handleAppStateChange = async (nextAppState: AppStateStatus) => {
+            const now = Date.now();
+
+            if (!isStudying) return;
+
+            if (nextAppState === 'active') {
+                startTime = now;
+            } else if (nextAppState === 'background' && startTime) {
+                // Difference in time between the app coming to foreground and background
+                const sessionDuration = Math.floor((now - startTime) / 1000);
+                setStudyDuration(prev => {
+                    const newTotal = prev + sessionDuration;
+                    return newTotal;
+                })
+
+                startTime = null;
+            }
+        }
+        
+        if (isStudying) {
+            startTime = Date.now();
+        }
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+        return () => {
+
+            if (isStudying && startTime) {
+                const finalSession = Math.floor((Date.now() - startTime) / 1000);
+                setStudyDuration(prev => prev + finalSession);
+            }
+
+            subscription.remove();
+        }
+    }, [isStudying])
 
     const isLoading = isDeckLoading || isCardLoading || !deckId || !userId || !deck;
 
@@ -401,7 +464,10 @@ export default function NewDeck() {
                     correctAnswers={easyCards}
                     wrongAnswers={hardCards}
                     onStudyAgain={handleReset}
-                    onClose={() => setIsDeckLearned(false)}
+                    onClose={async () => {
+                        await saveStudySessionDuration();
+                        setIsDeckLearned(false);
+                    }}
                 />
             )}
         </ScrollView>

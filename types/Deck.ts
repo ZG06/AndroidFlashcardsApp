@@ -11,4 +11,5 @@ export interface Deck {
     updatedAt?: Timestamp;
     lastStudied: Timestamp;
     learnedCount: number;
+    lastStudiedDuration: number;
 }
