@@ -2,18 +2,17 @@ import { ConfirmAccountDeleteModal } from "@/components/ConfirmAccountDeleteModa
 import EditProfileSettingsHeader from "@/components/EditProfileSettingsHeader";
 import EditProfileTextInput from "@/components/EditProfileTextInput";
 import EmailChangeModal from "@/components/EmailChangeModal";
+import { MemoizedProfilePicture } from "@/components/MemoizedProfilePicture";
 import Text from "@/components/Text";
 import TextInput from "@/components/TextInput";
 import { useAuth } from "@/context/authContext";
 import { auth } from "@/firebaseConfig";
 import { pickImageFromLibrary } from "@/utils/imagePicker";
 import { router, useFocusEffect } from "expo-router";
-import { Save, User, X } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import { Save, X } from "lucide-react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
     Alert,
-    Image,
     Platform,
     ScrollView,
     TouchableOpacity,
@@ -128,12 +127,12 @@ export default function EditProfileSettings() {
         }, [isAuthReady, user])
     )
     
+    const emailRegex = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/, []);
+
     const handleSaveProfileData = async () => {
         if (!user) return;
 
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!regex.test(email)) {
+        if (!emailRegex.test(email)) {
             if (Platform.OS === 'web') {
                 window.alert('Invalid email format');
             } else {
@@ -215,21 +214,12 @@ export default function EditProfileSettings() {
                             {
                                 // User profile picture
                             }
-                            {isProfilePictureLoading ? (
-                                <ActivityIndicator size={'small'} />
-                            ) : profilePicture ? (
-                                <Image
-                                    source={{uri: profilePicture}}
-                                    style={{
-                                        height: 74,
-                                        width: 74,
-                                        borderRadius: 37,
-                                        resizeMode: 'cover',
-                                    }}
-                                />
-                            ) : (
-                                <User size={40} color={'#2863e9'} />
-                            )}
+                            <MemoizedProfilePicture
+                                isProfilePictureLoading={isProfilePictureLoading}
+                                profilePicture={profilePicture}
+                                size={74}
+                                borderRadius={37}
+                            />
 
                         </View>
                         <View className={"justify-center"}>
@@ -320,7 +310,6 @@ export default function EditProfileSettings() {
                         onClose={() => setIsEmailChangeModalVisible(false)}
                         handleSaveProfileData={async () => {
                             setInitialEmail(email);
-                            setPassword('');
                             if (Platform.OS === 'web') {
                                 window.confirm('Your email has been changed successfully! Please verify your new email address.');
                             } else {

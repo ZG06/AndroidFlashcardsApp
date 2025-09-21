@@ -1,6 +1,7 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
 import CustomSlider from "@/components/CustomSlider";
 import GeneralHeader from "@/components/GeneralHeader";
+import { MemoizedProfilePicture } from "@/components/MemoizedProfilePicture";
 import Text from "@/components/Text";
 import { NOTIFICATION_MESSAGES } from "@/constants/notifications";
 import { useAuth } from "@/context/authContext";
@@ -10,7 +11,7 @@ import { router, useFocusEffect } from "expo-router";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Settings as SettingsIcon, User } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { Image, Platform, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import { Platform, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 
 
 export default function Settings() {
@@ -225,21 +226,12 @@ export default function Settings() {
                             // User profile with name and email
                         }
                         <View className={"items-center justify-center rounded-full size-16 mr-2"} style={{backgroundColor: '#dbeaff'}}>
-                            {isProfilePictureLoading ? (
-                                <ActivityIndicator size={50} />
-                            ) : profilePicture ? (
-                                <Image
-                                    source={{uri: profilePicture}}
-                                    style={{
-                                        height: 60,
-                                        width: 60,
-                                        borderRadius: 30,
-                                        resizeMode: 'cover',
-                                    }}
-                                />
-                            ) : (
-                                <User size={32} color={'#2863e9'} />
-                            )}
+                            <MemoizedProfilePicture
+                                isProfilePictureLoading={isProfilePictureLoading}
+                                profilePicture={profilePicture}
+                                size={60}
+                                borderRadius={30}
+                            />
                         </View>
                         <View className={"flex-1 flex-row justify-between"}>
                             <View className={"justify-center"}>
