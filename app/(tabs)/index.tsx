@@ -15,6 +15,7 @@ export default function Index() {
     const userId = auth.currentUser?.uid;
     const { decks, isLoading, error } = useDecks('All', userId);
     const [learnedCardsToday, setLearnedCardsToday] = useState(0);
+    const [sessionsDurationToday, setSessionsDurationToday] = useState(0);
     const [dailyGoal, setDailyGoal] = useState(50);
     const [isTodaysProgressLoading, setIsTodaysProgressLoading] = useState(false);
 
@@ -55,14 +56,17 @@ export default function Index() {
         todayEnd.setHours(23, 59, 59, 999);
 
         let learnedCards = 0;
+        let sessionsDuration = 0;
 
         decks.forEach((deck) => {
             if (deck.lastStudied && deck.lastStudied.toDate() > todayStart && deck.lastStudied.toDate() < todayEnd) {
                 learnedCards += deck.learnedCount;
+                sessionsDuration += deck.lastStudiedDuration;
             };
         })
 
         setLearnedCardsToday(learnedCards);
+        setSessionsDurationToday(sessionsDuration);
     }, [decks])
 
     useEffect(() => {
@@ -118,7 +122,7 @@ export default function Index() {
                                 <Text className={"text-gray-500"}>Cards Studied</Text>
                             </View>
                             <View className={"items-center"}>
-                                <Text weight="bold" className={"text-green-600 text-xl"}>32m</Text>
+                                <Text weight="bold" className={"text-green-600 text-xl"}>{Math.floor(sessionsDurationToday / 60)}m</Text>
                                 <Text className={"text-gray-500"}>Time Spent</Text>
                             </View>
                         </View>

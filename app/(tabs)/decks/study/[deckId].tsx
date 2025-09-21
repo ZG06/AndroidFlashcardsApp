@@ -134,7 +134,7 @@ export default function NewDeck() {
             
             await updateDoc(deckRef, {
                 lastStudied: serverTimestamp(),
-                lastStudiedDuraion: studyDuration
+                lastStudiedDuration: studyDuration
             });
         } catch (error) {
             console.error(error);

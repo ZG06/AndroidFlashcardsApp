@@ -33,7 +33,7 @@ export const useDecks = (category: string, userId?: string) => {
                         createdAt: data.createdAt,
                         lastStudied: data.lastStudied,
                         learnedCount: data.learnedCount,
-                        lastStudiedDuration: data.lastStudiedDuration
+                        lastStudiedDuration: data.lastStudiedDuration || 0
                     });
                 } else if (category === 'All') {
                     mapped.push({
