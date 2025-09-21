@@ -3,10 +3,10 @@ import Text from '@/components/Text';
 import { auth, db } from '@/firebaseConfig';
 import { useCards } from '@/hooks/useCards';
 import { useDecks } from '@/hooks/useDecks';
-import { updateLastStudied } from '@/lib/decks';
+import { updateLastStudied, updateStudyTime } from '@/lib/decks';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
-import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { Check, ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, AppState, AppStateStatus, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
@@ -46,7 +46,6 @@ export default function NewDeck() {
         if (currentCardIndex === cards.length - 1) {
             setIsDeckLearned(true);
             setIsStudying(false);
-            console.log('Finish', studyDuration)
             setLearnedCards(prev => {
                 const updated = [...prev];
 
@@ -118,24 +117,18 @@ export default function NewDeck() {
     const handleReset = () => {
         setStudyDuration(0);
         setIsStudying(true);
-        updateLastStudied(deckId as string);
         setLearnedCards([]);
         setCurrentCardIndex(0);
         setIsFront(true);
     }
 
-    const saveStudySessionDuration = async () => {
+    const saveTodayStudySessionDuration = async () => {
         const userId = auth.currentUser?.uid;
 
         if (!userId || !deckId) return;
 
         try {
-            const deckRef = doc(db, `users/${userId}/decks/${deckId}`);
-            
-            await updateDoc(deckRef, {
-                lastStudied: serverTimestamp(),
-                lastStudiedDuration: studyDuration
-            });
+            await updateStudyTime(deckId as string, studyDuration);
         } catch (error) {
             console.error(error);
         }
@@ -463,9 +456,12 @@ export default function NewDeck() {
                     cardAccuracy={cardAccuracy}
                     correctAnswers={easyCards}
                     wrongAnswers={hardCards}
-                    onStudyAgain={handleReset}
+                    onStudyAgain={() => {
+                        handleReset();
+                        updateLastStudied(deckId as string);
+                    }}
                     onClose={async () => {
-                        await saveStudySessionDuration();
+                        await saveTodayStudySessionDuration();
                         setIsDeckLearned(false);
                     }}
                 />

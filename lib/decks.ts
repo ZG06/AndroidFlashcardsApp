@@ -1,6 +1,6 @@
 import { auth, db } from "@/firebaseConfig";
 import { DeckCategory } from "@/types/DeckCategory";
-import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc, writeBatch } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, updateDoc, writeBatch } from "firebase/firestore";
 
 export const createDeck = async (name: string, cardsCount: number, category: DeckCategory, description?: string) => {
     const userId = auth.currentUser?.uid;
@@ -14,7 +14,7 @@ export const createDeck = async (name: string, cardsCount: number, category: Dec
             createdAt: serverTimestamp(),
             lastStudied: serverTimestamp(),
             learnedCount: 0,
-            lastStudiedDuration: 0
+            studyTimeToday: 0
         });
 
         return response.id;
@@ -84,4 +84,29 @@ export const updateLastStudied = async (deckId: string) => {
         console.error(error);
     }
     
+}
+
+export const updateStudyTime = async (deckId: string, duration: number) => {
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) return
+
+    const deckRef = doc(db, `users/${userId}/decks/${deckId}`);
+
+    const today = new Date();
+    const todayLocal = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+
+    const deckDoc = await getDoc(deckRef);
+    const lastStudied = deckDoc.data()?.lastStudied;
+    const lastStudiedDate = lastStudied ?
+        lastStudied.toDate() :
+        null;
+
+    const shouldReset = !lastStudied || (lastStudiedDate && lastStudiedDate < todayLocal);
+    const currentStudyTime = shouldReset ? 0 : (deckDoc.data()?.studyTimeToday || 0);
+    
+    await updateDoc(deckRef, {
+        studyTimeToday: currentStudyTime + duration,
+        lastStudied: serverTimestamp()
+    });
 }

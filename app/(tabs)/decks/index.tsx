@@ -4,7 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import Text from "@/components/Text";
 import { useAuth } from "@/context/authContext";
 import { useDecks } from "@/hooks/useDecks";
-import { deleteDeck, updateLastStudied } from "@/lib/decks";
+import { deleteDeck } from "@/lib/decks";
 import { router } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -64,11 +64,6 @@ export default function Decks() {
             { cancelable: true }
         );
     };
-
-    const handleDeckStudyPress = async (deckId: string) => {
-        await updateLastStudied(deckId);
-        router.push(`/decks/study/${deckId}`);
-    }
 
     useEffect(() => {
         if (error) {
@@ -144,7 +139,7 @@ export default function Decks() {
                                     lastStudied={deck.lastStudied}
                                     learnedCount={deck.learnedCount}
                                     onDelete={() => confirmDeckDelete(deck.id)}
-                                    onStudy={async () => handleDeckStudyPress(deck.id)}
+                                    onStudy={() => router.push(`/decks/study/${deck.id}`)}
                                 />
                             ))}
                     </View>

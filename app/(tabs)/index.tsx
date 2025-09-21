@@ -3,7 +3,6 @@ import HomeDecksItemCard from "@/components/HomeDecksItemCard";
 import Text from "@/components/Text";
 import { auth, db } from "@/firebaseConfig";
 import { useDecks } from "@/hooks/useDecks";
-import { updateLastStudied } from "@/lib/decks";
 import { router } from "expo-router";
 import { doc, onSnapshot } from "firebase/firestore";
 import { Play, Plus, TrendingUp } from "lucide-react-native";
@@ -18,11 +17,6 @@ export default function Index() {
     const [sessionsDurationToday, setSessionsDurationToday] = useState(0);
     const [dailyGoal, setDailyGoal] = useState(50);
     const [isTodaysProgressLoading, setIsTodaysProgressLoading] = useState(false);
-
-    const handleDeckStudyPress = async (deckId: string) => {
-        await updateLastStudied(deckId);
-        router.push(`/decks/study/${deckId}`);
-    }
 
     const onQuickStudyPress = () => {
         if (!decks || decks.length === 0) return;
@@ -61,7 +55,7 @@ export default function Index() {
         decks.forEach((deck) => {
             if (deck.lastStudied && deck.lastStudied.toDate() > todayStart && deck.lastStudied.toDate() < todayEnd) {
                 learnedCards += deck.learnedCount;
-                sessionsDuration += deck.lastStudiedDuration;
+                sessionsDuration += deck.studyTimeToday;
             };
         })
 
@@ -192,7 +186,7 @@ export default function Index() {
                                 createdAt={deck.createdAt}
                                 lastStudied={deck.lastStudied}
                                 learnedCount={deck.learnedCount}
-                                onStudy={async () => handleDeckStudyPress(deck.id)}
+                                onStudy={() => router.push(`/decks/study/${deck.id}`)}
                             />
                         ))}
                     </View>
