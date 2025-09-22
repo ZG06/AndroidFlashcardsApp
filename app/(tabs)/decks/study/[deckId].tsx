@@ -231,7 +231,7 @@ export default function NewDeck() {
                         className='p-2 hover:bg-gray-100 rounded-md'
                         onPress={async () => {
                             await saveTodayStudySessionDuration();
-                            router.back();
+                            router.replace('/decks');
                         }}
                         
                     >

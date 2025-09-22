@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import * as Notifications from 'expo-notifications';
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
+import { Platform } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import './globals.css';
 
@@ -24,14 +25,16 @@ const MainLayout = () => {
 
     {/* Configure notifications and request permissions for them when the app starts */}
     useEffect(() => {
-        Notifications.setNotificationHandler({
-            handleNotification: async () => ({
-                shouldPlaySound: true,
-                shouldSetBadge: true,
-                shouldShowBanner: true,
-                shouldShowList: true
-            }),
-        });
+        if (Platform.OS !== 'web') {
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldPlaySound: true,
+                    shouldSetBadge: true,
+                    shouldShowBanner: true,
+                    shouldShowList: true
+                }),
+            });
+        }
 
         const requestPermissions = async () => {
             const { status } = await Notifications.requestPermissionsAsync();
