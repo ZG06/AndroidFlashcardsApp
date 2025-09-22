@@ -7,7 +7,7 @@ import { useDecks } from "@/hooks/useDecks";
 import { router } from "expo-router";
 import { doc, onSnapshot } from "firebase/firestore";
 import { Play, Plus } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 
 
@@ -31,21 +31,21 @@ export default function Index() {
         return todayEnd;
     }, []);
     
-    const onQuickStudyPress = useCallback(() => {
-        if (!decks || decks.length === 0) return;
+    // const onQuickStudyPress = useCallback(() => {
+    //     if (!decks || decks.length === 0) return;
     
-        const mostRecentDeck = decks.reduce((mostRecent, current) => {
-            if (!mostRecent) return current;
+    //     const mostRecentDeck = decks.reduce((mostRecent, current) => {
+    //         if (!mostRecent) return current;
     
-            return current.lastStudied.toDate().getTime() > mostRecent.lastStudied.toDate().getTime()
-                ? current
-                : mostRecent;
-        })
+    //         return current.lastStudied.toDate().getTime() > mostRecent.lastStudied.toDate().getTime()
+    //             ? current
+    //             : mostRecent;
+    //     })
         
-        if (mostRecentDeck.id) {
-            router.replace(`decks/study/${mostRecentDeck.id}`);
-        }
-    }, [decks, router])
+    //     if (mostRecentDeck.id) {
+    //         router.replace(`/decks/study/${mostRecentDeck.id}`);
+    //     }
+    // }, [decks, router])
 
     const deckList = useMemo(() => {
         if (isLoading) return null;
@@ -136,7 +136,7 @@ export default function Index() {
                 }
                 <TouchableOpacity
                     className={"flex-1 bg-white p-6 rounded-md shadow-xl shadow-gray-200 items-center hover:shadow-md"}
-                    onPress={onQuickStudyPress}
+                    onPress={() => router.push('/decks/study')}
                 >
                     <Play color={"#2563eb"} size={32} style={{marginBottom: 10}} />
                     <Text weight="bold" className={"text-lg"}>Quick Study</Text>

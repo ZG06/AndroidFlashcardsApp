@@ -28,6 +28,12 @@ export default function DecksLayout() {
                     headerShown: false
                 }}
             />
+            <Stack.Screen
+                name="study/index"
+                options={{
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 }
