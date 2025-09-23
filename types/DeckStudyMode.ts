@@ -1,1 +1,1 @@
-export type DeckStudyMode = 'Review' | 'New' | 'All';
+export type DeckStudyMode = 'New' | 'Hard' | 'All';

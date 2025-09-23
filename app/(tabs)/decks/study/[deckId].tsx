@@ -3,6 +3,7 @@ import Text from '@/components/Text';
 import { auth, db } from '@/firebaseConfig';
 import { useCards } from '@/hooks/useCards';
 import { useDecks } from '@/hooks/useDecks';
+import { setCardDifficulty } from '@/lib/cards';
 import { updateLastStudied, updateStudyTime } from '@/lib/decks';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -33,55 +34,52 @@ export default function NewDeck() {
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [learnedCards, setLearnedCards] = useState<{ cardId: string; difficulty: 'easy' | 'hard' | null }[]>([]);
     const [isDeckLearned, setIsDeckLearned] = useState(false);
+    const [isSettingDifficulty, setIsSettingDifficulty] = useState(false);
+    const [isGoingBack, setIsGoingBack] = useState(false);
+    
+    const currentIndexRef = useRef(0);
 
     const [isStudying, setIsStudying] = useState(true);
     const [studyDuration, setStudyDuration] = useState(0);
     const studySessionStartRef = useRef<number | null>(null);
 
-    const easyCards = learnedCards.filter((card) => card.difficulty === 'easy').length;
-    const hardCards = learnedCards.filter((card) => card.difficulty === 'hard').length;
-    const cardAccuracy = (easyCards / (easyCards + hardCards) * 100) | 0;
+    const easyCards = learnedCards.filter((card) => card.difficulty === 'easy');
+    const hardCards = learnedCards.filter((card) => card.difficulty === 'hard');
+    const cardAccuracy = (easyCards.length / (easyCards.length + hardCards.length) * 100) | 0;
 
-    const handleSelectDifficulty = (difficulty: 'easy' | 'hard') => {
-        // If it is the last card, set isDeckLearned to true and add the last card to learnedCards
-        if (currentCardIndex === cards.length - 1) {
-            setIsDeckLearned(true);
-            setIsStudying(false);
-            setLearnedCards(prev => {
-                const updated = [...prev];
+    const handleSelectDifficulty = async (difficulty: 'easy' | 'hard') => {
+        // Prevent multiple rapid clicks
+        if (isSettingDifficulty) return;
 
-                updated.push({
-                    cardId: cards[currentCardIndex].id,
-                    difficulty: difficulty
-                });
+        const currentCardId = cards[currentCardIndex]?.id;
+        if (!currentCardId) return;
 
-                return updated
-            });
+        setIsSettingDifficulty(true);
 
-            return;
-        }
-        
-        // Add new card to learnedCards list
-        setLearnedCards(prev => {
-            const updated = [...prev];
-            const currentCard = cards[currentCardIndex];
-            const isIncluded = updated.find((card) => card.cardId === currentCard.id)
+        try {
+            const newLearnedCard = { cardId: currentCardId, difficulty};
+            setLearnedCards(prev => [
+                ...learnedCards.filter(card => card.cardId !== currentCardId),
+                newLearnedCard
+            ]);
 
-            if (!isIncluded) {
-                updated.push({
-                    cardId: cards[currentCardIndex].id,
-                    difficulty: difficulty
-                });
+            // Save current card difficulty to the database
+            await setCardDifficulty(deckId as string, currentCardId, difficulty);
+            
+            // If it is the last card, set isDeckLearned to true and add the last card to learnedCards
+            if (currentCardIndex === cards.length - 1) {
+                setIsDeckLearned(true);
+                setIsStudying(false);
             } else {
-                updated.find((card) => card.cardId === currentCard.id)!.difficulty = difficulty;
+                // Increment current card index by 1 as long as the card is not the last one
+                if (currentCardIndex !== cards.length - 1) {
+                    setCurrentCardIndex(prev => prev + 1);
+                }
             }
-
-            return updated
-        });
-
-        // Increment current card index by 1 as long as the card is not the last one
-        if (currentCardIndex !== cards.length - 1) {
-            setCurrentCardIndex(prev => prev + 1);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsSettingDifficulty(false);
         }
     };
 
@@ -102,16 +100,44 @@ export default function NewDeck() {
     
 
     // Going back to the previous card
-    const handleTrackModeBack = () => {
+    const handleTrackModeBack = async () => {
+        if (isGoingBack) return;
 
-        setLearnedCards(prev => 
-            prev.filter(card =>
-                card.cardId !== cards[currentCardIndex].id &&
-                card.cardId !== cards[currentCardIndex - 1].id
-            )
-        );
+        const currentIndex = currentIndexRef.current;
+        if (currentIndex <= 0) return;
 
-        setCurrentCardIndex(prev => prev - 1);
+        setIsGoingBack(true);
+
+        const prevCardIndex = currentIndex - 1;
+        const prevCard = cards[prevCardIndex];
+        const prevCardId = prevCard?.id;
+        
+        // Remove current card's difficulty
+        try {
+            if (prevCardId) {
+                // Update local state
+                setLearnedCards(prev => 
+                    prev.filter(card => card.cardId !== prevCardId)
+                );
+                
+                // Update Firestore
+                await setCardDifficulty(deckId as string, prevCardId, null);
+                
+                // Update the learned count
+                updateLearnedCount(deckId as string);
+            }
+
+            setCurrentCardIndex(prevCardIndex);
+            setFrontValue(prevCard.front);
+            setBackValue(prevCard.back);
+            setIsFront(true);
+        } catch (error) {
+            console.error('Error removing previous card difficulty:', error);
+            return;
+        } finally {
+            setIsGoingBack(false);
+        }
+            
     }
 
     // Resetting a deck progress
@@ -202,6 +228,10 @@ export default function NewDeck() {
         }
     }, [isStudying])
 
+    useEffect(() => {
+        currentIndexRef.current = currentCardIndex;
+    }, [currentCardIndex]);
+
     const isLoading = isDeckLoading || isCardLoading || !deckId || !userId || !deck;
 
     if (isLoading) {
@@ -230,8 +260,8 @@ export default function NewDeck() {
                     <TouchableOpacity
                         className='p-2 hover:bg-gray-100 rounded-md'
                         onPress={async () => {
-                            await saveTodayStudySessionDuration();
                             router.replace('/decks');
+                            await saveTodayStudySessionDuration();
                         }}
                         
                     >
@@ -288,7 +318,7 @@ export default function NewDeck() {
                             <View className='flex-row items-center justify-center gap-x-1'>
                                 <Check size={13} color="#15A349" />
                                 <Text className='text-green-600 text-[14px]'>
-                                    {easyCards}
+                                    {easyCards.length}
                                 </Text>
                             </View>
 
@@ -296,7 +326,7 @@ export default function NewDeck() {
                             <View className='flex-row items-center justify-center gap-x-1'>
                                 <X size={13} color="#DB2525" />
                                 <Text className='text-red-600 text-[14px]'>
-                                    {hardCards}
+                                    {hardCards.length}
                                 </Text>
                             </View>
 
@@ -459,8 +489,8 @@ export default function NewDeck() {
                     deckName={deck.name}
                     cardsStudied={learnedCards.length}
                     cardAccuracy={cardAccuracy}
-                    correctAnswers={easyCards}
-                    wrongAnswers={hardCards}
+                    correctAnswers={easyCards.length}
+                    wrongAnswers={hardCards.length}
                     onStudyAgain={() => {
                         handleReset();
                         updateLastStudied(deckId as string);

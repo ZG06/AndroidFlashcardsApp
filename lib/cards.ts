@@ -1,6 +1,6 @@
 import { auth, db } from "@/firebaseConfig";
 import { FlashCard } from "@/types/FlashCard";
-import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { deleteField, doc, serverTimestamp, updateDoc, writeBatch } from "firebase/firestore";
 
 export const saveCardsForDeck = async (deckId: string, cards: Array<{id: string; front: string; back: string}>) => {
     const userId = auth.currentUser?.uid;
@@ -86,4 +86,25 @@ export const upsertAndDeleteCards = async (
     });
 
     await batch.commit();
+}
+
+export const setCardDifficulty = async (
+    deckId: string,
+    cardId: string,
+    difficulty: 'easy' | 'hard' | null
+) => {
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) return;
+
+    try {
+        const cardRef = doc(db, `users/${userId}/decks/${deckId}/cards/${cardId}`);
+
+        await updateDoc(cardRef, {
+            difficulty: difficulty || deleteField(),
+            updatedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error(error);
+    }
 }
