@@ -36,6 +36,7 @@ export default function NewDeck() {
     const [isDeckLearned, setIsDeckLearned] = useState(false);
     const [isSettingDifficulty, setIsSettingDifficulty] = useState(false);
     const [isGoingBack, setIsGoingBack] = useState(false);
+    const [isLoadingGeneral, setIsLoadingGeneral] = useState(false);
     
     const currentIndexRef = useRef(0);
 
@@ -141,12 +142,22 @@ export default function NewDeck() {
     }
 
     // Resetting a deck progress
-    const handleReset = () => {
-        setStudyDuration(0);
-        setIsStudying(true);
-        setLearnedCards([]);
-        setCurrentCardIndex(0);
-        setIsFront(true);
+    const handleReset = async () => {
+        try {
+            const resetPromises = learnedCards.map(card => 
+                setCardDifficulty(deckId as string, card.cardId, null)
+            );
+            await Promise.all(resetPromises);
+
+            setStudyDuration(0);
+            setIsStudying(true);
+            setLearnedCards([]);
+            setCurrentCardIndex(0);
+            setIsFront(true);
+        } catch (error) {
+            console.error(error);
+        }
+
     }
 
     const saveTodayStudySessionDuration = async () => {
@@ -232,7 +243,7 @@ export default function NewDeck() {
         currentIndexRef.current = currentCardIndex;
     }, [currentCardIndex]);
 
-    const isLoading = isDeckLoading || isCardLoading || !deckId || !userId || !deck;
+    const isLoading = isDeckLoading || isCardLoading || isLoadingGeneral || !deckId || !userId || !deck;
 
     if (isLoading) {
         return (
@@ -265,7 +276,7 @@ export default function NewDeck() {
                         }}
                         
                     >
-                            <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
+                        <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
                     </TouchableOpacity>
 
                     {/* Deck name and mode */}
@@ -286,7 +297,11 @@ export default function NewDeck() {
                             style={[
                                 { opacity: (currentCardIndex === 0) ? 0.4 : 1 }
                             ]}
-                            onPress={handleReset}
+                            onPress={async () => {
+                                setIsLoadingGeneral(true);
+                                await handleReset();
+                                setIsLoadingGeneral(false);
+                            }}
                         >
                             <RotateCcw color={"black"} size={16} />
                             <Text weight='medium'>
@@ -491,9 +506,12 @@ export default function NewDeck() {
                     cardAccuracy={cardAccuracy}
                     correctAnswers={easyCards.length}
                     wrongAnswers={hardCards.length}
-                    onStudyAgain={() => {
-                        handleReset();
-                        updateLastStudied(deckId as string);
+                    onStudyAgain={async () => {
+                        setIsLoadingGeneral(true);
+                        setIsDeckLearned(false);
+                        await updateLastStudied(deckId as string);
+                        await handleReset();
+                        setIsLoadingGeneral(false);
                     }}
                     onClose={async () => {
                         await saveTodayStudySessionDuration();
