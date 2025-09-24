@@ -7,7 +7,7 @@ import { setCardDifficulty } from '@/lib/cards';
 import { updateLastStudied, updateStudyTime } from '@/lib/decks';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
-import { doc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { Check, ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, AppStateStatus, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
@@ -60,7 +60,7 @@ export default function NewDeck() {
         try {
             const newLearnedCard = { cardId: currentCardId, difficulty};
             setLearnedCards(prev => [
-                ...learnedCards.filter(card => card.cardId !== currentCardId),
+                ...prev.filter(card => card.cardId !== currentCardId),
                 newLearnedCard
             ]);
 
@@ -185,7 +185,7 @@ export default function NewDeck() {
     }, []);
     
     useEffect(() => {
-        if (cards.length > 0) {
+        if (cards.length > 0 && cards[currentCardIndex]) {
             setFrontValue(cards[currentCardIndex].front);
             setBackValue(cards[currentCardIndex].back);
             setIsFront(true);
@@ -197,7 +197,7 @@ export default function NewDeck() {
             // Update the number of learned cards
             updateLearnedCount(deckId as string);
         }, 500);
-
+        
         return () => clearTimeout(timer);
     }, [easyCards, deckId, updateLearnedCount]);
 
@@ -242,6 +242,49 @@ export default function NewDeck() {
     useEffect(() => {
         currentIndexRef.current = currentCardIndex;
     }, [currentCardIndex]);
+    
+    const loadLearnedCards = useCallback(async () => {
+        const userId = auth.currentUser?.uid;
+        if (!userId || !deckId) return;
+        
+        try {
+            if (learnedCards.length === 0) setIsLoadingGeneral(true);
+
+            const cardsRef = collection(db, `users/${userId}/decks/${deckId}/cards`);
+            const cardsSnapshot = await getDocs(cardsRef);
+
+            const learned = cardsSnapshot.docs
+                .filter(doc => doc.data().difficulty)
+                .map(doc => ({  
+                    cardId: doc.id,
+                    difficulty: doc.data().difficulty
+                }));
+
+            setLearnedCards(learned);
+            
+            if (learned.length > 0) {
+                if (learned.length === cards.length) {
+                    setIsDeckLearned(true);
+                } else {
+                    const firstUnlearnedIndex = cards.findIndex(card => 
+                        !learned.some(l => l.cardId === card.id)
+                    );
+
+                    setCurrentCardIndex(firstUnlearnedIndex !== -1 ? firstUnlearnedIndex : 0)
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoadingGeneral(false);
+        }
+    }, [deckId, cards]);
+
+    useEffect(() => {
+        if (deckId && cards?.length > 0) {
+            loadLearnedCards();
+        }
+    }, [deckId, cards, loadLearnedCards])
 
     const isLoading = isDeckLoading || isCardLoading || isLoadingGeneral || !deckId || !userId || !deck;
 
@@ -253,7 +296,7 @@ export default function NewDeck() {
         );
     }
 
-    const progress = (currentCardIndex + 1) / deckLength!;
+    const progress = (learnedCards.length + 1) / deckLength!;
 
     return (
         <ScrollView
@@ -314,7 +357,7 @@ export default function NewDeck() {
                     <View className={"flex-row justify-between mb-3"}>
                         {/* Current card number */}
                         <Text className='text-gray-600 text-[15px]'>
-                            Card {currentCardIndex + 1} of {deckLength}
+                            Card {Math.min(learnedCards.length + 1, deckLength)} of {deckLength}
                         </Text>
                         {/* Number of cards studies (selected as easy or hard) */}
                         <Text className='text-gray-600 text-[15px]'>
@@ -428,6 +471,7 @@ export default function NewDeck() {
                                 className={`flex-row items-center justify-center p-2.5 border border-red-200 rounded-md h-10 bg-red-50 hover:opacity-70`}
                                 // Set current card difficulty as 'hard'
                                 onPress={() => handleSelectDifficulty('hard')}
+                                disabled={isSettingDifficulty}
                             >
                                 <View
                                     className='flex-row items-center justify-center gap-x-1.5'
@@ -453,7 +497,7 @@ export default function NewDeck() {
                                     <ChevronLeft size={22} color={currentCardIndex === 0 ? "#9ca3af" : "#4b5563"} />
                                 </TouchableOpacity>
                             )}
-                            <Text weight='medium' className=''>
+                            <Text weight='medium'>
                                 Track progress
                             </Text>
                             <Switch
@@ -473,6 +517,7 @@ export default function NewDeck() {
                             <TouchableOpacity
                                 className={`flex-row items-center justify-center gap-x-[4px] border border-gray-200 rounded-md p-2.5 bg-white hover:bg-gray-100`}
                                 onPress={() => handleSelectDifficulty('easy')}
+                                disabled={isSettingDifficulty}
                             >
                                 <Text weight='medium'>
                                     Next
@@ -485,6 +530,7 @@ export default function NewDeck() {
                                 className={`items-center justify-center rounded-md p-2.5 bg-green-600 h-10 hover:opacity-70`}
                                 // Set current card difficulty as 'easy'
                                 onPress={() => handleSelectDifficulty('easy')}
+                                disabled={isSettingDifficulty}
                             >
                                 <View className='flex-row items-center justify-center gap-x-1.5'>
                                     <Check size={16} color="white" />

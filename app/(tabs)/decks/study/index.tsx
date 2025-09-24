@@ -149,11 +149,11 @@ export default function StudyOptionsScreen() {
                     </View>
 
                     <View className="flex-row items-center justify-between mb-4">
-                        {selectedMode === 'Review' ? (
+                        {selectedMode === 'New' ? (
                             <Text weight="semibold" className="text-lg">
-                                Decks Due for Review
+                                Decks with New Cards
                             </Text>
-                        ) : selectedMode === 'New' ? (
+                        ) : selectedMode === 'Hard' ? (
                             <Text weight="semibold" className="text-lg">
                                 Challenging Decks
                             </Text>
