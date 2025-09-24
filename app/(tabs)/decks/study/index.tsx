@@ -1,17 +1,78 @@
+import ActivityIndicator from "@/components/ActivityIndicator";
 import GeneralHeader from "@/components/GeneralHeader";
 import FlashcardCounterCard from "@/components/quick-study/FlashcardCounterCard";
 import StudyModeCards from "@/components/quick-study/StudyModeCards";
 import Text from "@/components/Text";
+import { auth, db } from "@/firebaseConfig";
 import { DeckStudyMode } from "@/types/DeckStudyMode";
+import { collection, getDocs } from "firebase/firestore";
 import { BookOpen, Target, TrendingUp } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 
 
+type CardCounts = {
+    new: number;
+    difficult: number;
+}
+
 export default function StudyOptionsScreen() {
     const [selectedMode, setSelectedMode] = useState<DeckStudyMode>('New');
+    const [cardCounts, setCardCounts] = useState<CardCounts>({ new: 0, difficult: 0 });
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const fetchCardsCount = async (): Promise<CardCounts> => {
+        const userId = auth.currentUser?.uid;
 
-    return (
+        if (!userId) return { new: 0, difficult: 0 };
+
+        try {
+            const decksRef = collection(db, `users/${userId}/decks`);
+            const decksSnapshot = await getDocs(decksRef);
+            
+            const cardPromises = decksSnapshot.docs.map(async (deckDoc) => {
+                const cardsRef = collection(db, `users/${userId}/decks/${deckDoc.id}/cards`);
+                const cardsSnapshot = await getDocs(cardsRef);
+                
+                return cardsSnapshot.docs.map(doc => doc.data());
+            });
+
+            const allCards = (await Promise.all(cardPromises)).flat();
+
+            return {
+                new: allCards.filter(card => !card.difficulty).length,
+                difficult: allCards.filter(card => card.difficulty === 'hard').length
+            }
+
+        } catch (error) {
+            console.error(error);
+            return { new: 0, difficult: 0 };
+        }
+    }
+
+    useEffect(() => {
+        let isMounted = true;
+        setIsLoading(true);
+
+        fetchCardsCount()
+            .then(counts => {
+                if (isMounted) setCardCounts(counts);
+            })
+            .catch(console.error)
+            .finally(() => {
+                if (isMounted) setIsLoading(false);
+            })
+
+        return () => {
+            isMounted = false;
+        }
+    }, [])
+
+    return isLoading ? (
+        <View className="flex-1 items-center justify-center"> 
+            <ActivityIndicator size={72} />
+        </View>
+    ) : (
         <View className={"flex-1"}>
 
             <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#E6EDFF'}}>
@@ -24,14 +85,14 @@ export default function StudyOptionsScreen() {
                         <FlashcardCounterCard
                             Icon={BookOpen}
                             color="#2664EB"
-                            count={133}
+                            count={cardCounts.new}
                             description="New Cards"
                         />
                         
                         <FlashcardCounterCard
                             Icon={TrendingUp}
                             color="#DD412C"
-                            count={100}
+                            count={cardCounts.difficult}
                             description="Difficult Cards"
                         />
 
