@@ -29,20 +29,21 @@ export default function StudyOptionsScreen() {
         try {
             const decksRef = collection(db, `users/${userId}/decks`);
             const decksSnapshot = await getDocs(decksRef);
-            
-            const cardPromises = decksSnapshot.docs.map(async (deckDoc) => {
-                const cardsRef = collection(db, `users/${userId}/decks/${deckDoc.id}/cards`);
-                const cardsSnapshot = await getDocs(cardsRef);
-                
-                return cardsSnapshot.docs.map(doc => doc.data());
-            });
 
-            const allCards = (await Promise.all(cardPromises)).flat();
+            let newCards = 0;
+            let difficultCards = 0;
 
+            decksSnapshot.forEach(deckDoc => {
+                const data = deckDoc.data();
+
+                newCards += data.newCardsCount || 0;
+                difficultCards += data.difficultCardsCount || 0;
+
+            })
             return {
-                new: allCards.filter(card => !card.difficulty).length,
-                difficult: allCards.filter(card => card.difficulty === 'hard').length
-            }
+                new: newCards,
+                difficult: difficultCards
+            };
 
         } catch (error) {
             console.error(error);

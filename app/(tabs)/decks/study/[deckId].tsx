@@ -361,7 +361,7 @@ export default function NewDeck() {
                     <View className={"flex-row justify-between mb-3"}>
                         {/* Current card number */}
                         <Text className='text-gray-600 text-[15px]'>
-                            Card {Math.min(learnedCards.length + 1, deckLength)} of {deckLength}
+                            Card {Math.min(learnedCards.length + 1, deckLength!)} of {deckLength}
                         </Text>
                         {/* Number of cards studies (selected as easy or hard) */}
                         <Text className='text-gray-600 text-[15px]'>
