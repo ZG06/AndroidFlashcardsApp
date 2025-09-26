@@ -1,5 +1,6 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
 import GeneralHeader from "@/components/GeneralHeader";
+import { DeckPreviewCard } from "@/components/quick-study/DeckPreviewCard";
 import FlashcardCounterCard from "@/components/quick-study/FlashcardCounterCard";
 import StudyModeCards from "@/components/quick-study/StudyModeCards";
 import Text from "@/components/Text";
@@ -172,9 +173,21 @@ export default function StudyOptionsScreen() {
                     </View>
 
                     <View className="items-center justify-center mt-4">
-                        <Text className="text-gray-600">
+                        {/* <Text className="text-gray-600">
                             No cards available
-                        </Text>
+                        </Text> */}
+                        <View className="w-full">
+                            <DeckPreviewCard
+                                name="Biology Terms"
+                                description="Cell biology and anatomy"
+                                cardsCount={15}
+                                learnedCount={8}
+                                newCardsCount={4}
+                                difficultCardsCount={3}
+                                accuracy={78}
+                                studyTimeToday={654}
+                            />
+                        </View>
                     </View>
                 </View>
             </ScrollView>
