@@ -1,3 +1,4 @@
+import ActivityIndicator from '@/components/ActivityIndicator';
 import { CompleteDeckStudyModal } from '@/components/CompleteDeckStudyModal';
 import Text from '@/components/Text';
 import { auth, db } from '@/firebaseConfig';
@@ -10,7 +11,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { Check, ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, AppState, AppStateStatus, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
+import { AppState, AppStateStatus, Platform, ScrollView, Switch, TouchableOpacity, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
 
@@ -91,13 +92,20 @@ export default function NewDeck() {
         try {
             const decksRef = doc(db, `users/${userId}/decks/${deckId}`);
 
+            const totalCards = cards.length;
+            const easyCount = easyCards.length;
+            const hardCount = hardCards.length;
+            const newCount = Math.max(0, totalCards - easyCount - hardCount);
+
             await updateDoc(decksRef, {
+                newCardsCount: newCount,
+                difficultCardsCount: hardCount,
                 learnedCount: learnedCards.length
             });
         } catch (error) {
             console.error(error);
         }
-    }, [learnedCards]);
+    }, [cards?.length, easyCards, hardCards, learnedCards]);
     
 
     // Going back to the previous card
@@ -199,7 +207,7 @@ export default function NewDeck() {
         }, 500);
         
         return () => clearTimeout(timer);
-    }, [easyCards, deckId, updateLearnedCount]);
+    }, [easyCards, hardCards, deckId, updateLearnedCount]);
 
     useEffect(() => {
         let startTime: number | null = null;
@@ -248,14 +256,12 @@ export default function NewDeck() {
         if (!userId || !deckId) return;
         
         try {
-            if (learnedCards.length === 0) setIsLoadingGeneral(true);
-
             const cardsRef = collection(db, `users/${userId}/decks/${deckId}/cards`);
             const cardsSnapshot = await getDocs(cardsRef);
 
             const learned = cardsSnapshot.docs
                 .filter(doc => doc.data().difficulty)
-                .map(doc => ({  
+                .map(doc => ({
                     cardId: doc.id,
                     difficulty: doc.data().difficulty
                 }));
@@ -278,12 +284,10 @@ export default function NewDeck() {
         } finally {
             setIsLoadingGeneral(false);
         }
-    }, [deckId, cards]);
+    }, [deckId, cards, learnedCards.length]);
 
     useEffect(() => {
-        if (deckId && cards?.length > 0) {
-            loadLearnedCards();
-        }
+        loadLearnedCards();
     }, [deckId, cards, loadLearnedCards])
 
     const isLoading = isDeckLoading || isCardLoading || isLoadingGeneral || !deckId || !userId || !deck;
@@ -291,7 +295,7 @@ export default function NewDeck() {
     if (isLoading) {
         return (
             <View className='flex-1 items-center justify-center'>
-                <ActivityIndicator size={50} />
+                <ActivityIndicator size={72} />
             </View> 
         );
     }
@@ -322,7 +326,7 @@ export default function NewDeck() {
                         <MaterialIcons name={"arrow-back"} size={22} color={"black"} />
                     </TouchableOpacity>
 
-                    {/* Deck name and mode */}
+                    {/* Deck name and moloadLearnedCade */}
                     <View className='flex-1 flex-row items-center justify-between ml-10'>
                         <View>
                             <Text weight="bold" className={"text-xl text-gray-900"}>
@@ -471,7 +475,6 @@ export default function NewDeck() {
                                 className={`flex-row items-center justify-center p-2.5 border border-red-200 rounded-md h-10 bg-red-50 hover:opacity-70`}
                                 // Set current card difficulty as 'hard'
                                 onPress={() => handleSelectDifficulty('hard')}
-                                disabled={isSettingDifficulty}
                             >
                                 <View
                                     className='flex-row items-center justify-center gap-x-1.5'
@@ -497,7 +500,7 @@ export default function NewDeck() {
                                     <ChevronLeft size={22} color={currentCardIndex === 0 ? "#9ca3af" : "#4b5563"} />
                                 </TouchableOpacity>
                             )}
-                            <Text weight='medium'>
+                            <Text weight='medium' className=''>
                                 Track progress
                             </Text>
                             <Switch
@@ -517,7 +520,6 @@ export default function NewDeck() {
                             <TouchableOpacity
                                 className={`flex-row items-center justify-center gap-x-[4px] border border-gray-200 rounded-md p-2.5 bg-white hover:bg-gray-100`}
                                 onPress={() => handleSelectDifficulty('easy')}
-                                disabled={isSettingDifficulty}
                             >
                                 <Text weight='medium'>
                                     Next
@@ -530,7 +532,6 @@ export default function NewDeck() {
                                 className={`items-center justify-center rounded-md p-2.5 bg-green-600 h-10 hover:opacity-70`}
                                 // Set current card difficulty as 'easy'
                                 onPress={() => handleSelectDifficulty('easy')}
-                                disabled={isSettingDifficulty}
                             >
                                 <View className='flex-row items-center justify-center gap-x-1.5'>
                                     <Check size={16} color="white" />

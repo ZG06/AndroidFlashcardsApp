@@ -12,4 +12,6 @@ export interface Deck {
     lastStudied: Timestamp;
     learnedCount: number;
     studyTimeToday: number;
+    newCardsCount: number;
+    difficultCardsCount: number;
 }
